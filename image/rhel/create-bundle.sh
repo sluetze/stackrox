@@ -63,6 +63,10 @@ cp -pr "${INPUT_ROOT}/ui/build/"*           "${bundle_root}/ui/"
 
 arch="x86_64"
 goarch="amd64"
+if [[ $TARGET_ARCH == "ppc64le" ]]; then
+    arch="ppc64le"
+    goarch="ppc64le"
+fi
 if [[ $(uname -m) == "arm64" ]]; then
   arch="aarch64"
   goarch="arm64"
@@ -95,7 +99,7 @@ postgres_url="https://download.postgresql.org/pub/repos/yum/${postgres_major}/re
 postgres_repo_url="https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-${arch}/pgdg-redhat-repo-latest.noarch.rpm"
 
 build_dir="$(mktemp -d)"
-docker build -q -t postgres-minor-image "${build_dir}" -f - <<EOF
+docker buildx build --platform "${PLATFORM}" -q -t postgres-minor-image "${build_dir}" -f - <<EOF
 FROM registry.access.redhat.com/ubi8/ubi:${pg_rhel_version}
 RUN dnf install --disablerepo='*' -y "${postgres_repo_url}"
 ENTRYPOINT dnf list --disablerepo='*' --enablerepo=pgdg${postgres_major} -y postgresql${postgres_major}-server.$arch | tail -n 1 | awk '{print \$2}'

@@ -72,7 +72,13 @@ ifeq ($(UNAME_M),arm64)
 endif
 endif
 
+ifeq ($(ARCH),)
 TARGET_ARCH := "amd64"
+else
+TARGET_ARCH := $(ARCH)
+GOARCH := $(ARCH)
+endif
+
 ifeq ($(UNAME_M),arm64)
 TARGET_ARCH = "arm64"
 endif
@@ -83,6 +89,13 @@ BIND_GOPATH ?= 0
 else
 BIND_GOCACHE ?= 1
 BIND_GOPATH ?= 1
+endif
+
+ifeq ($(UNAME_S),Linux)
+PLATFORM := linux/$(TARGET_ARCH)
+endif
+ifeq ($(UNAME_S),Darwin)
+PLATFORM := darwin/$(TARGET_ARCH)
 endif
 
 ifeq ($(BIND_GOCACHE),1)
@@ -570,8 +583,7 @@ $(CURDIR)/image/rhel/bundle.tar.gz:
 	/usr/bin/env DEBUG_BUILD="$(DEBUG_BUILD)" $(CURDIR)/image/rhel/create-bundle.sh $(CURDIR)/image $(BUILD_IMAGE) $(CURDIR)/image/rhel
 
 .PHONY: docker-build-main-image
-docker-build-main-image: copy-binaries-to-image-dir central-db-image $(CURDIR)/image/rhel/bundle.tar.gz
-	docker build \
+	docker buildx build --load --platform ${PLATFORM} \
 		-t stackrox/main:$(TAG) \
 		-t $(DEFAULT_IMAGE_REGISTRY)/main:$(TAG) \
 		--build-arg ROX_PRODUCT_BRANDING=$(ROX_PRODUCT_BRANDING) \
@@ -670,7 +682,7 @@ $(CURDIR)/image/postgres/bundle.tar.gz:
 
 .PHONY: central-db-image
 central-db-image: $(CURDIR)/image/postgres/bundle.tar.gz
-	docker build \
+	docker buildx build --load --platform ${PLATFORM} \
 		-t stackrox/central-db:$(TAG) \
 		-t $(DEFAULT_IMAGE_REGISTRY)/central-db:$(TAG) \
 		--file image/postgres/Dockerfile \
