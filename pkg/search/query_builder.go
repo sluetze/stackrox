@@ -9,7 +9,6 @@ import (
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/conv"
-	"github.com/stackrox/rox/pkg/generic"
 	"github.com/stackrox/rox/pkg/search/postgres/aggregatefunc"
 	"github.com/stackrox/rox/pkg/set"
 )
@@ -227,7 +226,6 @@ func (a *aggregateBy) Proto() *v1.AggregateBy {
 type QueryBuilder struct {
 	fieldsToValues map[FieldLabel][]string
 	ids            *[]string
-	linkedFields   [][]fieldValue
 
 	selectFields []*Select
 	// TODO(mandar): Deprecate highlighted and replace with selects.
@@ -279,16 +277,6 @@ func (qb *QueryBuilder) WithPagination(p *Pagination) *QueryBuilder {
 	return qb
 }
 
-// AddLinkedFields adds a bunch of fields and values where the matches must be in corresponding places in both fields.
-// For example, if you have an []struct{a string, b string}, and you query for "a": "avalue" and "b": "bvalue",
-// then the following slice would normally match.
-// []{{"a": "avalue", "b": "NOTbvalue"}, {"a": "NOTavalue", "b": "bvalue"}
-// But this function specifies that the query must be on linked fields,
-// so that an array would match ONLY if it had {"a": "avalue", "b": "bvalue"} on the same element.
-func (qb *QueryBuilder) AddLinkedFields(fields []FieldLabel, values []string) *QueryBuilder {
-	return qb.addLinkedFields(fields, values, false)
-}
-
 // AddDocIDs adds the list of ids to the DocID query of the QueryBuilder.
 func (qb *QueryBuilder) AddDocIDs(ids ...string) *QueryBuilder {
 	if qb.ids == nil {
@@ -308,37 +296,6 @@ func (qb *QueryBuilder) AddDocIDSet(idSet set.StringSet) *QueryBuilder {
 	for id := range idSet {
 		*qb.ids = append(*qb.ids, id)
 	}
-	return qb
-}
-
-// AddLinkedFieldsHighlighted is a convenience wrapper around AddLinkedFields and MarkHighlighted.
-func (qb *QueryBuilder) AddLinkedFieldsHighlighted(fields []FieldLabel, values []string) *QueryBuilder {
-	return qb.addLinkedFields(fields, values, true)
-}
-
-// AddLinkedFieldsWithHighlightValues allows you to add linked fields and specify granuarly which ones you want highlights for.
-func (qb *QueryBuilder) AddLinkedFieldsWithHighlightValues(fields []FieldLabel, values []string, highlighted []bool) *QueryBuilder {
-	if len(fields) != len(values) || len(fields) != len(highlighted) {
-		panic(fmt.Sprintf("Incorrect input to AddLinkedFieldsHighlighted, all three slices (%+v, %+v and %+v) must have the same length", fields, values, highlighted))
-	}
-	fieldValues := make([]fieldValue, len(fields))
-	for i, field := range fields {
-		fieldValues[i] = fieldValue{field, values[i], highlighted[i]}
-	}
-	qb.linkedFields = append(qb.linkedFields, fieldValues)
-	return qb
-}
-
-func (qb *QueryBuilder) addLinkedFields(fields []FieldLabel, values []string, highlighted bool) *QueryBuilder {
-	if len(fields) != len(values) {
-		panic("Incorrect input to AddLinkedFields, the two slices must have the same length")
-	}
-	fieldValues := make([]fieldValue, len(fields))
-	for i, field := range fields {
-		fieldValues[i] = fieldValue{field, values[i], highlighted}
-	}
-
-	qb.linkedFields = append(qb.linkedFields, fieldValues)
 	return qb
 }
 
@@ -421,24 +378,6 @@ func (qb *QueryBuilder) AddNumericFieldHighlighted(k FieldLabel, comparator stor
 	return qb.AddNumericField(k, comparator, value).MarkHighlighted(k)
 }
 
-// AddGenericTypeLinkedFields allows you to add linked fields of different types.
-func (qb *QueryBuilder) AddGenericTypeLinkedFields(fields []FieldLabel, values []interface{}) *QueryBuilder {
-	strValues := make([]string, 0, len(values))
-	for _, value := range values {
-		strValues = append(strValues, generic.String(value))
-	}
-	return qb.addLinkedFields(fields, strValues, false)
-}
-
-// AddGenericTypeLinkedFieldsHighligted allows you to add linked fields of different types and MarkHighlighted.
-func (qb *QueryBuilder) AddGenericTypeLinkedFieldsHighligted(fields []FieldLabel, values []interface{}) *QueryBuilder {
-	strValues := make([]string, 0, len(values))
-	for _, value := range values {
-		strValues = append(strValues, generic.String(value))
-	}
-	return qb.addLinkedFields(fields, strValues, true)
-}
-
 // Query returns the string version of the query.
 func (qb *QueryBuilder) Query() string {
 	pairs := make([]string, 0, len(qb.fieldsToValues))
@@ -451,7 +390,7 @@ func (qb *QueryBuilder) Query() string {
 
 // ProtoQuery generates a proto query from the query
 func (qb *QueryBuilder) ProtoQuery() *v1.Query {
-	queries := make([]*v1.Query, 0, len(qb.fieldsToValues)+len(qb.linkedFields))
+	queries := make([]*v1.Query, 0, len(qb.fieldsToValues))
 
 	if qb.ids != nil {
 		queries = append(queries, docIDQuery(*qb.ids))
@@ -468,10 +407,6 @@ func (qb *QueryBuilder) ProtoQuery() *v1.Query {
 	for _, field := range fields {
 		_, highlighted := qb.highlightedFields[field]
 		queries = append(queries, queryFromFieldValues(field.String(), qb.fieldsToValues[field], highlighted))
-	}
-
-	for _, linkedFieldsGroup := range qb.linkedFields {
-		queries = append(queries, matchLinkedFieldsQuery(linkedFieldsGroup))
 	}
 
 	cq := ConjunctionQuery(queries...)

@@ -93,32 +93,6 @@ func (s *SearchComparisonTestSuite) TestImageSearchResults() {
 				},
 			},
 		},
-		{
-			image: fixtures.GetImageWithUniqueComponents(50),
-			query: search.NewQueryBuilder().AddLinkedFieldsHighlighted(
-				[]search.FieldLabel{search.CVSS, search.CVE},
-				[]string{">=5", search.WildcardString}).
-				ProtoQuery(),
-			expectedResult: &search.Result{
-				ID: "test",
-				Matches: map[string][]string{"imagecve.cve_base_info.cve": {"CVE-2014-6200", "CVE-2014-6201", "CVE-2014-6202", "CVE-2014-6203", "CVE-2014-6204"},
-					"imagecve.cvss": {"5", "5", "5", "5", "5"},
-				},
-			},
-		},
-		{
-			image: fixtures.GetImageWithUniqueComponents(50),
-			query: search.NewQueryBuilder().AddLinkedFieldsHighlighted(
-				[]search.FieldLabel{search.CVSS, search.CVE},
-				[]string{">2", "CVE-2014-620"}).
-				ProtoQuery(),
-			expectedResult: &search.Result{
-				ID: "test",
-				Matches: map[string][]string{"imagecve.cve_base_info.cve": {"CVE-2014-6200", "CVE-2014-6201", "CVE-2014-6202", "CVE-2014-6203", "CVE-2014-6204"},
-					"imagecve.cvss": {"5", "5", "5", "5", "5"},
-				},
-			},
-		},
 	}
 
 	factory := predicate.NewFactory("image", (*storage.Image)(nil))
@@ -151,11 +125,6 @@ func (s *SearchComparisonTestSuite) TestDeploymentSearchResults() {
 		{
 			deployment: fixtures.GetDeployment(),
 			query:      search.NewQueryBuilder().AddBoolsHighlighted(search.Privileged, true).ProtoQuery(),
-		},
-		{
-			deployment: fixtures.GetDeployment(),
-			query: search.NewQueryBuilder().AddGenericTypeLinkedFieldsHighligted(
-				[]search.FieldLabel{search.AddCapabilities, search.Privileged}, []interface{}{"SYS_ADMIN", true}).ProtoQuery(),
 		},
 	}
 

@@ -20,12 +20,12 @@ var (
 
 func getSubjectFromStores(ctx context.Context, subjectName string, roleDS k8sRoleDS.DataStore, bindingDS k8sRoleBindingDS.DataStore) (*v1.GetSubjectResponse, error) {
 	bindingsQuery := search.DisjunctionQuery(
-		search.NewQueryBuilder().AddLinkedFields(
-			[]search.FieldLabel{search.SubjectName, search.SubjectKind},
-			[]string{search.ExactMatchString(subjectName), search.ExactMatchString(storage.SubjectKind_USER.String())}).ProtoQuery(),
-		search.NewQueryBuilder().AddLinkedFields(
-			[]search.FieldLabel{search.SubjectName, search.SubjectKind},
-			[]string{search.ExactMatchString(subjectName), search.ExactMatchString(storage.SubjectKind_GROUP.String())}).ProtoQuery(),
+		search.NewQueryBuilder().
+			AddExactMatches(search.SubjectName, subjectName).
+			AddExactMatches(search.SubjectKind, storage.SubjectKind_USER.String()).ProtoQuery(),
+		search.NewQueryBuilder().
+			AddExactMatches(search.SubjectName, subjectName).
+			AddExactMatches(search.SubjectKind, storage.SubjectKind_GROUP.String()).ProtoQuery(),
 	)
 	bindingsQuery.Pagination = &v1.QueryPagination{
 		Limit: math.MaxInt32,
