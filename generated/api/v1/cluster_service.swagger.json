@@ -661,6 +661,9 @@
         },
         "disableAuditLogs": {
           "type": "boolean"
+        },
+        "monitoring": {
+          "$ref": "#/definitions/storageMonitoringConfig"
         }
       }
     },
@@ -684,6 +687,22 @@
         "MANAGER_TYPE_KUBERNETES_OPERATOR"
       ],
       "default": "MANAGER_TYPE_UNKNOWN"
+    },
+    "storageMonitoringConfig": {
+      "type": "object",
+      "properties": {
+        "openshift": {
+          "$ref": "#/definitions/storageOpenShiftConfig"
+        }
+      }
+    },
+    "storageOpenShiftConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
     },
     "storageOrchestratorMetadata": {
       "type": "object",

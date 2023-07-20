@@ -218,7 +218,7 @@ func updateConfig(config *renderer.Config) error {
 			config.K8sConfig.Monitoring.OpenShiftMonitoring = pointer.Bool(isOpenShift4)
 		} else if *config.K8sConfig.Monitoring.OpenShiftMonitoring &&
 			config.ClusterType != storage.ClusterType_OPENSHIFT4_CLUSTER {
-			return errox.InvalidArgs.Newf("OpenShift monitoring integration requires OpenShift 4, got %q", config.ClusterType.String())
+			return errox.InvalidArgs.Newf(common.ErrorOpenShiftMonitoringNotSupported)
 		}
 	}
 

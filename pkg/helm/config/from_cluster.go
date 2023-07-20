@@ -33,6 +33,7 @@ func FromCluster(cluster *storage.Cluster, flavor defaults.ImageFlavor) (map[str
 	collectorImage := imageSpecFromOverrides(collectorImageOverrides)
 
 	dynAdmissionControllerCfg := cluster.GetDynamicConfig().GetAdmissionControllerConfig()
+	monitoringOpenShiftCfg := cluster.DynamicConfig.GetMonitoring().GetOpenshift()
 
 	m := map[string]interface{}{
 		"clusterName":     cluster.GetName(),
@@ -59,6 +60,11 @@ func FromCluster(cluster *storage.Cluster, flavor defaults.ImageFlavor) (map[str
 			"disableTaintTolerations": cluster.GetTolerationsConfig().GetDisabled(),
 			"slimMode":                cluster.GetSlimCollector(),
 			"image":                   collectorImage,
+		},
+		"monitoring": map[string]interface{}{
+			"openshift": map[string]interface{}{
+				"enabled": monitoringOpenShiftCfg.GetEnabled(),
+			},
 		},
 	}
 

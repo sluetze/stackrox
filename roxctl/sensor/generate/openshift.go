@@ -1,11 +1,14 @@
 package generate
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/stackrox/rox/generated/storage"
 	clusterValidation "github.com/stackrox/rox/pkg/cluster"
 	"github.com/stackrox/rox/pkg/errox"
 	"github.com/stackrox/rox/pkg/pointers"
+	"github.com/stackrox/rox/roxctl/common"
 	"github.com/stackrox/rox/roxctl/common/flags"
 	"github.com/stackrox/rox/roxctl/common/util"
 )
@@ -22,6 +25,7 @@ type sensorGenerateOpenShiftCommand struct {
 	openshiftVersion          int
 	admissionControllerEvents *bool
 	disableAuditLogCollection *bool
+	openshiftMonitoring       *bool
 }
 
 func (s *sensorGenerateOpenShiftCommand) ConstructOpenShift() error {
@@ -55,6 +59,18 @@ func (s *sensorGenerateOpenShiftCommand) ConstructOpenShift() error {
 
 	s.cluster.DynamicConfig.DisableAuditLogs = *s.disableAuditLogCollection
 
+	if s.openshiftMonitoring == nil {
+		s.openshiftMonitoring = pointers.Bool(s.cluster.Type == storage.ClusterType_OPENSHIFT4_CLUSTER)
+		fmt.Printf("auto setting: %+v", s.openshiftMonitoring)
+	} else if *s.openshiftMonitoring && s.cluster.Type != storage.ClusterType_OPENSHIFT4_CLUSTER {
+		return errox.InvalidArgs.Newf(common.ErrorOpenShiftMonitoringNotSupported)
+	}
+	s.cluster.DynamicConfig.Monitoring = &storage.MonitoringConfig{
+		Openshift: &storage.OpenShiftConfig{
+			Enabled: *s.openshiftMonitoring,
+		},
+	}
+
 	return nil
 }
 
@@ -72,12 +88,14 @@ func openshift(generateCmd *sensorGenerateCommand) *cobra.Command {
 			if err := clusterValidation.ValidatePartial(openshiftCommand.cluster).ToError(); err != nil {
 				return err
 			}
+			fmt.Printf("Generated cluster: %+v", openshiftCommand.cluster.GetDynamicConfig())
 			return openshiftCommand.fullClusterCreation()
 		}),
 	}
 	c.PersistentFlags().IntVar(&openshiftCommand.openshiftVersion, "openshift-version", 0, "OpenShift major version to generate deployment files for")
 	flags.OptBoolFlagVarPF(c.PersistentFlags(), &openshiftCommand.admissionControllerEvents, "admission-controller-listen-on-events", "", "enable admission controller webhook to listen on Kubernetes events", "auto")
 	flags.OptBoolFlagVarPF(c.PersistentFlags(), &openshiftCommand.disableAuditLogCollection, "disable-audit-logs", "", "disable audit log collection for runtime detection", "auto")
+	flags.OptBoolFlagVarPF(c.PersistentFlags(), &openshiftCommand.openshiftMonitoring, "openshift-monitoring", "", "integration with OpenShift 4 monitoring", "auto")
 
 	return c
 }

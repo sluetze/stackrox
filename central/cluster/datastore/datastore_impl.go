@@ -57,9 +57,7 @@ const (
 	defaultAdmissionControllerTimeout = 3
 )
 
-var (
-	clusterSAC = sac.ForResource(resources.Cluster)
-)
+var clusterSAC = sac.ForResource(resources.Cluster)
 
 type datastoreImpl struct {
 	clusterStorage            clusterStore.Store
@@ -580,7 +578,6 @@ func (ds *datastoreImpl) removeClusterNamespaces(ctx context.Context, cluster *s
 			log.Errorf("Failed to remove namespace %s in deleted cluster: %v", namespace.ID, err)
 		}
 	}
-
 }
 
 func (ds *datastoreImpl) removeClusterPods(ctx context.Context, cluster *storage.Cluster) {
@@ -965,6 +962,16 @@ func addDefaults(cluster *storage.Cluster) error {
 	if cluster.GetType() != storage.ClusterType_OPENSHIFT4_CLUSTER {
 		cluster.DynamicConfig.DisableAuditLogs = true
 	}
+
+	log.Infof("Monitoring config before defaults: %+v", cluster.DynamicConfig.GetMonitoring())
+	if cluster.DynamicConfig.GetMonitoring() == nil {
+		cluster.DynamicConfig.Monitoring = &storage.MonitoringConfig{
+			Openshift: &storage.OpenShiftConfig{
+				Enabled: cluster.GetType() == storage.ClusterType_OPENSHIFT4_CLUSTER,
+			},
+		}
+	}
+	log.Infof("Monitoring config after defaults: %+v", cluster.DynamicConfig.GetMonitoring())
 
 	acConfig := cluster.DynamicConfig.GetAdmissionControllerConfig()
 	if acConfig == nil {

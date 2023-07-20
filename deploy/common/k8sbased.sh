@@ -513,6 +513,10 @@ function launch_sensor {
         extra_config+=("--enable-pod-security-policies=${POD_SECURITY_POLICIES}")
     fi
 
+    if [[ -n "${ROX_OPENSHIFT_VERSION}" ]]; then
+        extra_config+=("--openshift-version=${ROX_OPENSHIFT_VERSION}")
+    fi
+
     # Delete path
     rm -rf "$k8s_dir/sensor-deploy"
 
@@ -546,8 +550,17 @@ function launch_sensor {
         --set "image.main.repository=${MAIN_IMAGE_REPO}"
         --set "image.main.tag=${MAIN_IMAGE_TAG}"
         --set "collector.collectionMethod=$(echo "$COLLECTION_METHOD" | tr '[:lower:]' '[:upper:]')"
-        --set "env.openshift=$([[ "$ORCH" == "openshift" ]] && echo "true" || echo "false")"
       )
+      if [[ -n "$ROX_OPENSHIFT_VERSION" ]]; then
+        helm_args+=(
+          --set-string env.openshift="${ROX_OPENSHIFT_VERSION}"
+        )
+      else
+        helm_args+=(
+          --set "env.openshift=$([[ "$ORCH" == "openshift" ]] && echo "true" || echo "false")"
+        )
+      fi
+
       if [[ -f "$k8s_dir/sensor-deploy/chart/feature-flag-values.yaml" ]]; then
         helm_args+=(-f "$k8s_dir/sensor-deploy/chart/feature-flag-values.yaml")
       fi
