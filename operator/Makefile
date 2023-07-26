@@ -364,7 +364,8 @@ upgrade-dirty-tag-via-olm: kuttl
 ##@ Bundle and Index build
 
 # Commands to enter local Python virtual environment and get needed dependencies there.
-ACTIVATE_PYTHON = python3 -m venv bundle_helpers/.venv ;\
+# Use --clear to make it idempotent and remove error on activating .ps1 file if it already exists.
+ACTIVATE_PYTHON = python3 -m venv --clear bundle_helpers/.venv ;\
 	. bundle_helpers/.venv/bin/activate ;\
 	pip3 install --upgrade pip==21.3.1 setuptools==59.6.0 ;\
 	pip3 install -r bundle_helpers/requirements.txt
