@@ -1,6 +1,9 @@
 package reconciler
 
 import (
+	"fmt"
+
+	helmClient "github.com/operator-framework/helm-operator-plugins/pkg/client"
 	pkgReconciler "github.com/operator-framework/helm-operator-plugins/pkg/reconciler"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/image"
@@ -23,6 +26,17 @@ const (
 
 // RegisterNewReconciler registers a new helm reconciler in the given k8s controller manager
 func RegisterNewReconciler(mgr ctrl.Manager, selector string) error {
+	actionConfigGetter, err := helmClient.NewActionConfigGetter(mgr.GetConfig(), mgr.GetRESTMapper(), mgr.GetLogger(),
+		helmClient.DisableStorageOwnerRefInjection(true),
+	)
+	if err != nil {
+		return fmt.Errorf("creating action config getter: %w", err)
+	}
+	actionClientGetter, err := helmClient.NewActionClientGetter(actionConfigGetter)
+	if err != nil {
+		return fmt.Errorf("creating action client getter: %w", err)
+	}
+
 	proxyEnv := proxy.GetProxyEnvVars() // fix at startup time
 	opts := []pkgReconciler.Option{
 		pkgReconciler.WithExtraWatch(
@@ -43,9 +57,10 @@ func RegisterNewReconciler(mgr ctrl.Manager, selector string) error {
 		pkgReconciler.WithPreExtension(commonExtensions.ReconcileProductVersionStatusExtension(version.GetMainVersion())),
 		pkgReconciler.WithReconcilePeriod(extensions.InitBundleReconcilePeriod),
 		pkgReconciler.WithPauseReconcileAnnotation(pauseReconcileAnnotation),
+		pkgReconciler.WithActionClientGetter(actionClientGetter),
 	}
 
-	opts, err := addSelectorOptionIfNeeded(selector, opts)
+	opts, err = addSelectorOptionIfNeeded(selector, opts)
 	if err != nil {
 		return err
 	}
