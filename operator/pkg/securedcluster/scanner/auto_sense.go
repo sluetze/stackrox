@@ -68,11 +68,27 @@ func isRunningOnOpenShift(ctx context.Context, client ctrlClient.Client) (bool, 
 	clusterVersion.SetAPIVersion("config.openshift.io/v1")
 	key := ctrlClient.ObjectKey{Name: clusterVersionDefaultName}
 
+<<<<<<< Updated upstream
 	err := client.Get(ctx, key, clusterVersion)
 	if err != nil && k8sErrors.IsNotFound(err) {
 		log.Info(fmt.Sprintf("OpenShift ClusterVersion kind is present, but its %q object was not found (cluster not ready?)", clusterVersionDefaultName))
 		return false, err
 	} else if err != nil && meta.IsNoMatchError(err) {
+=======
+	// https://github.com/kubernetes-sigs/controller-runtime/issues/2354
+	groupErr := &discovery.ErrGroupDiscoveryFailed{}
+
+	if err := client.Get(ctx, key, clusterVersion); err == nil {
+		return true, nil
+	} else if k8sErrors.IsNotFound(err) {
+		log.Info(fmt.Sprintf("OpenShift ClusterVersion kind is present, but its %q object was not found (cluster not ready?)", clusterVersionDefaultName))
+		return false, err
+	} else if errors.As(err, &groupErr) {
+		log.Info("Running on Kubernetes, OpenShift ClusterVersion kind does not exist")
+		return false, nil
+	} else if meta.IsNoMatchError(err) {
+		// https://github.com/kubernetes-sigs/controller-runtime/issues/2354
+>>>>>>> Stashed changes
 		log.Info("Running on Kubernetes, OpenShift ClusterVersion kind does not exist")
 		return false, nil
 	} else if err != nil {
