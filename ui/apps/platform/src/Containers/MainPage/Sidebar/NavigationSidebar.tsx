@@ -278,11 +278,13 @@ const navDescriptions: NavDescription[] = [
 type NavigationSidebarProps = {
     hasReadAccess: HasReadAccess;
     isFeatureFlagEnabled: IsFeatureFlagEnabled;
+    isSideNavOpen: boolean;
 };
 
 function NavigationSidebar({
     hasReadAccess,
     isFeatureFlagEnabled,
+    isSideNavOpen,
 }: NavigationSidebarProps): ReactElement {
     const { pathname } = useLocation();
     const routePredicates = { hasReadAccess, isFeatureFlagEnabled };
@@ -379,7 +381,7 @@ function NavigationSidebar({
         </Nav>
     );
 
-    return <PageSidebar nav={Navigation} />;
+    return <PageSidebar nav={Navigation} isNavOpen={isSideNavOpen} />;
 }
 
 export default NavigationSidebar;

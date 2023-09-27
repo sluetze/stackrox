@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { Page, Button } from '@patternfly/react-core';
@@ -29,6 +29,8 @@ import Body from './Body';
 import Notifications from './Notifications';
 import AcsFeedbackModal from './AcsFeedbackModal';
 
+const SIDE_NAV_OPEN_KEY = 'isSideNavOpen';
+
 function MainPage(): ReactElement {
     const history = useHistory();
     const dispatch = useDispatch();
@@ -38,6 +40,9 @@ function MainPage(): ReactElement {
     const isLoadingPublicConfig = useSelector(selectors.isLoadingPublicConfigSelector);
     const isLoadingCentralCapabilities = useSelector(selectors.getIsLoadingCentralCapabilities);
     const [isLoadingClustersCount, setIsLoadingClustersCount] = useState(false);
+    const [isSideNavOpen, setIsSideNavOpen] = useState<boolean>(
+        localStorage.getItem(SIDE_NAV_OPEN_KEY) === 'true'
+    );
 
     const hasWriteAccessForCluster = hasReadWriteAccess('Cluster');
     useEffect(() => {
@@ -58,6 +63,31 @@ function MainPage(): ReactElement {
                 });
         }
     }, [hasWriteAccessForCluster, history]);
+
+    const toggleSideNav = useCallback((newSideNavState) => {
+        localStorage.setItem(SIDE_NAV_OPEN_KEY, newSideNavState.toString());
+        setIsSideNavOpen(newSideNavState);
+    }, []);
+
+    // handle what happens on key press
+    const handleKeyPress = useCallback(
+        (event) => {
+            if (event.key === '[') {
+                toggleSideNav(!isSideNavOpen);
+            }
+        },
+        [toggleSideNav, isSideNavOpen]
+    );
+
+    useEffect(() => {
+        // attach the event listener
+        document.addEventListener('keydown', handleKeyPress);
+
+        // remove the event listener
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleKeyPress]);
 
     // Prerequisites from initial requests for conditional rendering that affects all authenticated routes:
     // feature flags: for NavigationSidebar and Body
@@ -116,14 +146,19 @@ function MainPage(): ReactElement {
                 <AcsFeedbackModal />
                 <Page
                     mainContainerId="main-page-container"
-                    header={<Masthead />}
-                    isManagedSidebar
+                    header={<Masthead onNavToggle={() => toggleSideNav(!isSideNavOpen)} />}
                     sidebar={
                         <NavigationSidebar
                             hasReadAccess={hasReadAccess}
                             isFeatureFlagEnabled={isFeatureFlagEnabled}
+                            isSideNavOpen={isSideNavOpen}
                         />
                     }
+                    onPageResize={({ mobileView }) => {
+                        if (mobileView) {
+                            toggleSideNav(false);
+                        }
+                    }}
                 >
                     <Body
                         hasReadAccess={hasReadAccess}
