@@ -18,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/grpc/authz/allow"
 	grpcmetrics "github.com/stackrox/rox/pkg/grpc/metrics"
 	"github.com/stackrox/rox/pkg/grpc/routes"
+	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/metrics"
 	"github.com/stackrox/rox/pkg/mtls"
 	"github.com/stackrox/rox/pkg/mtls/verifier"
@@ -28,6 +29,7 @@ import (
 	"github.com/stackrox/rox/scanner/matcher"
 	"github.com/stackrox/rox/scanner/services"
 	"golang.org/x/sys/unix"
+	"k8s.io/client-go/kubernetes"
 )
 
 // Backends holds the potential engines the scanner
@@ -68,8 +70,17 @@ func main() {
 		utils.CrashOnError(os.Setenv(mtls.KeyFileEnvName, filepath.Join(p, mtls.ServiceKeyFileName)))
 	}
 
+	k8sConfig, err := k8sutil.GetK8sInClusterConfig()
+	if err != nil {
+		panic(fmt.Errorf("failed to get Kubernetes config: %w", err))
+	}
+	clientset, err := kubernetes.NewForConfig(k8sConfig)
+	if err != nil {
+		panic(fmt.Errorf("failed to create Kubernetes client: %w", err))
+	}
+
 	// Initialize metrics and metrics server.
-	metricsSrv := metrics.NewServer(metrics.ScannerSubsystem, metrics.NewTLSConfigurerFromEnv())
+	metricsSrv := metrics.NewServer(metrics.ScannerSubsystem, metrics.NewTLSConfigurerFromEnv(clientset))
 	metricsSrv.RunForever()
 	defer metricsSrv.Stop(ctx)
 	metrics.GatherThrottleMetricsForever(metrics.ScannerSubsystem.String())

@@ -29,6 +29,11 @@ const (
 	// CAKeyFileName is the canonical file name (basename) of the file storing the CA certificate private key.
 	CAKeyFileName = "ca-key.pem"
 
+	// AdditionalCACertFileName is the canonical file name (basename) of the file storing the additional CA certificate.
+	AdditionalCACertFileName = "additional-ca.pem"
+	// AdditionalCAKeyFileName is the canonical file name (basename) of the file storing the additional CA certificate private key.
+	AdditionalCAKeyFileName = "additional-ca-key.pem"
+
 	// ServiceCertFileName is the canonical file name (basename) of the file storing the public part of
 	// an internal service certificate. Note that if files for several services are stored in the same
 	// location (directory or file map), it is common to prefix the file name with the service name in
@@ -277,20 +282,22 @@ func issueNewCertFromSigner(subj Subject, signer cfsigner.Signer, opts []IssueCe
 
 	var hosts []string
 	hosts = append(hosts, subj.AllHostnames()...)
+
 	if ns := issueOpts.namespace; ns != "" && ns != namespaces.StackRox {
 		hosts = append(hosts, subj.AllHostnamesForNamespace(ns)...)
 	}
 
 	req := cfsigner.SignRequest{
-		Hosts:   hosts,
-		Request: string(csrBytes),
+		Hosts:     hosts,
+		Request:   string(csrBytes),
+		NotAfter:  issueOpts.notAfter,
+		NotBefore: issueOpts.notBefore,
 		Subject: &cfsigner.Subject{
 			CN:           subj.CN(),
 			Names:        []cfcsr.Name{subj.Name()},
 			SerialNumber: serial.String(),
 		},
-		Serial:  serial,
-		Profile: issueOpts.signerProfile,
+		Serial: serial,
 	}
 	certBytes, err := signer.Sign(req)
 	if err != nil {

@@ -23,6 +23,7 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/clientconn"
 	"github.com/stackrox/rox/pkg/env"
+	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/metrics"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/sensor/common/centralclient"
@@ -37,6 +38,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
+	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 )
 
@@ -247,13 +249,23 @@ func registerHostKillSignals(startTime time.Time, fakeCentral *centralDebug.Fake
 // If a KUBECONFIG file is provided, then local-sensor will use that file to connect to a remote cluster.
 func main() {
 	localConfig := mustGetCommandLineArgs()
+
+	k8sConfig, err := k8sutil.GetK8sInClusterConfig()
+	if err != nil {
+		panic(fmt.Errorf("failed to get Kubernetes config: %w", err))
+	}
+	clientset, err := kubernetes.NewForConfig(k8sConfig)
+	if err != nil {
+		panic(fmt.Errorf("failed to create Kubernetes client: %w", err))
+	}
+
 	if localConfig.WithMetrics {
 		// Start the prometheus metrics server
-		metrics.NewServer(metrics.SensorSubsystem, metrics.NewTLSConfigurerFromEnv()).RunForever()
+		metrics.NewServer(metrics.SensorSubsystem, metrics.NewTLSConfigurerFromEnv(clientset)).RunForever()
 		metrics.GatherThrottleMetricsForever(metrics.SensorSubsystem.String())
 	}
 	var fakeClient client.Interface
-	fakeClient, err := k8s.MakeOutOfClusterClient()
+	fakeClient, err = k8s.MakeOutOfClusterClient()
 	// when replying a trace, there is no need to connect to K8s cluster
 	if localConfig.ReplayK8sEnabled {
 		fakeClient = k8s.MakeFakeClient()

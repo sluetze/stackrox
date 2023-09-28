@@ -58,8 +58,10 @@ func VerifyCACertInFileMap(fileMap map[string][]byte, ca mtls.CA) error {
 	return nil
 }
 
+type CAOption func(request *csr.CertificateRequest)
+
 // GenerateCA generates a new StackRox service CA.
-func GenerateCA() (mtls.CA, error) {
+func GenerateCA(opts ...CAOption) (mtls.CA, error) {
 	serial, err := mtls.RandomSerial()
 	if err != nil {
 		return nil, pkgErrors.Wrap(err, "could not generate a serial number")
@@ -68,6 +70,9 @@ func GenerateCA() (mtls.CA, error) {
 		CN:           mtls.ServiceCACommonName,
 		KeyRequest:   csr.NewKeyRequest(),
 		SerialNumber: serial.String(),
+	}
+	for _, opt := range opts {
+		opt(&req)
 	}
 	caCert, _, caKey, err := initca.New(&req)
 	if err != nil {

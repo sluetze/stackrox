@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/stackrox/rox/pkg/clientconn"
 	"github.com/stackrox/rox/pkg/devmode"
 	"github.com/stackrox/rox/pkg/env"
+	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/metrics"
 	"github.com/stackrox/rox/pkg/premain"
@@ -18,6 +20,7 @@ import (
 	"github.com/stackrox/rox/sensor/kubernetes/fake"
 	"github.com/stackrox/rox/sensor/kubernetes/sensor"
 	"golang.org/x/sys/unix"
+	"k8s.io/client-go/kubernetes"
 )
 
 var (
@@ -31,8 +34,17 @@ func main() {
 
 	log.Infof("Running StackRox Version: %s", version.GetMainVersion())
 
+	k8sConfig, err := k8sutil.GetK8sInClusterConfig()
+	if err != nil {
+		panic(fmt.Errorf("failed to get Kubernetes config: %w", err))
+	}
+	clientset, err := kubernetes.NewForConfig(k8sConfig)
+	if err != nil {
+		panic(fmt.Errorf("failed to create Kubernetes client: %w", err))
+	}
+
 	// Start the prometheus metrics server
-	metrics.NewServer(metrics.SensorSubsystem, metrics.NewTLSConfigurerFromEnv()).RunForever()
+	metrics.NewServer(metrics.SensorSubsystem, metrics.NewTLSConfigurerFromEnv(clientset)).RunForever()
 	metrics.GatherThrottleMetricsForever(metrics.SensorSubsystem.String())
 
 	sigs := make(chan os.Signal, 1)

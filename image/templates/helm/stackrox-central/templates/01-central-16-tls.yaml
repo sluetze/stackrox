@@ -1,0 +1,43 @@
+{{- include "srox.init" . -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: central-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "srox.labels" (list . "role" "central-tls") | nindent 4 }}
+  annotations:
+    {{- include "srox.annotations" (list . "role" "central-tls") | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+  - deletecollection
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: central-tls
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "srox.labels" (list . "rolebinding" "central-tls") | nindent 4 }}
+  annotations:
+    {{- include "srox.annotations" (list . "rolebinding" "central-tls") | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: central-tls
+subjects:
+- kind: ServiceAccount
+  name: central
+  namespace: {{.Release.Namespace}}
+---

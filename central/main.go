@@ -183,6 +183,7 @@ import (
 	"github.com/stackrox/rox/pkg/grpc/errors"
 	"github.com/stackrox/rox/pkg/grpc/routes"
 	"github.com/stackrox/rox/pkg/httputil/proxy"
+	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/logging"
 	pkgMetrics "github.com/stackrox/rox/pkg/metrics"
 	"github.com/stackrox/rox/pkg/migrations"
@@ -196,6 +197,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/utils"
 	pkgVersion "github.com/stackrox/rox/pkg/version"
+	"k8s.io/client-go/kubernetes"
 )
 
 var (
@@ -288,8 +290,20 @@ func main() {
 
 	// Register telemetry prometheus metrics.
 	telemetry.Singleton().Start()
+
+	config, err := k8sutil.GetK8sInClusterConfig()
+	if err != nil {
+		log.Fatalf("Failed to get in-cluster config", logging.Err(err))
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatalf("Failed to create Kubernetes client", logging.Err(err))
+	}
+
+	certgen.NewCentralTLSConfigurer(clientset).Start(ctx)
+
 	// Start the prometheus metrics server
-	pkgMetrics.NewServer(pkgMetrics.CentralSubsystem, pkgMetrics.NewTLSConfigurerFromEnv()).RunForever()
+	pkgMetrics.NewServer(pkgMetrics.CentralSubsystem, pkgMetrics.NewTLSConfigurerFromEnv(clientset)).RunForever()
 	pkgMetrics.GatherThrottleMetricsForever(pkgMetrics.CentralSubsystem.String())
 
 	if env.ManagedCentral.BooleanSetting() {

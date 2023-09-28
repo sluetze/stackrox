@@ -11,7 +11,6 @@ import (
 	"github.com/stackrox/rox/pkg/env"
 	"github.com/stackrox/rox/pkg/fileutils"
 	"github.com/stackrox/rox/pkg/k8scfgwatch"
-	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/mtls/certwatch"
 	"github.com/stackrox/rox/pkg/mtls/verifier"
@@ -86,25 +85,14 @@ func newTLSConfigurer(certDir string, k8sClient kubernetes.Interface, clientCANa
 }
 
 // NewTLSConfigurerFromEnv creates a new TLS configurer based on environment variables.
-func NewTLSConfigurerFromEnv() verifier.TLSConfigurer {
+func NewTLSConfigurerFromEnv(k8s kubernetes.Interface) verifier.TLSConfigurer {
 	if !secureMetricsEnabled() {
-		return &nilTLSConfigurer{}
-	}
-
-	config, err := k8sutil.GetK8sInClusterConfig()
-	if err != nil {
-		log.Errorw("Failed to get in-cluster config", logging.Err(err))
-		return &nilTLSConfigurer{}
-	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		log.Errorw("Failed to create Kubernetes client", logging.Err(err))
 		return &nilTLSConfigurer{}
 	}
 	certDir := env.SecureMetricsCertDir.Setting()
 	clientCANamespace := env.SecureMetricsClientCANamespace.Setting()
 	clientCAConfigMap := env.SecureMetricsClientCAConfigMap.Setting()
-	cfgr := newTLSConfigurer(certDir, clientset, clientCANamespace, clientCAConfigMap)
+	cfgr := newTLSConfigurer(certDir, k8s, clientCANamespace, clientCAConfigMap)
 	return cfgr
 }
 

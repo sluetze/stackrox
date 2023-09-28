@@ -18,12 +18,14 @@ import (
 	"github.com/stackrox/rox/pkg/concurrency"
 	"github.com/stackrox/rox/pkg/env"
 	"github.com/stackrox/rox/pkg/k8sutil"
+	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/metrics"
 	"github.com/stackrox/rox/pkg/mtls"
 	"github.com/stackrox/rox/pkg/protoutils"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/version"
 	"google.golang.org/grpc/metadata"
+	"k8s.io/client-go/kubernetes"
 )
 
 // Compliance represents the Compliance app
@@ -53,8 +55,17 @@ func (c *Compliance) Start() {
 	// Set the random seed based on the current time.
 	rand.Seed(time.Now().UnixNano())
 
+	config, err := k8sutil.GetK8sInClusterConfig()
+	if err != nil {
+		log.Fatalf("Failed to get in-cluster config", logging.Err(err))
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatalf("Failed to create Kubernetes client", logging.Err(err))
+	}
+
 	// Start the prometheus metrics server
-	metrics.NewServer(metrics.ComplianceSubsystem, metrics.NewTLSConfigurerFromEnv()).RunForever()
+	metrics.NewServer(metrics.ComplianceSubsystem, metrics.NewTLSConfigurerFromEnv(clientset)).RunForever()
 	metrics.GatherThrottleMetricsForever(metrics.ComplianceSubsystem.String())
 
 	// Set up Compliance <-> Sensor connection

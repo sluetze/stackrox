@@ -1,8 +1,12 @@
 package mtls
 
+import "time"
+
 type issueOptions struct {
 	namespace     string
 	signerProfile string
+	notAfter      time.Time
+	notBefore     time.Time
 }
 
 func (o *issueOptions) apply(opts []IssueCertOption) {
@@ -33,5 +37,17 @@ func WithValidityExpiringInHours() IssueCertOption {
 func WithValidityExpiringInDays() IssueCertOption {
 	return func(o *issueOptions) {
 		o.signerProfile = ephemeralProfileWithExpirationInDays
+	}
+}
+
+func WithNotAfter(notAfter time.Time) IssueCertOption {
+	return func(o *issueOptions) {
+		o.notAfter = notAfter
+	}
+}
+
+func WithNotBefore(notBefore time.Time) IssueCertOption {
+	return func(o *issueOptions) {
+		o.notBefore = notBefore
 	}
 }
