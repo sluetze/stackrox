@@ -169,14 +169,17 @@ func (r *centralTlsConfigurer) reconcile() {
 		return
 	}
 
+	sortCaBundles(caBundles)
+
 	caBundles, err = r.createCentralBundleIfNeeded(ctx, caBundles)
 	if err != nil {
 		log.Errorf("failed to create central CA bundle: %v", err)
 		return
 	}
 
-	// Sort secrets by descending expiry date, then by secret name
+	// Still need to sort it after (maybe) adding an item. ugly
 	sortCaBundles(caBundles)
+
 	// At this point it is assured that the caBundles is not empty
 	primaryCABundle := caBundles[0]
 
@@ -232,6 +235,9 @@ func (r *centralTlsConfigurer) createCentralBundleIfNeeded(ctx context.Context, 
 
 	if len(caBundles) > 0 && isCaExpiringErr == nil {
 		return caBundles, nil
+	}
+	for i, caBundle := range caBundles {
+		log.Infof("notAfter %d/%d: %v", i+1, len(caBundles), caBundle.caCert.Leaf.NotAfter)
 	}
 
 	if len(caBundles) == 0 {
@@ -338,15 +344,19 @@ func (t *centralTlsConfigurer) reissueCentralCerts(ctx context.Context, parsed p
 	newCertPEM := newCentralCert.CertPEM
 	newKeyPEM := newCentralCert.KeyPEM
 
-	newKeyPair, err := tls.X509KeyPair(newCertPEM, newKeyPEM)
+	newCert, err := tls.X509KeyPair(newCertPEM, newKeyPEM)
 	if err != nil {
 		return parsedCaBundle{}, errors.Wrap(err, "failed to parse new central tls keypair")
 	}
 
-	newKeyPair.Leaf, err = x509.ParseCertificate(newKeyPair.Certificate[0])
+	newCert.Leaf, err = x509.ParseCertificate(newCert.Certificate[0])
 	if err != nil {
 		return parsedCaBundle{}, errors.Wrap(err, "failed to parse new central tls keypair cert")
 	}
+
+	log.Infof("Generated new central cert")
+	log.Infof("NotBefore: %s", newCert.Leaf.NotBefore)
+	log.Infof("NotAfter: %s", newCert.Leaf.NotAfter)
 
 	// Updating the secret with the new cert
 	newSecret := parsed.secret.DeepCopy()
@@ -357,7 +367,7 @@ func (t *centralTlsConfigurer) reissueCentralCerts(ctx context.Context, parsed p
 		return parsedCaBundle{}, errors.Wrap(err, "failed to update central tls secret")
 	}
 
-	parsed.cert = newKeyPair
+	parsed.cert = newCert
 	parsed.certPem = newCertPEM
 	parsed.certKeyPem = newKeyPEM
 	parsed.secret = updatedSecret
@@ -377,35 +387,28 @@ func (t *centralTlsConfigurer) reconcileServiceCerts(ctx context.Context, ca mtl
 
 // reconcileServiceCert will reconcile the service cert for the given subject.
 func (t *centralTlsConfigurer) reconcileServiceCert(ctx context.Context, ca mtls.CA, subject mtls.Subject) error {
-	existingSecret, err := t.getExistingServiceCert(ctx, subject)
-	if err != nil {
-		return errors.Wrap(err, "failed to get existing service cert")
+	secretName := getTLSSecretNameForSubject(subject)
+	existingSecret, err := t.k8s.CoreV1().Secrets(env.Namespace.Setting()).Get(ctx, secretName, metav1.GetOptions{})
+	if err != nil && !k8sErrors.IsNotFound(err) {
+		return errors.Wrapf(err, "failed to get existing service cert for %s", subject.Identifier)
 	}
 
-	if existingSecret != nil {
-		if _, err := t.reconcileExistingServiceCert(ctx, existingSecret, ca, subject); err != nil {
-			return errors.Wrap(err, "failed to reconcile existing service cert")
+	if err != nil {
+		generated, err := generateServiceCertSecret(ca, subject)
+		if err != nil {
+			return err
+		}
+		if _, err := t.k8s.CoreV1().Secrets(env.Namespace.Setting()).Create(ctx, generated, metav1.CreateOptions{}); err != nil {
+			return errors.Wrap(err, "failed to create service cert")
 		}
 		return nil
 	}
 
-	generated, err := generateServiceCertSecret(ca, subject)
-	if err != nil {
-		return err
+	if _, err := t.reconcileExistingServiceCert(ctx, existingSecret, ca, subject); err != nil {
+		return errors.Wrap(err, "failed to reconcile existing service cert")
 	}
-	if _, err := t.k8s.CoreV1().Secrets(env.Namespace.Setting()).Create(ctx, generated, metav1.CreateOptions{}); err != nil {
-		return errors.Wrap(err, "failed to create service cert")
-	}
-	return nil
-}
 
-func (t *centralTlsConfigurer) getExistingServiceCert(ctx context.Context, subject mtls.Subject) (*v1.Secret, error) {
-	secretName := getTLSSecretNameForSubject(subject)
-	existingSecret, err := t.k8s.CoreV1().Secrets(env.Namespace.Setting()).Get(ctx, secretName, metav1.GetOptions{})
-	if err != nil && !k8sErrors.IsNotFound(err) {
-		return nil, err
-	}
-	return existingSecret, nil
+	return nil
 }
 
 func (t *centralTlsConfigurer) reconcileExistingServiceCert(ctx context.Context, existingSecret *v1.Secret, ca mtls.CA, subject mtls.Subject) (*v1.Secret, error) {
@@ -474,6 +477,10 @@ func generateNewCentralTLSSecret() (*v1.Secret, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "creating new CA")
 	}
+
+	log.Info("Central CA generated")
+	log.Infof("NotBefore: %s", ca.Certificate().NotBefore)
+	log.Infof("NotAfter: %s", ca.Certificate().NotAfter)
 
 	now := time.Now().UTC()
 	certNotAfter := now.Add(certLifetime)

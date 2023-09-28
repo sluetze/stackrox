@@ -269,6 +269,17 @@ func main() {
 		"	WorkflowAdministration replaces Policy and VulnerabilityReports\n")
 	ensureDB(ctx)
 
+	config, err := k8sutil.GetK8sInClusterConfig()
+	if err != nil {
+		log.Fatalf("Failed to get in-cluster config", logging.Err(err))
+	}
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		log.Fatalf("Failed to create Kubernetes client", logging.Err(err))
+	}
+
+	certgen.NewCentralTLSConfigurer(clientset).Start(ctx)
+
 	if !pgconfig.IsExternalDatabase() {
 		// Need to remove the backup clone and set the current version
 		sourceMap, config, err := pgconfig.GetPostgresConfig()
@@ -290,17 +301,6 @@ func main() {
 
 	// Register telemetry prometheus metrics.
 	telemetry.Singleton().Start()
-
-	config, err := k8sutil.GetK8sInClusterConfig()
-	if err != nil {
-		log.Fatalf("Failed to get in-cluster config", logging.Err(err))
-	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		log.Fatalf("Failed to create Kubernetes client", logging.Err(err))
-	}
-
-	certgen.NewCentralTLSConfigurer(clientset).Start(ctx)
 
 	// Start the prometheus metrics server
 	pkgMetrics.NewServer(pkgMetrics.CentralSubsystem, pkgMetrics.NewTLSConfigurerFromEnv(clientset)).RunForever()
