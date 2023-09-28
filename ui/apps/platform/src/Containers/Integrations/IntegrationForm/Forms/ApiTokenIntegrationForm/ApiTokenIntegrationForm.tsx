@@ -14,7 +14,6 @@ import * as yup from 'yup';
 
 import { ApiToken } from 'types/apiToken.proto';
 
-import SelectSingle from 'Components/SelectSingle';
 import usePageState from 'Containers/Integrations/hooks/usePageState';
 import { getDateTime } from 'utils/dateUtils';
 import NotFoundMessage from 'Components/NotFoundMessage';
@@ -82,15 +81,17 @@ function ApiTokenIntegrationForm({
     }
 
     const onRoleSelect = (_, selected) => {
+        // const newSelection = values.roles
+        // if isEditing
         const newSelection = values.roles.find((roleFilter) => roleFilter === selected)
             ? values.roles.filter((roleFilter) => roleFilter !== selected)
             : values.roles.concat(selected);
 
-        return setFieldValue("roles", newSelection)
+        return setFieldValue('roles', newSelection)
     };
 
     const onClearRoleSelections = () => {
-        return setFieldValue("roles", []);
+        return setFieldValue('roles', []);
     };
 
     // The edit flow doesn't make sense for API Tokens so we'll show an empty state message here
@@ -171,6 +172,8 @@ function ApiTokenIntegrationForm({
                             <RoleSelector
                                 roles={roleNames}
                                 selectedRoles={values.roles}
+                                isEditable={isEditable}
+                                isGenerated={isGenerated}
                                 onRoleSelect={onRoleSelect}
                                 onRoleSelectionClear={onClearRoleSelections}
                             />
