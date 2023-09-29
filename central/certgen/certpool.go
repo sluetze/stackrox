@@ -9,6 +9,7 @@ import (
 	"hash/fnv"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cloudflare/cfssl/csr"
@@ -118,9 +119,7 @@ type centralTlsConfigurer struct {
 }
 
 func NewCentralTLSConfigurer(k8s kubernetes.Interface) TLSConfigurer {
-	return &centralTlsConfigurer{
-		k8s: k8s,
-	}
+	return &centralTlsConfigurer{k8s: k8s}
 }
 
 func (c *centralTlsConfigurer) Configure(config *tls.Config) error {
@@ -555,54 +554,44 @@ func hasReachedPercentOfLifetime(cert tls.Certificate, percent int, now time.Tim
 	return getPercentOfLifetimeReached(cert, now) > float64(percent)
 }
 
-func hasCertExpired(cert tls.Certificate, now time.Time) bool {
-	return getPercentOfLifetimeRemaining(cert, now) <= 0
-}
-
 func getPercentOfLifetimeReached(cert tls.Certificate, now time.Time) float64 {
 	return 100 - getPercentOfLifetimeRemaining(cert, now)
 }
 
+func getPercentOfLifetimeRemaining(cert tls.Certificate, now time.Time) float64 {
+	return (float64(getCertTotalLifetimeDuration(cert)) / float64(getCertRemainingDuration(cert, now))) * 100
+}
+
 func getCertTotalLifetimeDuration(cert tls.Certificate) time.Duration {
-	notAfter := cert.Leaf.NotAfter
-	notBefore := cert.Leaf.NotBefore
-	return notAfter.Sub(notBefore)
+	return cert.Leaf.NotAfter.Sub(cert.Leaf.NotBefore)
 }
 
 func getCertRemainingDuration(cert tls.Certificate, now time.Time) time.Duration {
-	notAfter := cert.Leaf.NotAfter
-	return notAfter.Sub(now)
-}
-
-func getPercentOfLifetimeRemaining(cert tls.Certificate, now time.Time) float64 {
-	lifetime := getCertTotalLifetimeDuration(cert)
-	remaining := getCertRemainingDuration(cert, now)
-	var remainingPercent = (float64(remaining) / float64(lifetime)) * 100
-	return remainingPercent
+	return cert.Leaf.NotAfter.Sub(now)
 }
 
 func getCertExpirationDescription(cert tls.Certificate, now time.Time) string {
-	lifetime := getCertTotalLifetimeDuration(cert)
-	remaining := getCertRemainingDuration(cert, now)
-	remainingPercent := getPercentOfLifetimeRemaining(cert, now)
-	hasExpired := hasCertExpired(cert, now)
-	msg := ""
+	hasExpired := cert.Leaf.NotAfter.Before(now) || cert.Leaf.NotAfter.Equal(now)
+	d := &strings.Builder{}
 
 	if hasExpired {
-		msg = "has expired "
+		d.WriteString("has expired ")
 	} else {
-		msg = "is expiring in "
+		d.WriteString("expires in ")
 	}
 
-	msg += remaining.String()
+	d.WriteString(getCertRemainingDuration(cert, now).Truncate(time.Second).String())
 
 	if hasExpired {
-		msg += " ago "
+		d.WriteString(" ago")
 	} else {
-		msg += fmt.Sprintf(" (%.2f%% remaining of %s)", remainingPercent, lifetime.String())
+		d.WriteString(fmt.Sprintf(" (%.2f%% remaining of %s)",
+			getPercentOfLifetimeRemaining(cert, now),
+			getCertTotalLifetimeDuration(cert).String()),
+		)
 	}
 
-	return msg
+	return d.String()
 }
 
 func getTLSSecretNameForSubject(subject mtls.Subject) string {
