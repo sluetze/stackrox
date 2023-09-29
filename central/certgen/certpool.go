@@ -86,14 +86,10 @@ var (
 )
 
 type parsedCaBundle struct {
-	caCert     tls.Certificate
-	caCertPem  []byte
-	caKeyPem   []byte
-	cert       tls.Certificate
-	certPem    []byte
-	certKeyPem []byte
-	secret     *v1.Secret
-	ca         mtls.CA
+	caCert tls.Certificate
+	cert   tls.Certificate
+	secret *v1.Secret
+	ca     mtls.CA
 }
 
 type parsedServiceBundle struct {
@@ -163,27 +159,30 @@ func (r *centralTlsConfigurer) reconcile() {
 	ctx, cancel := context.WithTimeout(context.Background(), certReconciliationInterval)
 	defer cancel()
 
-	caBundles, err := r.reconcileCentralCABundles(ctx)
+	now := time.Now()
+
+	caBundles, err := r.reconcileCentralCABundles(ctx, now)
 	if err != nil {
 		log.Errorf("failed to reconcile central CA bundles: %v", err)
 		return
 	}
 
-	sortCaBundles(caBundles)
+	sortCaBundles(caBundles, now)
 
-	caBundles, err = r.createCentralBundleIfNeeded(ctx, caBundles)
+	caBundles, err = r.createCentralBundleIfNeeded(ctx, caBundles, now)
 	if err != nil {
 		log.Errorf("failed to create central CA bundle: %v", err)
 		return
 	}
 
 	// Still need to sort it after (maybe) adding an item. ugly
-	sortCaBundles(caBundles)
+	sortCaBundles(caBundles, now)
 
 	// At this point it is assured that the caBundles is not empty
+	// And the first CA is the one we want to use
 	primaryCABundle := caBundles[0]
 
-	if err := r.reconcileServiceCerts(ctx, primaryCABundle.ca, centralSubjects); err != nil {
+	if err := r.reconcileServiceCerts(ctx, primaryCABundle.ca, centralSubjects, now); err != nil {
 		log.Errorf("failed to reconcile service certs: %v", err)
 		return
 	}
@@ -202,7 +201,7 @@ func (r *centralTlsConfigurer) reconcile() {
 
 }
 
-func (r *centralTlsConfigurer) reconcileCentralCABundles(ctx context.Context) ([]parsedCaBundle, error) {
+func (r *centralTlsConfigurer) reconcileCentralCABundles(ctx context.Context, now time.Time) ([]parsedCaBundle, error) {
 	// List all the central tls secrets
 	listOptions := metav1.ListOptions{LabelSelector: fmt.Sprintf("%s=true", centralTLSLabel)}
 	secretList, err := r.k8s.CoreV1().Secrets(env.Namespace.Setting()).List(ctx, listOptions)
@@ -214,7 +213,7 @@ func (r *centralTlsConfigurer) reconcileCentralCABundles(ctx context.Context) ([
 	var validSecrets []parsedCaBundle
 	for _, secret := range secretList.Items {
 		// Reconcile the secret.
-		parsed, skip, err := r.reconcileCentralTLSSecret(ctx, &secret)
+		parsed, skip, err := r.reconcileCentralTLSSecret(ctx, &secret, now)
 		if err != nil {
 			log.Errorf("failed to reconcile central tls secret %s: %v", secret.Name, err)
 			return nil, err
@@ -227,26 +226,20 @@ func (r *centralTlsConfigurer) reconcileCentralCABundles(ctx context.Context) ([
 	return validSecrets, nil
 }
 
-func (r *centralTlsConfigurer) createCentralBundleIfNeeded(ctx context.Context, caBundles []parsedCaBundle) ([]parsedCaBundle, error) {
-	var isCaExpiringErr error
-	if len(caBundles) > 0 {
-		isCaExpiringErr = assertNotExpiring(caBundles[0].caCert)
-	}
-
-	if len(caBundles) > 0 && isCaExpiringErr == nil {
-		return caBundles, nil
-	}
-	for i, caBundle := range caBundles {
-		log.Infof("notAfter %d/%d: %v", i+1, len(caBundles), caBundle.caCert.Leaf.NotAfter)
-	}
+func (r *centralTlsConfigurer) createCentralBundleIfNeeded(ctx context.Context, caBundles []parsedCaBundle, now time.Time) ([]parsedCaBundle, error) {
 
 	if len(caBundles) == 0 {
-		log.Infof("no valid central CA found. reissuing central CA")
+		log.Infof("no valid central CA found. reissuing")
+	} else if hasReachedPercentOfLifetime(caBundles[0].caCert, certRenewalPercent, now) {
+		log.Infof("current central CA %s is expiring: %v", caBundles[0].secret.Name, getCertExpirationDescription(caBundles[0].caCert, now))
+		for i, caBundle := range caBundles {
+			log.Infof("central CA %d/%d notAfter: %v", i+1, len(caBundles), caBundle.caCert.Leaf.NotAfter)
+		}
 	} else {
-		log.Infof("current central CA %s is expiring: %v", caBundles[0].secret.Name, isCaExpiringErr)
+		return caBundles, nil
 	}
 
-	newSecret, err := generateNewCentralTLSSecret()
+	newSecret, err := generateNewCentralTLSSecret(now)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate new central tls secret")
 	}
@@ -270,7 +263,7 @@ func (r *centralTlsConfigurer) createCentralBundleIfNeeded(ctx context.Context, 
 // It will delete the secret if the secret or the CA is not valid anymore
 // It will re-issue the certs if they are about to expire or invalid against the CA
 // It will return the parsed bundle, whether the secret should be skipped, and an error if any
-func (r *centralTlsConfigurer) reconcileCentralTLSSecret(ctx context.Context, secret *v1.Secret) (parsedCaBundle, bool, error) {
+func (r *centralTlsConfigurer) reconcileCentralTLSSecret(ctx context.Context, secret *v1.Secret, now time.Time) (parsedCaBundle, bool, error) {
 	secretName := secret.Name
 
 	// Ignore secrets that are being deleted
@@ -289,12 +282,11 @@ func (r *centralTlsConfigurer) reconcileCentralTLSSecret(ctx context.Context, se
 		return parsedCaBundle{}, true, nil
 	}
 
-	now := time.Now()
 	caNotAfter := parsed.caCert.Leaf.NotAfter
 	certNotAfter := parsed.cert.Leaf.NotAfter
 
 	// Delete CAs that are expired
-	if now.After(caNotAfter) {
+	if hasReachedPercentOfLifetime(parsed.caCert, certRenewalPercent, now) {
 		log.Infof("central tls secret %s CA is expired. deleting", secretName)
 		if err := r.k8s.CoreV1().Secrets(env.Namespace.Setting()).Delete(ctx, secretName, metav1.DeleteOptions{}); err != nil && !k8sErrors.IsNotFound(err) {
 			return parsedCaBundle{}, false, errors.Wrapf(err, "failed to delete invalid central tls secret")
@@ -304,8 +296,8 @@ func (r *centralTlsConfigurer) reconcileCentralTLSSecret(ctx context.Context, se
 
 	var shouldReissue = false
 
-	// If the cert is expired
-	if err := assertNotExpiring(parsed.cert); err != nil {
+	// If the cert is expiring
+	if hasReachedPercentOfLifetime(parsed.cert, certRenewalPercent, now) {
 		log.Infof("reissuing central tls secret %s: %v", secretName, err)
 		// reissue only if the cert expiration is before the CA expiration
 		shouldReissue = certNotAfter.Before(caNotAfter)
@@ -320,7 +312,7 @@ func (r *centralTlsConfigurer) reconcileCentralTLSSecret(ctx context.Context, se
 	}
 
 	if shouldReissue {
-		newParsed, err := r.reissueCentralCerts(ctx, parsed)
+		newParsed, err := r.reissueCentralCerts(ctx, parsed, now)
 		if err != nil {
 			return parsedCaBundle{}, false, errors.Wrapf(err, "failed to reissue central certs")
 		}
@@ -333,10 +325,10 @@ func (r *centralTlsConfigurer) reconcileCentralTLSSecret(ctx context.Context, se
 
 // reissueCentralCerts will re-create the service certs for central.
 // It will return the modified parsedCaBundle and an error if any
-func (t *centralTlsConfigurer) reissueCentralCerts(ctx context.Context, parsed parsedCaBundle) (parsedCaBundle, error) {
+func (t *centralTlsConfigurer) reissueCentralCerts(ctx context.Context, parsed parsedCaBundle, now time.Time) (parsedCaBundle, error) {
 
 	// Generate the central cert
-	newCentralCert, err := generateServiceCert(parsed.ca, mtls.CentralSubject)
+	newCentralCert, err := generateServiceCert(now, parsed.ca, mtls.CentralSubject)
 	if err != nil {
 		return parsedCaBundle{}, errors.Wrap(err, "failed to generate central cert")
 	}
@@ -368,17 +360,15 @@ func (t *centralTlsConfigurer) reissueCentralCerts(ctx context.Context, parsed p
 	}
 
 	parsed.cert = newCert
-	parsed.certPem = newCertPEM
-	parsed.certKeyPem = newKeyPEM
 	parsed.secret = updatedSecret
 
 	return parsed, nil
 }
 
 // reconcileServiceCerts will reconcile the service certs for the given subjects.
-func (t *centralTlsConfigurer) reconcileServiceCerts(ctx context.Context, ca mtls.CA, subjects []mtls.Subject) error {
+func (t *centralTlsConfigurer) reconcileServiceCerts(ctx context.Context, ca mtls.CA, subjects []mtls.Subject, now time.Time) error {
 	for _, subject := range subjects {
-		if err := t.reconcileServiceCert(ctx, ca, subject); err != nil {
+		if err := t.reconcileServiceCert(ctx, ca, subject, now); err != nil {
 			return errors.Wrapf(err, "failed to reconcile service cert for %s", subject.Identifier)
 		}
 	}
@@ -386,7 +376,7 @@ func (t *centralTlsConfigurer) reconcileServiceCerts(ctx context.Context, ca mtl
 }
 
 // reconcileServiceCert will reconcile the service cert for the given subject.
-func (t *centralTlsConfigurer) reconcileServiceCert(ctx context.Context, ca mtls.CA, subject mtls.Subject) error {
+func (t *centralTlsConfigurer) reconcileServiceCert(ctx context.Context, ca mtls.CA, subject mtls.Subject, now time.Time) error {
 	secretName := getTLSSecretNameForSubject(subject)
 	existingSecret, err := t.k8s.CoreV1().Secrets(env.Namespace.Setting()).Get(ctx, secretName, metav1.GetOptions{})
 	if err != nil && !k8sErrors.IsNotFound(err) {
@@ -394,7 +384,7 @@ func (t *centralTlsConfigurer) reconcileServiceCert(ctx context.Context, ca mtls
 	}
 
 	if err != nil {
-		generated, err := generateServiceCertSecret(ca, subject)
+		generated, err := generateServiceCertSecret(ca, subject, now)
 		if err != nil {
 			return err
 		}
@@ -404,14 +394,14 @@ func (t *centralTlsConfigurer) reconcileServiceCert(ctx context.Context, ca mtls
 		return nil
 	}
 
-	if _, err := t.reconcileExistingServiceCert(ctx, existingSecret, ca, subject); err != nil {
+	if _, err := t.reconcileExistingServiceCert(ctx, existingSecret, ca, subject, now); err != nil {
 		return errors.Wrap(err, "failed to reconcile existing service cert")
 	}
 
 	return nil
 }
 
-func (t *centralTlsConfigurer) reconcileExistingServiceCert(ctx context.Context, existingSecret *v1.Secret, ca mtls.CA, subject mtls.Subject) (*v1.Secret, error) {
+func (t *centralTlsConfigurer) reconcileExistingServiceCert(ctx context.Context, existingSecret *v1.Secret, ca mtls.CA, subject mtls.Subject, now time.Time) (*v1.Secret, error) {
 
 	secretName := existingSecret.Name
 
@@ -439,8 +429,8 @@ func (t *centralTlsConfigurer) reconcileExistingServiceCert(ctx context.Context,
 
 	// check if the cert is expiring
 	if !shouldRecreate {
-		if err := assertNotExpiring(serviceBundle.cert); err != nil {
-			log.Infof("reissuing service cert secret %s: %v", secretName, err)
+		if hasReachedPercentOfLifetime(serviceBundle.cert, certRenewalPercent, now) {
+			log.Infof("reissuing service cert secret %s: %s", secretName, getCertExpirationDescription(serviceBundle.cert, now))
 			shouldRecreate = true
 		}
 	}
@@ -450,7 +440,7 @@ func (t *centralTlsConfigurer) reconcileExistingServiceCert(ctx context.Context,
 	}
 
 	// update the secret
-	generated, err := generateServiceCertSecret(ca, subject)
+	generated, err := generateServiceCertSecret(ca, subject, now)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate service cert")
 	}
@@ -464,7 +454,7 @@ func (t *centralTlsConfigurer) reconcileExistingServiceCert(ctx context.Context,
 
 }
 
-func generateNewCentralTLSSecret() (*v1.Secret, error) {
+func generateNewCentralTLSSecret(now time.Time) (*v1.Secret, error) {
 
 	// Generate the CA
 	ca, err := certgen.GenerateCA(func(request *csr.CertificateRequest) {
@@ -482,14 +472,13 @@ func generateNewCentralTLSSecret() (*v1.Secret, error) {
 	log.Infof("NotBefore: %s", ca.Certificate().NotBefore)
 	log.Infof("NotAfter: %s", ca.Certificate().NotAfter)
 
-	now := time.Now().UTC()
 	certNotAfter := now.Add(certLifetime)
 	if certNotAfter.After(ca.Certificate().NotAfter) {
 		certNotAfter = ca.Certificate().NotAfter.UTC()
 	}
 
 	// Generate the central cert
-	centralCert, err := generateServiceCert(ca, mtls.CentralSubject)
+	centralCert, err := generateServiceCert(now, ca, mtls.CentralSubject)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate central cert")
 	}
@@ -517,8 +506,8 @@ func generateNewCentralTLSSecret() (*v1.Secret, error) {
 	return &s, nil
 }
 
-func generateServiceCertSecret(ca mtls.CA, subject mtls.Subject) (*v1.Secret, error) {
-	cert, err := generateServiceCert(ca, subject)
+func generateServiceCertSecret(ca mtls.CA, subject mtls.Subject, now time.Time) (*v1.Secret, error) {
+	cert, err := generateServiceCert(now, ca, subject)
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not generate cert for %v", subject.Identifier)
 	}
@@ -538,8 +527,7 @@ func generateServiceCertSecret(ca mtls.CA, subject mtls.Subject) (*v1.Secret, er
 	return secret, nil
 }
 
-func generateServiceCert(ca mtls.CA, subject mtls.Subject) (*mtls.IssuedCert, error) {
-	now := time.Now().UTC()
+func generateServiceCert(now time.Time, ca mtls.CA, subject mtls.Subject) (*mtls.IssuedCert, error) {
 	notAfter := now.Add(certLifetime)
 	if notAfter.After(ca.Certificate().NotAfter) {
 		notAfter = ca.Certificate().NotAfter.UTC()
@@ -563,31 +551,58 @@ func verifyCertAgainstCaCert(caCert *x509.Certificate, cert tls.Certificate) err
 	return err
 }
 
-func assertNotExpiring(cert tls.Certificate) error {
-	now := time.Now()
+func hasReachedPercentOfLifetime(cert tls.Certificate, percent int, now time.Time) bool {
+	return getPercentOfLifetimeReached(cert, now) > float64(percent)
+}
+
+func hasCertExpired(cert tls.Certificate, now time.Time) bool {
+	return getPercentOfLifetimeRemaining(cert, now) <= 0
+}
+
+func getPercentOfLifetimeReached(cert tls.Certificate, now time.Time) float64 {
+	return 100 - getPercentOfLifetimeRemaining(cert, now)
+}
+
+func getCertTotalLifetimeDuration(cert tls.Certificate) time.Duration {
 	notAfter := cert.Leaf.NotAfter
 	notBefore := cert.Leaf.NotBefore
-	lifetime := notAfter.Sub(notBefore)
-	remaining := notAfter.Sub(now)
+	return notAfter.Sub(notBefore)
+}
+
+func getCertRemainingDuration(cert tls.Certificate, now time.Time) time.Duration {
+	notAfter := cert.Leaf.NotAfter
+	return notAfter.Sub(now)
+}
+
+func getPercentOfLifetimeRemaining(cert tls.Certificate, now time.Time) float64 {
+	lifetime := getCertTotalLifetimeDuration(cert)
+	remaining := getCertRemainingDuration(cert, now)
 	var remainingPercent = (float64(remaining) / float64(lifetime)) * 100
-	var progressPercent = 100 - remainingPercent
-	if int(progressPercent) > certRenewalPercent {
-		var hasExpired = now.After(notAfter)
-		var msg = ""
-		if hasExpired {
-			msg = "has expired "
-		} else {
-			msg = "is expiring in "
-		}
-		msg += notAfter.Sub(now).String()
-		if hasExpired {
-			msg += " ago "
-		} else {
-			msg += fmt.Sprintf(" (%.2f%% remaining of %s)", remainingPercent, lifetime.String())
-		}
-		return fmt.Errorf("cert %s", msg)
+	return remainingPercent
+}
+
+func getCertExpirationDescription(cert tls.Certificate, now time.Time) string {
+	lifetime := getCertTotalLifetimeDuration(cert)
+	remaining := getCertRemainingDuration(cert, now)
+	remainingPercent := getPercentOfLifetimeRemaining(cert, now)
+	hasExpired := hasCertExpired(cert, now)
+	msg := ""
+
+	if hasExpired {
+		msg = "has expired "
+	} else {
+		msg = "is expiring in "
 	}
-	return nil
+
+	msg += remaining.String()
+
+	if hasExpired {
+		msg += " ago "
+	} else {
+		msg += fmt.Sprintf(" (%.2f%% remaining of %s)", remainingPercent, lifetime.String())
+	}
+
+	return msg
 }
 
 func getTLSSecretNameForSubject(subject mtls.Subject) string {
@@ -699,14 +714,10 @@ func parseCentralBundle(secret *v1.Secret) (parsedCaBundle, error) {
 		return parsedCaBundle{}, errors.Wrap(err, "failed to load CA for signing")
 	}
 	return parsedCaBundle{
-		ca:         ca,
-		caCert:     caCert,
-		caCertPem:  caCertBytes,
-		caKeyPem:   caKeyBytes,
-		cert:       centralCert,
-		certPem:    centralCertBytes,
-		certKeyPem: centralKeyBytes,
-		secret:     secret,
+		ca:     ca,
+		caCert: caCert,
+		cert:   centralCert,
+		secret: secret,
 	}, nil
 }
 
@@ -722,15 +733,22 @@ func computeHashFor(ca mtls.CA) (string, error) {
 	return hash, nil
 }
 
-func sortCaBundles(parsed []parsedCaBundle) {
+func sortCaBundles(parsed []parsedCaBundle, now time.Time) {
 	// we want the Ca cert that has the longest lifetime to be first
 	// if equal, sort by secret name
 	sort.Slice(parsed, func(i, j int) bool {
-		notAfterI := parsed[i].caCert.Leaf.NotAfter
-		notAfterJ := parsed[j].caCert.Leaf.NotAfter
-		if notAfterI.Equal(notAfterJ) {
-			return parsed[i].secret.CreationTimestamp.After(parsed[j].secret.CreationTimestamp.Time)
+		left := parsed[i]
+		right := parsed[j]
+		leftCaExpiring := hasReachedPercentOfLifetime(left.caCert, certRenewalPercent, now)
+		rightCaExpiring := hasReachedPercentOfLifetime(right.caCert, certRenewalPercent, now)
+		if leftCaExpiring != rightCaExpiring {
+			return !leftCaExpiring
 		}
-		return notAfterI.After(notAfterJ)
+		leftNotAfter := left.caCert.Leaf.NotAfter
+		rightNotAfter := right.caCert.Leaf.NotAfter
+		if leftNotAfter.Equal(rightNotAfter) {
+			return left.secret.CreationTimestamp.After(right.secret.CreationTimestamp.Time)
+		}
+		return leftNotAfter.After(rightNotAfter)
 	})
 }
