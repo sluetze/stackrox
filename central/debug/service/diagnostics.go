@@ -97,14 +97,13 @@ func pullMetricsFromSensor(ctx context.Context, clusterName string, sensorConn c
 	}
 }
 
-func addMissingClustersInfo(ctx context.Context, remainingClusterNameMap map[string]string,
-	filesC chan<- k8sintrospect.File, wg *concurrency.WaitGroup, filterClusters []string) {
+func addMissingClustersInfo(ctx context.Context, remainingClusterNameMap map[string]string, filesC chan<- k8sintrospect.File, wg *concurrency.WaitGroup, opts debugDumpOptions) {
 	defer wg.Add(-1)
 
 	var missingClustersFileContents bytes.Buffer
 	fmt.Fprintln(&missingClustersFileContents, "Data from the following clusters is unavailable:")
 	for _, clusterName := range remainingClusterNameMap {
-		if filterClusters != nil && sliceutils.Find(filterClusters, clusterName) != -1 {
+		if checkClusterExcluded(opts, clusterName) {
 			fmt.Fprintf(&missingClustersFileContents, "- %s (not requested by user)\n", clusterName)
 		} else {
 			fmt.Fprintf(&missingClustersFileContents, "- %s (no active connection)\n", clusterName)
@@ -165,12 +164,22 @@ func getClusterCandidate(conn connection.SensorConnection, clusterNameMap map[st
 	delete(clusterNameMap, clusterID)
 
 	// if there are no cluster filters, all clusters must be considered.
-	if opts.clusters != nil && sliceutils.Find(opts.clusters, clusterName) == -1 {
+	if checkClusterExcluded(opts, clusterName) {
 		return "", "", false
 	}
 
 	// Make sure we use a name that doesn't clash with any other cluster name.
 	return clusterName, sanitizeClusterName(clusterName), true
+}
+
+func checkClusterExcluded(opts debugDumpOptions, clusterName string) bool {
+	if opts.clusters != nil && sliceutils.Find(opts.clusters, clusterName) == -1 {
+		return true
+	}
+	if opts.excludeClusters != nil && sliceutils.Find(opts.excludeClusters, clusterName) != -1 {
+		return true
+	}
+	return false
 }
 
 func (s *serviceImpl) pullSensorMetrics(ctx context.Context, zipWriter *zip.Writer, opts debugDumpOptions) error {
@@ -260,7 +269,7 @@ func (s *serviceImpl) getK8sDiagnostics(ctx context.Context, zipWriter *zip.Writ
 	// Add information about clusters for which we didn't have an active sensor connection.
 	if len(clusterNameMap) > 0 {
 		wg.Add(1)
-		go addMissingClustersInfo(ctx, clusterNameMap, filesC, &wg, opts.clusters)
+		go addMissingClustersInfo(ctx, clusterNameMap, filesC, &wg, opts)
 	}
 
 	// Pull data from the central cluster.
