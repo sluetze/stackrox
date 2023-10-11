@@ -8,8 +8,6 @@ import {
     DescriptionListGroup,
     DescriptionListDescription,
     SelectOption,
-    DatePicker,
-    yyyyMMddFormat,
 } from '@patternfly/react-core';
 
 import * as yup from 'yup';
@@ -31,7 +29,6 @@ import useAllowedRoles from './useFetchRoles';
 export type ApiTokenIntegrationFormValues = {
     name: string;
     roles: string[];
-    expiration: string;
 };
 
 export type ApiTokenIntegrationFormProps = {
@@ -51,7 +48,6 @@ export const validationSchema = yup.object().shape({
 export const defaultValues: ApiTokenIntegrationFormValues = {
     name: '',
     roles: [],
-    expiration: '',
 };
 
 function ApiTokenIntegrationForm({
@@ -179,29 +175,6 @@ function ApiTokenIntegrationForm({
                                 })}
                             </SelectSingle>
                         </FormLabelGroup>
-                        {isEditable && !isGenerated && (
-                            <FormLabelGroup
-                                isRequired
-                                label="Expiration date"
-                                fieldId="expiration"
-                                touched={touched}
-                                errors={errors}
-                            >
-                                <DatePicker
-                                    id="expiration"
-                                    value={
-                                        values.expiration
-                                            ? yyyyMMddFormat(new Date(values.expiration))
-                                            : ''
-                                    }
-                                    onChange={(event, value, date) => {
-                                        if (date) {
-                                            setFieldValue('expiration', date.toISOString());
-                                        }
-                                    }}
-                                />
-                            </FormLabelGroup>
-                        )}
                     </Form>
                 )}
             </PageSection>

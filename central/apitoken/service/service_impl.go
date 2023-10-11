@@ -18,7 +18,6 @@ import (
 	"github.com/stackrox/rox/pkg/grpc/authz"
 	"github.com/stackrox/rox/pkg/grpc/authz/perrpc"
 	"github.com/stackrox/rox/pkg/grpc/authz/user"
-	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/sliceutils"
 	"google.golang.org/grpc"
@@ -29,7 +28,6 @@ var (
 		user.With(permissions.View(resources.Integration)): {
 			"/v1.APITokenService/GetAPIToken",
 			"/v1.APITokenService/GetAPITokens",
-			"/v1.APITokenService/GetAllowedTokenRoles",
 		},
 		user.With(permissions.Modify(resources.Integration)): {
 			"/v1.APITokenService/RevokeToken",
@@ -114,7 +112,7 @@ func (s *serviceImpl) GenerateToken(ctx context.Context, req *v1.GenerateTokenRe
 		return nil, errox.NotAuthorized.CausedBy(err)
 	}
 
-	token, metadata, err := s.backend.IssueRoleToken(ctx, req.GetName(), utils.RoleNames(roles), req.GetExpiration())
+	token, metadata, err := s.backend.IssueRoleToken(ctx, req.GetName(), utils.RoleNames(roles))
 	if err != nil {
 		return nil, err
 	}
@@ -133,14 +131,6 @@ func (s *serviceImpl) ListAllowedTokenRoles(ctx context.Context, _ *v1.Empty) (*
 	allRoles, err := s.roles.GetAllResolvedRoles(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to fetch all roles")
-	}
-	for idx, role := range allRoles {
-		if role == nil {
-			logging.GetRateLimitedLogger().Warnf("Role is nil at %d", idx)
-
-		} else {
-			logging.GetRateLimitedLogger().Warnf("Role %s %+v %+v", role.GetRoleName(), role.GetAccessScope(), role.GetPermissions())
-		}
 	}
 	var result []string
 	for _, role := range allRoles {

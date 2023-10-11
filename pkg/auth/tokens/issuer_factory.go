@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
@@ -56,7 +55,6 @@ func (f *issuerFactory) createClaims(sourceID string, roxClaims RoxClaims) *Clai
 			Issuer:   f.id,
 			Audience: jwt.Audience{sourceID},
 			ID:       uuid.NewV4().String(),
-			Expiry:   utils.IfThenElse(roxClaims.ExpireAt != nil, jwt.NewNumericDate(*roxClaims.ExpireAt), nil),
 		},
 		RoxClaims: roxClaims,
 	}
