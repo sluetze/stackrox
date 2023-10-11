@@ -7,7 +7,6 @@ import {
     DescriptionListTerm,
     DescriptionListGroup,
     DescriptionListDescription,
-    SelectOption,
 } from '@patternfly/react-core';
 
 import * as yup from 'yup';
@@ -172,6 +171,7 @@ function ApiTokenIntegrationForm({
                                 selectedRoles={values.roles}
                                 isEditable={isEditable}
                                 isGenerated={isGenerated}
+                                isRolesLoading={isRolesLoading}
                                 onRoleSelect={onRoleSelect}
                                 onRoleSelectionClear={onClearRoleSelections}
                             />
