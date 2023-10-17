@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"testing"
@@ -11,11 +12,16 @@ import (
 
 	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/pkg/errors"
+	clusterMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
 	configMocks "github.com/stackrox/rox/central/config/datastore/mocks"
 	"github.com/stackrox/rox/central/globaldb"
 	groupMocks "github.com/stackrox/rox/central/group/datastore/mocks"
 	notifierMocks "github.com/stackrox/rox/central/notifier/datastore/mocks"
 	roleMocks "github.com/stackrox/rox/central/role/datastore/mocks"
+	"github.com/stackrox/rox/central/sensor/service/connection"
+	connectionMocks "github.com/stackrox/rox/central/sensor/service/connection/mocks"
+	"github.com/stackrox/rox/central/sensor/telemetry"
+	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/storage"
 	permissionsMocks "github.com/stackrox/rox/pkg/auth/permissions/mocks"
 	"github.com/stackrox/rox/pkg/httputil/mock"
@@ -37,10 +43,12 @@ type debugServiceTestSuite struct {
 	mockCtrl *gomock.Controller
 	noneCtx  context.Context
 
-	groupsMock    *groupMocks.MockDataStore
-	rolesMock     *roleMocks.MockDataStore
-	notifiersMock *notifierMocks.MockDataStore
-	configMock    *configMocks.MockDataStore
+	groupsMock        *groupMocks.MockDataStore
+	rolesMock         *roleMocks.MockDataStore
+	notifiersMock     *notifierMocks.MockDataStore
+	configMock        *configMocks.MockDataStore
+	clustersMock      *clusterMocks.MockDataStore
+	sensorConnMgrMock *connectionMocks.MockManager
 
 	service *serviceImpl
 }
@@ -53,10 +61,12 @@ func (s *debugServiceTestSuite) SetupTest() {
 	s.rolesMock = roleMocks.NewMockDataStore(s.mockCtrl)
 	s.notifiersMock = notifierMocks.NewMockDataStore(s.mockCtrl)
 	s.configMock = configMocks.NewMockDataStore(s.mockCtrl)
+	s.clustersMock = clusterMocks.NewMockDataStore(s.mockCtrl)
+	s.sensorConnMgrMock = connectionMocks.NewMockManager(s.mockCtrl)
 
 	s.service = &serviceImpl{
-		clusters:             nil,
-		sensorConnMgr:        nil,
+		clusters:             s.clustersMock,
+		sensorConnMgr:        s.sensorConnMgrMock,
 		telemetryGatherer:    nil,
 		store:                nil,
 		authzTraceSink:       nil,
@@ -195,14 +205,31 @@ func (s *debugServiceTestSuite) TestGetBundle() {
 	globaldb.SetPostgresTest(s.T(), db)
 
 	s.configMock.EXPECT().GetConfig(gomock.Any()).Return(&storage.Config{}, nil)
+	numberOfClusters := 100
+	numberOfSensorsPerCluster := 10
+	clusters := make([]*storage.Cluster, 0, numberOfClusters)
+	connections := make([]connection.SensorConnection, 0, numberOfSensorsPerCluster*numberOfClusters)
+	for i := 0; i < numberOfClusters; i++ {
+		clusterId := fmt.Sprintf("%d", i)
+		clusters = append(clusters, &storage.Cluster{Id: clusterId})
+		for j := 0; j < numberOfSensorsPerCluster; j++ {
+			connMock := connectionMocks.NewMockSensorConnection(s.mockCtrl)
+			connMock.EXPECT().HasCapability(gomock.Any()).Return(true).Times(2)
+			connMock.EXPECT().ClusterID().Return(clusterId).Times(2)
+			connMock.EXPECT().Telemetry().Return(&dummyTelemetry{}).Times(2)
+			connections = append(connections, connMock)
+		}
+	}
+	s.clustersMock.EXPECT().GetClusters(gomock.Any()).Return(clusters, nil).Times(2)
+	s.sensorConnMgrMock.EXPECT().GetActiveConnections().Return(connections).Times(2)
 	s.service.writeZippedDebugDump(context.Background(), w, "debug.zip", debugDumpOptions{
-		logs:              0,
+		logs:              fullK8sIntrospectionData,
 		telemetryMode:     noTelemetry,
 		withCPUProfile:    false,
 		withLogImbue:      false,
 		withAccessControl: false,
 		withNotifiers:     false,
-		withCentral:       false,
+		withCentral:       true,
 		clusters:          nil,
 		since:             time.Now(),
 	})
@@ -215,9 +242,30 @@ func (s *debugServiceTestSuite) TestGetBundle() {
 	zipReader, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
 	s.Require().NoError(err)
 
-	s.Assert().Len(zipReader.File, 2)
+	s.Assert().Len(zipReader.File, numberOfClusters*numberOfSensorsPerCluster+8)
 	for _, zipFile := range zipReader.File {
 		s.T().Log("Reading file:", zipFile.Name)
 		s.Assert().Equal(stubTime, zipFile.Modified.UTC())
 	}
+}
+
+type dummyTelemetry struct {
+}
+
+func (s *dummyTelemetry) PullKubernetesInfo(ctx context.Context, cb telemetry.KubernetesInfoChunkCallback, since time.Time) error {
+	data := &central.TelemetryResponsePayload_KubernetesInfo{
+		Files: []*central.TelemetryResponsePayload_KubernetesInfo_File{
+			{Path: "path", Contents: []byte("content")},
+		},
+	}
+	return cb(ctx, data)
+}
+func (s *dummyTelemetry) PullClusterInfo(ctx context.Context, cb telemetry.ClusterInfoCallback) error {
+	return nil
+}
+func (s *dummyTelemetry) PullMetrics(ctx context.Context, cb telemetry.MetricsInfoChunkCallback) error {
+	return nil
+}
+func (s *dummyTelemetry) ProcessTelemetryDataResponse(resp *central.PullTelemetryDataResponse) error {
+	return nil
 }

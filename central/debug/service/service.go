@@ -66,7 +66,10 @@ const (
 	noLogs logsMode = iota
 	localLogs
 	fullK8sIntrospectionData
+	_
+)
 
+const (
 	noTelemetry telemetryMode = iota
 	telemetryCentralOnly
 	telemetryCentralAndSensors
