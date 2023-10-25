@@ -36,13 +36,18 @@ var (
 		policymigrationhelper.PolicySectionComparator,
 	}
 
+	// Update the nftables policy only if the existing name, description, rationale, remediation and policy sections haven't changed.
+	nftablesFieldsToCompare = []policymigrationhelper.FieldComparator{
+		policymigrationhelper.NameComparator,
+		policymigrationhelper.DescriptionComparator,
+		policymigrationhelper.RationaleComparator,
+		policymigrationhelper.RemediationComparator,
+		policymigrationhelper.PolicySectionComparator,
+	}
+
 	policyDiffs = []policymigrationhelper.PolicyDiff{
 		{
-			FieldsToCompare: fieldsToCompare,
-			PolicyFileName:  "exec-iptables.json",
-		},
-		{
-			FieldsToCompare: fieldsToCompare,
+			FieldsToCompare: nftablesFieldsToCompare,
 			PolicyFileName:  "exec-iptables-root.json",
 		},
 		{
