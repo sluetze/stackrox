@@ -1,6 +1,6 @@
 //go:build sql_integration
 
-package m192tom193
+package m193tom194
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stackrox/rox/generated/storage"
-	"github.com/stackrox/rox/migrator/migrations/m_192_to_m_193_policy_updates_for_4_3/schema"
+	"github.com/stackrox/rox/migrator/migrations/m_193_to_m_194_policy_updates_for_4_3/schema"
 	"github.com/stackrox/rox/migrator/migrations/policymigrationhelper"
 	pghelper "github.com/stackrox/rox/migrator/migrations/postgreshelper"
 	"github.com/stackrox/rox/migrator/types"

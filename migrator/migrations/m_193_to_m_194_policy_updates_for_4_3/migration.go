@@ -1,4 +1,4 @@
-package m192tom193
+package m193tom194
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations"
-	"github.com/stackrox/rox/migrator/migrations/m_192_to_m_193_policy_updates_for_4_3/schema"
+	"github.com/stackrox/rox/migrator/migrations/m_193_to_m_194_policy_updates_for_4_3/schema"
 	"github.com/stackrox/rox/migrator/migrations/policymigrationhelper"
 	"github.com/stackrox/rox/migrator/types"
 	"gorm.io/gorm"
@@ -15,8 +15,8 @@ import (
 
 var (
 	migration = types.Migration{
-		StartingSeqNum: 192,
-		VersionAfter:   &storage.Version{SeqNum: 193},
+		StartingSeqNum: 193,
+		VersionAfter:   &storage.Version{SeqNum: 194},
 		Run: func(databases *types.Databases) error {
 			err := updatePolicies(databases.GormDB)
 			if err != nil {
