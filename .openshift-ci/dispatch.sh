@@ -51,6 +51,7 @@ if ! [[ "$ci_job" =~ [a-z-]+ ]]; then
     die "untrusted job: $ci_job"
 fi
 
+ls -la "$ROOT/scripts/ci/jobs/"
 if [[ -f "$ROOT/scripts/ci/jobs/${ci_job}.sh" ]]; then
     job_script="$ROOT/scripts/ci/jobs/${ci_job}.sh"
 elif [[ -f "$ROOT/scripts/ci/jobs/${ci_job//-/_}.py" ]]; then
