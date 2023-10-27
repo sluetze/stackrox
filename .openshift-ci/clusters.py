@@ -32,10 +32,11 @@ class GKECluster:
     REFRESH_PATH = "scripts/ci/gke.sh"
     TEARDOWN_PATH = "scripts/ci/gke.sh"
 
-    def __init__(self, cluster_id, num_nodes=3, machine_type="e2-standard-4"):
+    def __init__(self, cluster_id, num_nodes=3, machine_type="e2-standard-4", disk_gb=40):
         self.cluster_id = cluster_id
         self.num_nodes = num_nodes
         self.machine_type = machine_type
+        self.disk_gb = disk_gb
         self.refresh_token_cmd = None
 
     def provision(self):
@@ -46,6 +47,7 @@ class GKECluster:
                 self.cluster_id,
                 str(self.num_nodes),
                 self.machine_type,
+                str(self.disk_gb),
             ]
         ) as cmd:
 
@@ -73,20 +75,23 @@ class GKECluster:
 
         return self
 
-    def teardown(self):
+    def teardown(self, canceled=False):
         while os.path.exists("/tmp/hold-cluster"):
             print("Pausing teardown because /tmp/hold-cluster exists")
             time.sleep(60)
 
-        if self.refresh_token_cmd is not None:
+        if self.refresh_token_cmd is not None and not canceled:
             print("Terminating GKE token refresh")
             try:
                 popen_graceful_kill(self.refresh_token_cmd)
             except Exception as err:
                 print(f"Could not terminate the token refresh: {err}")
 
+        args = [GKECluster.TEARDOWN_PATH, "teardown_gke_cluster"]
+        if canceled:
+            args.append("true")
         subprocess.run(
-            [GKECluster.TEARDOWN_PATH, "teardown_gke_cluster"],
+            args,
             check=True,
             timeout=GKECluster.TEARDOWN_TIMEOUT,
         )
@@ -95,7 +100,7 @@ class GKECluster:
 
     def sigint_handler(self, signum, frame):
         print("Tearing down the cluster due to SIGINT", signum, frame)
-        self.teardown()
+        self.teardown(canceled=True)
 
 
 class AutomationFlavorsCluster:
@@ -111,6 +116,25 @@ class AutomationFlavorsCluster:
             ["kubectl", "get", "nodes", "-o", "wide"],
             check=True,
             timeout=AutomationFlavorsCluster.KUBECTL_TIMEOUT,
+        )
+
+        return self
+
+    def teardown(self):
+        pass
+
+class OpenShiftScaleWorkersCluster:
+    SCALE_CHANGE_TIMEOUT = 15 * 60
+
+    def __init__(self, increment=1):
+        self.increment = increment
+
+    def provision(self):
+        print("Scaling worker nodes")
+        subprocess.run(
+            ["scripts/ci/openshift.sh", "scale_worker_nodes", str(self.increment)],
+            check=True,
+            timeout=OpenShiftScaleWorkersCluster.SCALE_CHANGE_TIMEOUT,
         )
 
         return self
