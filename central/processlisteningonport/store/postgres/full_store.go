@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"reflect"
 	"time"
 
+	// "unsafe"
 	"github.com/gogo/protobuf/proto"
 	"github.com/jackc/pgx/v4"
 	metrics "github.com/stackrox/rox/central/metrics"
@@ -61,7 +63,13 @@ func (s *fullStoreImpl) retryableGetPLOP(
 	var rows pgx.Rows
 	var err error
 
+	startTime := time.Now()
 	rows, err = s.db.Query(ctx, getByDeploymentStmt, deploymentID)
+	endTime := time.Now()
+
+	duration := endTime.Sub(startTime)
+
+	log.Infof("Plop query took %+v", duration)
 
 	if err != nil {
 		// Do not be alarmed if the error is simply NoRows
@@ -73,12 +81,23 @@ func (s *fullStoreImpl) retryableGetPLOP(
 	}
 	defer rows.Close()
 
+	startTime = time.Now()
 	results, err := s.readRows(rows)
+	endTime = time.Now()
+
+	duration = endTime.Sub(startTime)
+	log.Infof("readRow took %+v", duration)
+
 	if err != nil {
 		return nil, err
 	}
 
 	return results, rows.Err()
+}
+
+func memoryUsage(v interface{}) int {
+	size := int(reflect.TypeOf(v).Size())
+	return size
 }
 
 // Manual converting of raw data from SQL query to ProcessListeningOnPort (not
@@ -87,7 +106,13 @@ func (s *fullStoreImpl) readRows(
 	rows pgx.Rows,
 ) ([]*storage.ProcessListeningOnPort, error) {
 	var plops []*storage.ProcessListeningOnPort
+	var totalAppendDuration time.Duration
+	var memSerialized = 0
+	var memProcSerialized = 0
 
+	totalAppendDuration = 0
+
+	startTime := time.Now()
 	for rows.Next() {
 		var serialized []byte
 		var procSerialized []byte
@@ -104,6 +129,8 @@ func (s *fullStoreImpl) readRows(
 			return nil, pgutils.ErrNilIfNoRows(err)
 		}
 
+		memSerialized += len(serialized)
+		memProcSerialized += len(procSerialized)
 		var msg storage.ProcessListeningOnPortStorage
 		if err := proto.Unmarshal(serialized, &msg); err != nil {
 			return nil, err
@@ -166,7 +193,35 @@ func (s *fullStoreImpl) readRows(
 			ImageId:            procMsg.GetImageId(),
 		}
 
+		appendStartTime := time.Now()
 		plops = append(plops, plop)
+		appendEndTime := time.Now()
+		appendDuration := appendEndTime.Sub(appendStartTime)
+		totalAppendDuration += appendDuration
+	}
+
+	endTime := time.Now()
+
+	duration := endTime.Sub(startTime)
+
+	log.Infof("loop took %+v", duration)
+	log.Infof("appending in loop took %+v", totalAppendDuration)
+
+	if len(plops) > 0 {
+		memorySize := memoryUsage(plops[0]) * len(plops)
+		memorySizeValue := memoryUsage(*plops[0]) * len(plops)
+		memorySizeSignal := memoryUsage(*(plops[0].Signal)) * len(plops)
+		memorySizeEndpoint := memoryUsage(*(plops[0].Endpoint)) * len(plops)
+		memoryTotal := memorySize + memorySizeValue + memorySizeSignal + memorySizeEndpoint
+		memoryTotalTotal := memoryTotal + memSerialized + memProcSerialized
+		log.Infof("plops memorySize= %+v", memorySize)
+		log.Infof("plops memorySizeValue= %+v", memorySizeValue)
+		log.Infof("plops memorySizeSignal= %+v", memorySizeSignal)
+		log.Infof("plops memorySizeEndpoint= %v", memorySizeEndpoint)
+		log.Infof("memoryTotal= %+v", memoryTotal)
+		log.Infof("memorySerialized= %+v", memSerialized)
+		log.Infof("memoryProcSerialized= %+v", memProcSerialized)
+		log.Infof("memoryTotalTotal= %+v", memoryTotalTotal)
 	}
 
 	log.Debugf("Read returned %+v plops", len(plops))

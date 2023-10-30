@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	datastore "github.com/stackrox/rox/central/processlisteningonport/datastore"
@@ -10,6 +11,7 @@ import (
 	"github.com/stackrox/rox/pkg/grpc/authz"
 	"github.com/stackrox/rox/pkg/grpc/authz/perrpc"
 	"github.com/stackrox/rox/pkg/grpc/authz/user"
+	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"google.golang.org/grpc"
 )
@@ -20,6 +22,7 @@ var (
 			"/v1.ListeningEndpointsService/GetListeningEndpoints",
 		},
 	})
+	log = logging.LoggerForModule()
 )
 
 type serviceImpl struct {
@@ -47,7 +50,11 @@ func (s *serviceImpl) GetListeningEndpoints(
 	req *v1.GetProcessesListeningOnPortsRequest,
 ) (*v1.GetProcessesListeningOnPortsResponse, error) {
 	deployment := req.GetDeploymentId()
+	startTime := time.Now()
 	processesListeningOnPorts, err := s.dataStore.GetProcessListeningOnPort(ctx, deployment)
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	log.Infof("GetProcessListeningOnPort took %+v", duration)
 
 	if err != nil {
 		return nil, err

@@ -242,7 +242,11 @@ func (ds *datastoreImpl) GetProcessListeningOnPort(
 		return nil, sac.ErrResourceAccessDenied
 	}
 
+	startTime := time.Now()
 	processesListeningOnPorts, err = ds.storage.GetProcessListeningOnPort(ctx, deploymentID)
+	endTime := time.Now()
+	duration := endTime.Sub(startTime)
+	log.Infof("ds.storage.GetProcessListeningOnPort took %+v", duration)
 
 	if err != nil {
 		log.Warnf("In GetProcessListeningOnPort. Query for deployment %s returned err: %+v", deploymentID, err)
