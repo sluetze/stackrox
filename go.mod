@@ -5,7 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/containeranalysis v0.11.2
-	cloud.google.com/go/storage v1.33.0
+	cloud.google.com/go/storage v1.34.1
 	github.com/BurntSushi/toml v1.3.2
 	github.com/ComplianceAsCode/compliance-operator v1.3.1
 	github.com/Masterminds/semver v1.5.0
@@ -30,11 +30,10 @@ require (
 	// If this is updated, be sure to check the version of github.com/opencontainers/runc used.
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/driftprogramming/pgxpoolmock v1.1.0
 	github.com/facebookincubator/nvdtools v0.1.5
 	github.com/fatih/color v1.15.0
 	github.com/fullsailor/pkcs7 v0.0.0
-	github.com/georgysavva/scany v1.2.1
+	github.com/georgysavva/scany/v2 v2.0.0
 	github.com/ghodss/yaml v1.0.1-0.20190212211648-25d852aebe32
 	github.com/go-logr/logr v1.3.0
 	github.com/go-logr/zapr v1.2.4
@@ -59,10 +58,8 @@ require (
 	github.com/heimdalr/dag v1.3.1
 	github.com/helm/helm-mapkubeapis v0.4.1
 	github.com/heroku/docker-registry-client v0.0.0
-	github.com/jackc/pgconn v1.14.1
-	github.com/jackc/pgproto3/v2 v2.3.2
 	github.com/jackc/pgtype v1.14.0
-	github.com/jackc/pgx/v4 v4.18.1
+	github.com/jackc/pgx/v5 v5.5.0
 	github.com/joshdk/go-junit v1.0.0
 	github.com/klauspost/compress v1.17.2
 	github.com/lib/pq v1.10.9
@@ -132,7 +129,7 @@ require (
 	gopkg.in/robfig/cron.v2 v2.0.0-20150107220207-be2e0b0deed5
 	gopkg.in/square/go-jose.v2 v2.6.0
 	gopkg.in/yaml.v3 v3.0.1
-	gorm.io/driver/postgres v1.5.2
+	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 	helm.sh/helm/v3 v3.12.3
 	k8s.io/api v0.28.2
@@ -263,11 +260,14 @@ require (
 	github.com/itchyny/gojq v0.12.13 // indirect
 	github.com/itchyny/timefmt-go v0.1.5 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgconn v1.14.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.2 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.3.1 // indirect
+	github.com/jackc/pgx/v4 v4.18.0 // indirect
 	github.com/jackc/puddle v1.3.0 // indirect
+	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jedisct1/go-minisign v0.0.0-20211028175153-1c139d1cc84b // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
