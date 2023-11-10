@@ -1,4 +1,5 @@
 {
+	"name": "Stackrox Apollo-CI Devcontainer",
 	"image":"quay.io/stackrox-io/apollo-ci:stackrox-test-0.3.61",
 	"containerEnv":{
 		"CI":"true"
