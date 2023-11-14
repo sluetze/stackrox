@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/networkgraph/aggregator"
 	graphConfigDS "github.com/stackrox/rox/central/networkgraph/config/datastore"

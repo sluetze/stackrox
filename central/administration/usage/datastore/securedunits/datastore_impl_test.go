@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/administration/usage/store/postgres"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/postgres/pgtest"
@@ -15,6 +14,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestUsageDataStore(t *testing.T) {

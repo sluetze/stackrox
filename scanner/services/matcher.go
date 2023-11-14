@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/quay/claircore"
 	"github.com/quay/zlog"
@@ -18,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // matcherService represents a vulnerability matcher gRPC service.

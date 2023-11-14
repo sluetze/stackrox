@@ -7,7 +7,6 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	nodeCVEDS "github.com/stackrox/rox/central/cve/node/datastore"
 	nodeCVESearch "github.com/stackrox/rox/central/cve/node/datastore/search"
 	nodeCVEPostgres "github.com/stackrox/rox/central/cve/node/datastore/store/postgres"
@@ -35,6 +34,7 @@ import (
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 

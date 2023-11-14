@@ -9,13 +9,13 @@ import (
 	"math/rand"
 	"testing"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/blob/datastore"
 	"github.com/stackrox/rox/central/blob/datastore/store"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/postgres/pgtest"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stretchr/testify/suite"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type snapshotTestSuite struct {

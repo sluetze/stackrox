@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
@@ -27,6 +26,7 @@ import (
 	"github.com/stackrox/rox/sensor/common/message"
 	"github.com/stackrox/rox/sensor/common/metrics"
 	flowMetrics "github.com/stackrox/rox/sensor/common/networkflow/metrics"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

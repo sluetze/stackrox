@@ -6,7 +6,6 @@ import (
 	"context"
 	"testing"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations/m_195_to_m_196_vuln_request_users/schema/old"
 	"github.com/stackrox/rox/migrator/migrations/m_195_to_m_196_vuln_request_users/store/previous"
@@ -19,6 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

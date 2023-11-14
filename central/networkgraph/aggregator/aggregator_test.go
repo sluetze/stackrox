@@ -3,13 +3,13 @@ package aggregator
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/networkgraph"
 	"github.com/stackrox/rox/pkg/networkgraph/externalsrcs"
 	"github.com/stackrox/rox/pkg/networkgraph/testutils"
 	"github.com/stackrox/rox/pkg/networkgraph/tree"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestSubnetToSupernetAggregator(t *testing.T) {

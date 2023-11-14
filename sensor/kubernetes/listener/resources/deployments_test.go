@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/docker/config"
@@ -12,6 +11,7 @@ import (
 	"github.com/stackrox/rox/sensor/common/awscredentials/mocks"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func Test_deploymentHandler_getImageIntegrationEvent(t *testing.T) {

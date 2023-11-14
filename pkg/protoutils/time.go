@@ -3,7 +3,7 @@ package protoutils
 import (
 	"time"
 
-	"github.com/gogo/protobuf/types"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

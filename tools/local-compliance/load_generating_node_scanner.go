@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/compliance/collection/compliance"
 	"github.com/stackrox/rox/compliance/collection/intervals"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // LoadGeneratingNodeScanner is a scanner that generates fake scans with high frequecy of the node-inventory messages.

@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	jiraLib "github.com/andygrunwald/go-jira"
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/cryptoutils/cryptocodec"
 	mitreMocks "github.com/stackrox/rox/pkg/mitre/datastore/mocks"
@@ -19,6 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // fakeJira is a fake JIRA backend that implements exactly the APIs that the JIRA notifier needs (and only to the extent

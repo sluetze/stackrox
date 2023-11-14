@@ -7,7 +7,6 @@ import (
 	"sort"
 	"testing"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	imageCVEDS "github.com/stackrox/rox/central/cve/image/datastore"
 	imageCVESearch "github.com/stackrox/rox/central/cve/image/datastore/search"
 	imageCVEPostgres "github.com/stackrox/rox/central/cve/image/datastore/store/postgres"
@@ -32,6 +31,7 @@ import (
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 

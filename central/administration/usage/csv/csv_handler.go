@@ -6,13 +6,13 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	datastore "github.com/stackrox/rox/central/administration/usage/datastore/securedunits"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/csv"
 	"github.com/stackrox/rox/pkg/errox"
 	grpcErrors "github.com/stackrox/rox/pkg/grpc/errors"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

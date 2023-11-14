@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	notifierDS "github.com/stackrox/rox/central/notifier/datastore"
 	reportSnapshotDS "github.com/stackrox/rox/central/reports/snapshot/datastore"
 	"github.com/stackrox/rox/generated/storage"
@@ -18,6 +17,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestReportConfigurationDatastoreV2(t *testing.T) {

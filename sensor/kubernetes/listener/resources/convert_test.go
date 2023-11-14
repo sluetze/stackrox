@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/storage"
 	imageUtils "github.com/stackrox/rox/pkg/images/utils"
@@ -13,6 +12,7 @@ import (
 	"github.com/stackrox/rox/sensor/kubernetes/listener/resources/references"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"

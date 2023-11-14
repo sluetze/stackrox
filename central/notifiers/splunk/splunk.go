@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/pkg/errors"
 	notifierUtils "github.com/stackrox/rox/central/notifiers/utils"

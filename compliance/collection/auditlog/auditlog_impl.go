@@ -7,13 +7,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/nxadm/tail"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/protoutils"
 	"github.com/stackrox/rox/pkg/set"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

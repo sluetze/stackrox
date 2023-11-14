@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/pkg/errors"

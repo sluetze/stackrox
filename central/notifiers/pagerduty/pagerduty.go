@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	pd "github.com/PagerDuty/go-pagerduty"
-	"github.com/gogo/protobuf/types"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/pkg/errors"
 	notifierUtils "github.com/stackrox/rox/central/notifiers/utils"
@@ -25,6 +24,7 @@ import (
 	"github.com/stackrox/rox/pkg/notifiers"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

@@ -10,7 +10,6 @@ import (
 	"path"
 	"path/filepath"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations"
@@ -23,6 +22,7 @@ import (
 	"github.com/stackrox/rox/pkg/probeupload"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/utils"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 

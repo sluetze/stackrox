@@ -1,9 +1,9 @@
 package standards
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/compliance"
 	"github.com/stackrox/rox/generated/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"k8s.io/kubelet/config/v1beta1"
 )
 

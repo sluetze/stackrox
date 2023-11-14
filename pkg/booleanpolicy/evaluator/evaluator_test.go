@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/booleanpolicy/evaluator/pathutil"
 	"github.com/stackrox/rox/pkg/booleanpolicy/query"
@@ -13,6 +12,7 @@ import (
 	"github.com/stackrox/rox/pkg/timeutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type TopLevel struct {

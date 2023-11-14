@@ -1,12 +1,12 @@
 package fixtures
 
 import (
-	ptypes "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/fixtures/fixtureconsts"
 	"github.com/stackrox/rox/pkg/images/types"
 	"github.com/stackrox/rox/pkg/sac/testconsts"
 	"github.com/stackrox/rox/pkg/uuid"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func copyScopingInfo(alert *storage.Alert) *storage.Alert {

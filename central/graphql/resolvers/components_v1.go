@@ -3,7 +3,6 @@ package resolvers
 import (
 	"context"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	acConverter "github.com/stackrox/rox/central/activecomponent/converter"
 	"github.com/stackrox/rox/central/graphql/resolvers/deploymentctx"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/features"
 	"github.com/stackrox/rox/pkg/scancomponent"
 	"github.com/stackrox/rox/pkg/search"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Resolvers on Embedded Scan Object.

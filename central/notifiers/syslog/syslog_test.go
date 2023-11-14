@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/notifiers/syslog/mocks"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
@@ -16,6 +15,7 @@ import (
 	metadataGetterMocks "github.com/stackrox/rox/pkg/notifiers/mocks"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestSyslogNotifier(t *testing.T) {

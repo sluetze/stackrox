@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 
-	ptypes "github.com/gogo/protobuf/types"
 	openshiftAppsV1 "github.com/openshift/api/apps/v1"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
@@ -17,6 +16,7 @@ import (
 	"github.com/stackrox/rox/pkg/stringutils"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/pkg/utils"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 	batchV1 "k8s.io/api/batch/v1"
 	batchV1beta1 "k8s.io/api/batch/v1beta1"
 	v1 "k8s.io/api/core/v1"

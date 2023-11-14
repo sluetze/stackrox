@@ -10,4 +10,5 @@ import (
 	// Tool dependencies, not used anywhere in the code.
 	_ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway"
 	_ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger"
+	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
 )

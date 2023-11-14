@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/errox"
 	"github.com/stackrox/rox/pkg/utils"

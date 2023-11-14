@@ -13,7 +13,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	types "github.com/gogo/protobuf/types"
+	types "google.golang.org/protobuf/types/known/timestamppb"
 	storage "github.com/stackrox/rox/generated/storage"
 	timestamp "github.com/stackrox/rox/pkg/timestamp"
 	gomock "go.uber.org/mock/gomock"

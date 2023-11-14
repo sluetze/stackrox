@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/pkg/timeutil"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

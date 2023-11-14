@@ -3,7 +3,7 @@ package search
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/pkg/utils"

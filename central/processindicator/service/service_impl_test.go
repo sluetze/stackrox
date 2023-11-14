@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	deploymentMocks "github.com/stackrox/rox/central/deployment/datastore/mocks"
 	"github.com/stackrox/rox/central/processbaseline/datastore/mocks"
 	v1 "github.com/stackrox/rox/generated/api/v1"
@@ -15,6 +14,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestAuthz(t *testing.T) {

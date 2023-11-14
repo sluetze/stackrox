@@ -1,10 +1,10 @@
 package quay
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/clair"
 	"github.com/stackrox/rox/pkg/stringutils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func convertScanToImageScan(image *storage.Image, s *scanResult) *storage.ImageScan {

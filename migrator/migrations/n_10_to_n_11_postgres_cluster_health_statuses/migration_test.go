@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	legacy "github.com/stackrox/rox/migrator/migrations/n_10_to_n_11_postgres_cluster_health_statuses/legacy"
 	pgStore "github.com/stackrox/rox/migrator/migrations/n_10_to_n_11_postgres_cluster_health_statuses/postgres"

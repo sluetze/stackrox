@@ -3,7 +3,7 @@ package m91tom92
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations/dackboxhelpers"
 	"github.com/stackrox/rox/migrator/migrations/m_91_to_m_92_write_edges_to_graph/sortedkeys"

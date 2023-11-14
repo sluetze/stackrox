@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/cve/common"
 	"github.com/stackrox/rox/central/cve/node/datastore/search"
@@ -15,6 +14,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	pkgSearch "github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/sync"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

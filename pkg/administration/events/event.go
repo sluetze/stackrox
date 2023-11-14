@@ -3,11 +3,11 @@ package events
 import (
 	"strings"
 
-	gogoTimestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/errox"
 	"github.com/stackrox/rox/pkg/stringutils"
 	"github.com/stackrox/rox/pkg/uuid"
+	gogotimestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var rootNamespaceUUID = uuid.FromStringOrPanic("d4dcc3d8-fcdf-4621-8386-0be1372ecbba")

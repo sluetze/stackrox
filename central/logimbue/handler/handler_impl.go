@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/logimbue/store"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type handlerImpl struct {

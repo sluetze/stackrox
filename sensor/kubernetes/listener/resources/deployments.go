@@ -3,7 +3,6 @@ package resources
 import (
 	"sort"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/storage"
@@ -21,6 +20,7 @@ import (
 	"github.com/stackrox/rox/sensor/kubernetes/listener/resources/rbac"
 	"github.com/stackrox/rox/sensor/kubernetes/listener/resources/references"
 	"github.com/stackrox/rox/sensor/kubernetes/orchestratornamespaces"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	v1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	v1listers "k8s.io/client-go/listers/core/v1"

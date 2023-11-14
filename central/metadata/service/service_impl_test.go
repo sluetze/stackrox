@@ -11,8 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
-	timestamp "github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	cTLS "github.com/google/certificate-transparency-go/tls"
 	systemInfoStorage "github.com/stackrox/rox/central/systeminfo/store/postgres"
 	v1 "github.com/stackrox/rox/generated/api/v1"
@@ -26,6 +25,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -188,7 +188,7 @@ func (s *serviceImplTestSuite) TestDatabaseBackupStatus() {
 	expected := &storage.SystemInfo{
 		BackupInfo: &storage.BackupInfo{
 			Status:          storage.OperationStatus_PASS,
-			BackupLastRunAt: timestamp.TimestampNow(),
+			BackupLastRunAt: timestamp.Now(),
 		},
 	}
 	err := srv.systemInfoStore.Upsert(ctx, expected)

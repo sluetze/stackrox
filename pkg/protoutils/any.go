@@ -1,9 +1,9 @@
 package protoutils
 
 import (
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	golangProto "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // MarshalAny correctly marshals a proto message into an Any

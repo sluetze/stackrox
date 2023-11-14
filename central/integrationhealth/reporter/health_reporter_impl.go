@@ -3,7 +3,6 @@ package reporter
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/integrationhealth/datastore"
 	"github.com/stackrox/rox/generated/storage"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/sync"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

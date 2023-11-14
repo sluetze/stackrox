@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/postgres"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )

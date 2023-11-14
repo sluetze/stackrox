@@ -8,10 +8,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/compliance"
 	"github.com/stackrox/rox/pkg/compliance/compress"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // To run this benchmark download sample data from the Compliance Checks In Nodes design doc

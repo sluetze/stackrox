@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	clusterDatastore "github.com/stackrox/rox/central/cluster/datastore"
 	statusStore "github.com/stackrox/rox/central/complianceoperator/v2/scanconfigurations/scanconfigstatus/store/postgres"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/search"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // TODO(ROX-19742):  Figure out SAC for the configurations

@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/blob/datastore/search"
 	"github.com/stackrox/rox/central/blob/datastore/store"
 	"github.com/stackrox/rox/central/blob/datastore/store/postgres"
@@ -24,6 +23,7 @@ import (
 	pkgSearch "github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/timeutil"
 	"github.com/stretchr/testify/suite"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type blobTestSuite struct {

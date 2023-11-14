@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	alertDatastore "github.com/stackrox/rox/central/alert/datastore"
 	blobDatastore "github.com/stackrox/rox/central/blob/datastore"
@@ -42,6 +41,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/timeutil"
 	"golang.org/x/sync/semaphore"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

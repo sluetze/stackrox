@@ -3,13 +3,13 @@ package processbaseline
 import (
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/protoutils"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // The EvaluationMode specifies when to treat a process baseline as being locked.

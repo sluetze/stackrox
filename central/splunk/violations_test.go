@@ -16,7 +16,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/alert/datastore"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/booleanpolicy/violationmessages/printer"
@@ -26,6 +25,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"k8s.io/client-go/util/jsonpath"
 )
 

@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/cloudflare/cfssl/log"
-	timestamp "github.com/gogo/protobuf/types"
 	systemInfoStorage "github.com/stackrox/rox/central/systeminfo/store/postgres"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/grpc/authn"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sync"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // BackupListener provides functionality to listen on backup operations.

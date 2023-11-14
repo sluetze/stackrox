@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/go-grpc-middleware/util/metautils"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/hashicorp/go-multierror"
@@ -29,6 +28,7 @@ import (
 	"github.com/stackrox/rox/pkg/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

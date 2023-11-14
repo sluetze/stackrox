@@ -6,8 +6,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	dDSMocks "github.com/stackrox/rox/central/deployment/datastore/mocks"
 	nsDSMocks "github.com/stackrox/rox/central/namespace/datastore/mocks"
 	networkBaselineMocks "github.com/stackrox/rox/central/networkbaseline/datastore/mocks"
@@ -25,6 +24,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type generatorTestSuite struct {

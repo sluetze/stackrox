@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/test"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func getFilledStruct() *test.TestClone {

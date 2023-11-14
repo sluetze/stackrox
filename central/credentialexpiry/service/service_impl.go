@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/pkg/errors"
 	imageIntegrationStore "github.com/stackrox/rox/central/imageintegration/datastore"
@@ -22,6 +21,7 @@ import (
 	"github.com/stackrox/rox/pkg/urlfmt"
 	"github.com/stackrox/rox/pkg/utils"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func getVulnsPerComponent(componentIndex int, numVulns int, cveType storage.EmbeddedVulnerability_VulnerabilityType) []*storage.EmbeddedVulnerability {

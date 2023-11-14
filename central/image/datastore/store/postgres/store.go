@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/jackc/pgx/v5"
 	"github.com/mitchellh/hashstructure/v2"
 	"github.com/pkg/errors"
@@ -25,6 +24,7 @@ import (
 	"github.com/stackrox/rox/pkg/search"
 	pgSearch "github.com/stackrox/rox/pkg/search/postgres"
 	"github.com/stackrox/rox/pkg/set"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 

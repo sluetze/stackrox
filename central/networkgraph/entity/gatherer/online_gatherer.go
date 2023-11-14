@@ -5,7 +5,6 @@ import (
 	"context"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	blobstore "github.com/stackrox/rox/central/blob/datastore"
 	entityDataStore "github.com/stackrox/rox/central/networkgraph/entity/datastore"
@@ -19,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/sync"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

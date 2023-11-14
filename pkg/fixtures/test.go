@@ -1,9 +1,9 @@
 package fixtures
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // GetTestSingleKeyStruct returns filled TestSingleKeyStruct

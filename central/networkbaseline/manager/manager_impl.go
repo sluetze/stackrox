@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	deploymentDS "github.com/stackrox/rox/central/deployment/datastore"
 	"github.com/stackrox/rox/central/deployment/queue"
@@ -34,6 +33,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

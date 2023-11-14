@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	dataStoreMocks "github.com/stackrox/rox/central/alert/datastore/mocks"
 	"github.com/stackrox/rox/central/alert/mappings"
@@ -21,6 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

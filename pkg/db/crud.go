@@ -1,6 +1,6 @@
 package db
 
-import "github.com/gogo/protobuf/proto"
+import proto "github.com/CrowdStrike/csproto"
 
 // Crud provides a simple crud layer on top of a DB supporting proto messages
 //

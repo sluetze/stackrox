@@ -6,10 +6,10 @@ package legacy
 import (
 	"context"
 
-	proto "github.com/gogo/protobuf/proto"
-	storage "github.com/stackrox/rox/generated/storage"
-	singletonstore "github.com/stackrox/rox/pkg/bolthelper/singletonstore"
-	bbolt "go.etcd.io/bbolt"
+proto proto "github.com/CrowdStrike/csproto"
+storage "github.com/stackrox/rox/generated/storage"
+singletonstore "github.com/stackrox/rox/pkg/bolthelper/singletonstore"
+bbolt "go.etcd.io/bbolt"
 )
 
 var (

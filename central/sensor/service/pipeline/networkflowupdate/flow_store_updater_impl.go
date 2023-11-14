@@ -3,12 +3,12 @@ package networkflowupdate
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	networkBaselineManager "github.com/stackrox/rox/central/networkbaseline/manager"
 	flowDataStore "github.com/stackrox/rox/central/networkgraph/flow/datastore"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/networkgraph"
 	"github.com/stackrox/rox/pkg/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type flowPersisterImpl struct {

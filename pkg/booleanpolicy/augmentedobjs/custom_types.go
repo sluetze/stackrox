@@ -1,8 +1,8 @@
 package augmentedobjs
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // This block enumerates custom tags.

@@ -4,7 +4,6 @@ import (
 	"context"
 	"sort"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/internalapi/central"
@@ -37,6 +36,7 @@ import (
 	"github.com/stackrox/rox/sensor/common/store"
 	"github.com/stackrox/rox/sensor/common/updater"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

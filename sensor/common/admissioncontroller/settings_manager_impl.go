@@ -1,7 +1,6 @@
 package admissioncontroller
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stackrox/rox/sensor/common/clusterid"
 	"github.com/stackrox/rox/sensor/common/store"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type settingsManager struct {

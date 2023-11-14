@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	acUpdater "github.com/stackrox/rox/central/activecomponent/updater"
 	deploymentDS "github.com/stackrox/rox/central/deployment/datastore"

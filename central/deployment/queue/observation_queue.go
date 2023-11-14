@@ -3,8 +3,8 @@ package queue
 import (
 	"container/list"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/pkg/sync"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DeploymentObservation struct used as element in the queue

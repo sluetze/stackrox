@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/cvss/cvssv2"
 	"github.com/stackrox/rox/pkg/cvss/cvssv3"
@@ -17,6 +16,7 @@ import (
 	clairConvert "github.com/stackrox/scanner/api/v1/convert"
 	clientMetadata "github.com/stackrox/scanner/pkg/clairify/client/metadata"
 	"github.com/stackrox/scanner/pkg/component"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

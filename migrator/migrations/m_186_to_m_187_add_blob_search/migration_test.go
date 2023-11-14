@@ -8,13 +8,13 @@ import (
 	"math/rand"
 	"testing"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	afterSchema "github.com/stackrox/rox/migrator/migrations/m_186_to_m_187_add_blob_search/schema/after"
 	beforeSchema "github.com/stackrox/rox/migrator/migrations/m_186_to_m_187_add_blob_search/schema/before"
 	pghelper "github.com/stackrox/rox/migrator/migrations/postgreshelper"
 	"github.com/stackrox/rox/pkg/postgres/pgutils"
 	"github.com/stretchr/testify/suite"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 

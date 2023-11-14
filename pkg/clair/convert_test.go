@@ -3,7 +3,6 @@ package clair
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/clair/mock"
 	"github.com/stackrox/rox/pkg/features"
@@ -11,6 +10,7 @@ import (
 	"github.com/stackrox/scanner/pkg/component"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestConvertVulnerability(t *testing.T) {

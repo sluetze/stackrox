@@ -5,13 +5,13 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/pkg/postgres"
 	"github.com/stackrox/rox/pkg/postgres/pgutils"
 	"github.com/stackrox/rox/pkg/protoreflect"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/stringutils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

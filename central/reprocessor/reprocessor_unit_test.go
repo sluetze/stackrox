@@ -3,13 +3,13 @@ package reprocessor
 import (
 	"testing"
 
-	protobuf "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	nodeDatastoreMocks "github.com/stackrox/rox/central/node/datastore/mocks"
 	riskManagerMocks "github.com/stackrox/rox/central/risk/manager/mocks"
 	"github.com/stackrox/rox/generated/storage"
 	nodesEnricherMocks "github.com/stackrox/rox/pkg/nodes/enricher/mocks"
 	"go.uber.org/mock/gomock"
+	protobuf "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func Test_loopImpl_reprocessNode(t *testing.T) {

@@ -6,13 +6,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	notificationschedulestore "github.com/stackrox/rox/migrator/migrations/m_175_to_m_176_create_notification_schedule_table/notificationschedulestore"
 	pghelper "github.com/stackrox/rox/migrator/migrations/postgreshelper"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestMigration(t *testing.T) {

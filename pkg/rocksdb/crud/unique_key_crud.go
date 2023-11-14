@@ -3,7 +3,7 @@ package generic
 import (
 	"bytes"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/pkg/db"
 	"github.com/stackrox/rox/pkg/errox"

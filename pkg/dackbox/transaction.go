@@ -1,7 +1,7 @@
 package dackbox
 
 import (
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/pkg/dackbox/graph"
 	"github.com/stackrox/rox/pkg/dackbox/transactions"
 	"github.com/stackrox/rox/pkg/dbhelper"

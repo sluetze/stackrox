@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	blobDatastore "github.com/stackrox/rox/central/blob/datastore"
 	"github.com/stackrox/rox/central/reports/common"
 	configDatastore "github.com/stackrox/rox/central/reports/config/datastore"
@@ -21,6 +20,7 @@ import (
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

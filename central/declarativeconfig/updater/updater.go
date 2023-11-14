@@ -4,7 +4,7 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	authProviderDatastore "github.com/stackrox/rox/central/authprovider/datastore"
 	authProviderRegistry "github.com/stackrox/rox/central/authprovider/registry"
 	declarativeConfigHealth "github.com/stackrox/rox/central/declarativeconfig/health/datastore"

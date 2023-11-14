@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/sensor/service/common"
 	"github.com/stackrox/rox/generated/internalapi/central"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

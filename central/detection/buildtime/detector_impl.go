@@ -1,13 +1,13 @@
 package buildtime
 
 import (
-	ptypes "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/booleanpolicy"
 	"github.com/stackrox/rox/pkg/detection"
 	"github.com/stackrox/rox/pkg/images/types"
 	"github.com/stackrox/rox/pkg/uuid"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type detectorImpl struct {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	hashManager "github.com/stackrox/rox/central/hash/manager"
 	"github.com/stackrox/rox/central/metrics"

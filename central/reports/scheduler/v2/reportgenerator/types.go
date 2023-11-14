@@ -1,8 +1,8 @@
 package reportgenerator
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ReportRequest contains information needed to generate and notify a report

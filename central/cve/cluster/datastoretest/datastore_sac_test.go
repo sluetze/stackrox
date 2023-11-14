@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	clusterCVEDataStore "github.com/stackrox/rox/central/cve/cluster/datastore"
 	cveConverterV2 "github.com/stackrox/rox/central/cve/converter/v2"
 	graphDBTestUtils "github.com/stackrox/rox/central/graphdb/testutils"
@@ -18,6 +17,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/testconsts"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

@@ -14,8 +14,8 @@ import (
 	"strconv"
 	"time"
 
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/VividCortex/ewma"
-	"github.com/gogo/protobuf/proto"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/pkg/concurrency"

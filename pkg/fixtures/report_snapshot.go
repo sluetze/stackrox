@@ -1,8 +1,8 @@
 package fixtures
 
 import (
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // GetReportSnapshot returns a valid report snapshot object

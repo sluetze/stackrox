@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/jackc/pgx/v5"
 	metrics "github.com/stackrox/rox/central/metrics"
 	"github.com/stackrox/rox/central/processlisteningonport/store"

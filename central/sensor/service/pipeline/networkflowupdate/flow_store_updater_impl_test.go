@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	baselineMocks "github.com/stackrox/rox/central/networkbaseline/manager/mocks"
 	nfDSMocks "github.com/stackrox/rox/central/networkgraph/flow/datastore/mocks"
 	"github.com/stackrox/rox/generated/storage"

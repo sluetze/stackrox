@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	queueMocks "github.com/stackrox/rox/central/deployment/queue/mocks"
 	alertManagerMocks "github.com/stackrox/rox/central/detection/alertmanager/mocks"
@@ -19,6 +18,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestManager(t *testing.T) {

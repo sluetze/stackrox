@@ -3,9 +3,9 @@ package telemetry
 import (
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/set"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

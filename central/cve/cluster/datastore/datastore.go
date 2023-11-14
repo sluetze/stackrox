@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/cve/cluster/datastore/search"
 	"github.com/stackrox/rox/central/cve/cluster/datastore/store"
 	"github.com/stackrox/rox/central/cve/common"
@@ -11,6 +10,7 @@ import (
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
 	searchPkg "github.com/stackrox/rox/pkg/search"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DataStore is an intermediary to cluster CVE storage.

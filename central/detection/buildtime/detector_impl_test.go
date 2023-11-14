@@ -3,7 +3,7 @@ package buildtime
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/central/detection"
 	"github.com/stackrox/rox/central/policy/datastore/mocks"
 	"github.com/stackrox/rox/generated/storage"

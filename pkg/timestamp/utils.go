@@ -3,9 +3,9 @@ package timestamp
 import (
 	"time"
 
-	"github.com/gogo/protobuf/types"
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/pkg/protoconv"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // RoundTimestamp rounds up ts to the nearest multiple of d. In case of error, the function returns without rounding up.

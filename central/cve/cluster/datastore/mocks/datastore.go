@@ -12,7 +12,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	types "github.com/gogo/protobuf/types"
+	types "google.golang.org/protobuf/types/known/timestamppb"
 	converter "github.com/stackrox/rox/central/cve/converter/v2"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	storage "github.com/stackrox/rox/generated/storage"

@@ -5,7 +5,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/stackrox/rox/central/metrics"
 	"github.com/stackrox/rox/generated/storage"
@@ -13,6 +12,7 @@ import (
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func init() {

@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/quay/claircore"
 	"github.com/stackrox/rox/generated/storage"
@@ -14,6 +13,7 @@ import (
 	registrytypes "github.com/stackrox/rox/pkg/registries/types"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/utils"
+	gogotypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var vulnNamePattern = regexp.MustCompile(`((CVE|ALAS|DSA)-\d{4}-\d+)|((RHSA|RHBA|RHEA)-\d{4}:\d+)`)

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/notifiers/metadatagetter"
 	v1 "github.com/stackrox/rox/generated/api/v1"
@@ -20,6 +19,7 @@ import (
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/notifiers"
 	"github.com/stackrox/rox/pkg/version"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

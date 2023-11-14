@@ -1,7 +1,7 @@
 package protoutils
 
 import (
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 )
 
 // SlicesEqual returns whether the given two slices of proto objects have equal values.

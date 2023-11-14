@@ -4,8 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
@@ -21,6 +20,7 @@ import (
 	"github.com/stackrox/rox/pkg/secrets"
 	"github.com/stackrox/rox/pkg/utils"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

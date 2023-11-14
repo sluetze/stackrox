@@ -6,7 +6,6 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	clusterDSMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
 	dDSMocks "github.com/stackrox/rox/central/deployment/datastore/mocks"
 	graphConfigDSMocks "github.com/stackrox/rox/central/networkgraph/config/datastore/mocks"
@@ -26,6 +25,7 @@ import (
 	sacTestutils "github.com/stackrox/rox/pkg/sac/testutils"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestNetworkGraph(t *testing.T) {

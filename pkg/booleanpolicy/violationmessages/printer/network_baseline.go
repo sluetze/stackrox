@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/booleanpolicy/augmentedobjs"
 	"github.com/stackrox/rox/pkg/protoconv"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

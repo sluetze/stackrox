@@ -12,7 +12,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	proto "github.com/gogo/protobuf/proto"
+	csproto "github.com/CrowdStrike/csproto"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -60,7 +60,7 @@ func (mr *MockResourceUpdaterMockRecorder) DeleteResources(ctx any, resourceIDsT
 }
 
 // Upsert mocks base method.
-func (m_2 *MockResourceUpdater) Upsert(ctx context.Context, m proto.Message) error {
+func (m_2 *MockResourceUpdater) Upsert(ctx context.Context, m csproto.Message) error {
 	m_2.ctrl.T.Helper()
 	ret := m_2.ctrl.Call(m_2, "Upsert", ctx, m)
 	ret0, _ := ret[0].(error)

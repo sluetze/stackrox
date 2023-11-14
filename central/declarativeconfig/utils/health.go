@@ -5,8 +5,7 @@ import (
 	"path"
 	"reflect"
 
-	"github.com/gogo/protobuf/proto"
-	timestamp "github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/central/declarativeconfig/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/declarativeconfig"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/stringutils"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

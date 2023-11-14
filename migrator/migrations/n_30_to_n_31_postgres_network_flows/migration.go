@@ -5,7 +5,6 @@ package n30ton31
 import (
 	"context"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations"
@@ -18,6 +17,7 @@ import (
 	"github.com/stackrox/rox/pkg/postgres"
 	"github.com/stackrox/rox/pkg/postgres/pgutils"
 	"github.com/stackrox/rox/pkg/timestamp"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 

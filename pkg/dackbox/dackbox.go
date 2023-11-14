@@ -1,7 +1,7 @@
 package dackbox
 
 import (
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/pkg/concurrency/sortedkeys"
 	"github.com/stackrox/rox/pkg/dackbox/graph"
 	"github.com/stackrox/rox/pkg/dackbox/transactions"

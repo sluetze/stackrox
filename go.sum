@@ -80,6 +80,8 @@ github.com/CloudyKit/fastprinter v0.0.0-20170127035650-74b38d55f37a/go.mod h1:EF
 github.com/CloudyKit/jet v2.1.3-0.20180809161101-62edd43e4f88+incompatible/go.mod h1:HPYO+50pSWkPoj9Q/eq0aRGByCL6ScRlUmiEX5Zgm+w=
 github.com/ComplianceAsCode/compliance-operator v1.3.1 h1:1GOGZrcqPxruJuraYZTNaUg8d/D0OD1D/JNnzQvkbHA=
 github.com/ComplianceAsCode/compliance-operator v1.3.1/go.mod h1:cLT1g8TMPoS0lY1DqqkocU/5tk49DJVtunTkb9Hbz9c=
+github.com/CrowdStrike/csproto v0.26.0 h1:Zp/04IiIAOnXkQllW0u6A3fnP6eB+SkHlULUy9nB3oo=
+github.com/CrowdStrike/csproto v0.26.0/go.mod h1:+QCpLLpG5rIs/hZvstv6rHqRmEC0T9SNgDAPXnXxxuU=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
 github.com/DataDog/gorocksdb v0.0.0-20200107201226-9722c3a2e063 h1:Rqs1GAKuL3hFKh5NVDD3iZQBr9pMuNh33AaXcx/cKVY=

@@ -6,8 +6,7 @@ package postgres
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
-	protoTypes "github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
@@ -20,6 +19,7 @@ import (
 	pgSearch "github.com/stackrox/rox/pkg/search/postgres"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/utils"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

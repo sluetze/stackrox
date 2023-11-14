@@ -3,7 +3,7 @@ package updater
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 	authProviderDatastore "github.com/stackrox/rox/central/authprovider/datastore"

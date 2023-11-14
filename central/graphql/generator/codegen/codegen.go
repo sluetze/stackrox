@@ -8,10 +8,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/golang/protobuf/proto"
 	"github.com/stackrox/rox/central/graphql/generator"
 	"github.com/stackrox/rox/pkg/set"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var timestampType = reflect.TypeOf((*types.Timestamp)(nil))

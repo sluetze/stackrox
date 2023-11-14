@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	clusterMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
 	"github.com/stackrox/rox/central/notifiers/cscc/findings"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/cryptoutils/cryptocodec"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

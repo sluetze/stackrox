@@ -1,11 +1,11 @@
 package resources
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	imageUtils "github.com/stackrox/rox/pkg/images/utils"
 	"github.com/stackrox/rox/pkg/k8sutil"
 	podUtils "github.com/stackrox/rox/pkg/pods/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	corev1 "k8s.io/api/core/v1"
 )
 

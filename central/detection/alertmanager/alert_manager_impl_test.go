@@ -7,8 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
-	ptypes "github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	alertMocks "github.com/stackrox/rox/central/alert/datastore/mocks"
 	"github.com/stackrox/rox/central/detection"
 	runtimeDetectorMocks "github.com/stackrox/rox/central/detection/runtime/mocks"
@@ -26,6 +25,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

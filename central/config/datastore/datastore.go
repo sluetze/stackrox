@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/hashicorp/golang-lru/v2/expirable"
 	"github.com/stackrox/rox/central/config/store"
 	pgStore "github.com/stackrox/rox/central/config/store/postgres"
@@ -15,6 +14,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/sync"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DataStore is the entry point for modifying Config data.

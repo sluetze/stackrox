@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/logging"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

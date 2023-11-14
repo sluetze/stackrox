@@ -8,7 +8,6 @@ import (
 	"unicode"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
-	gogoTypes "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
@@ -24,6 +23,7 @@ import (
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 	_package "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/package"
 	"google.golang.org/grpc"
+	gogoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

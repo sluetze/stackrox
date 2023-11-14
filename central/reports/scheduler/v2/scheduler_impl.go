@@ -6,7 +6,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/graphql/resolvers"
@@ -28,6 +27,7 @@ import (
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/sync"
 	"golang.org/x/sync/semaphore"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gopkg.in/robfig/cron.v2"
 )
 

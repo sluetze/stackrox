@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	managerMocks "github.com/stackrox/rox/central/complianceoperator/v2/compliancemanager/mocks"
 	scanConfigMocks "github.com/stackrox/rox/central/complianceoperator/v2/scanconfigurations/datastore/mocks"
@@ -21,6 +20,7 @@ import (
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

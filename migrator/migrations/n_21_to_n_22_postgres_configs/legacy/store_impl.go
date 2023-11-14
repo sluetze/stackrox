@@ -3,7 +3,7 @@ package bolt
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/bolthelper/singletonstore"
 	"go.etcd.io/bbolt"

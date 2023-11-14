@@ -3,9 +3,9 @@ package fixtures
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/fixtures/fixtureconsts"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // GetNode returns a mock *storage.Node

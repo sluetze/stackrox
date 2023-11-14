@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/processbaseline/search"
 	"github.com/stackrox/rox/central/processbaseline/store"
@@ -19,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	pkgSearch "github.com/stackrox/rox/pkg/search"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

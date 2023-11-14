@@ -3,7 +3,7 @@ package mapper
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	groupDataStore "github.com/stackrox/rox/central/group/datastore"
 	roleDataStore "github.com/stackrox/rox/central/role/datastore"

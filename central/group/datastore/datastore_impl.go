@@ -3,7 +3,7 @@ package datastore
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 	groupFilter "github.com/stackrox/rox/central/group/datastore/filter"

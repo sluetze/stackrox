@@ -3,12 +3,12 @@ package common
 import (
 	"testing"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/cve"
 	"github.com/stackrox/rox/pkg/scancomponent"
 	pgSearch "github.com/stackrox/rox/pkg/search/postgres"
 	"github.com/stretchr/testify/assert"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestSplitAndMergeNode(t *testing.T) {

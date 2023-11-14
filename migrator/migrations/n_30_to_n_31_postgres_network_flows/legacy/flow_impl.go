@@ -7,14 +7,14 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations/n_30_to_n_31_postgres_network_flows/common"
 	"github.com/stackrox/rox/pkg/rocksdb"
 	generic "github.com/stackrox/rox/pkg/rocksdb/crud"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/tecbot/gorocksdb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type flowStoreImpl struct {

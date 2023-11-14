@@ -1,8 +1,8 @@
 package resolvers
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func timestamp(ts *types.Timestamp) (*graphql.Time, error) {

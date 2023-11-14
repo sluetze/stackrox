@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/net"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/sensor/common/networkflow/manager"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

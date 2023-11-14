@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/pkg/errors"
 	blobDS "github.com/stackrox/rox/central/blob/datastore"
@@ -35,6 +34,7 @@ import (
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

@@ -1,11 +1,11 @@
 package cache
 
 import (
-	gogoTypes "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/maputil"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/sync"
+	gogoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // cacheImpl holds in-memory cache of collected usage metrics.

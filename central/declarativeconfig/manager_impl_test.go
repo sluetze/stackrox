@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	declarativeConfigHealthMock "github.com/stackrox/rox/central/declarativeconfig/health/datastore/mocks"
 	"github.com/stackrox/rox/central/declarativeconfig/types"

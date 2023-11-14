@@ -3,7 +3,7 @@ package m106to107
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	dbTypes "github.com/stackrox/rox/migrator/types"
 	"github.com/stackrox/rox/pkg/rocksdb"

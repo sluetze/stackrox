@@ -3,13 +3,13 @@ package v2tostorage
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	v2 "github.com/stackrox/rox/generated/api/v2"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/grpc/authn"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // VulnerabilityRequest converts *v2.VulnerabilityException to *storage.VulnerabilityRequest.

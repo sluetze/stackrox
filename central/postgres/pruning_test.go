@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	activeComponent "github.com/stackrox/rox/central/activecomponent/datastore"
 	administrationEventDS "github.com/stackrox/rox/central/administration/events/datastore"
 	alertStore "github.com/stackrox/rox/central/alert/datastore"
@@ -28,6 +27,7 @@ import (
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

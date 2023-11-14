@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	pkgErrors "github.com/pkg/errors"
 	"github.com/stackrox/rox/central/auth/datastore"
@@ -30,6 +29,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/uuid"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

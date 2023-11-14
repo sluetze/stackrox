@@ -3,13 +3,13 @@ package datastore
 import (
 	"context"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/declarativeconfig/health/datastore/store"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/declarativeconfig"
 	"github.com/stackrox/rox/pkg/errox"
 	"github.com/stackrox/rox/pkg/postgres/pgutils"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type datastoreImpl struct {

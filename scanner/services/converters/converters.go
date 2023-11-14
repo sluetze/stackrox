@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/quay/claircore"
 	"github.com/quay/claircore/pkg/cpe"
 	"github.com/quay/zlog"
 	v4 "github.com/stackrox/rox/generated/internalapi/scanner/v4"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

@@ -9,7 +9,6 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/pkg/errors"
 	clusterDataStore "github.com/stackrox/rox/central/cluster/datastore"
@@ -38,6 +37,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/templates"
 	"github.com/stackrox/rox/pkg/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gopkg.in/robfig/cron.v2"
 )
 

@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	ptypes "github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/stackrox/rox/central/cve/converter/v2"
 	"github.com/stackrox/rox/central/graphql/resolvers/loaders"
@@ -24,6 +23,7 @@ import (
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func testDeployments() []*storage.Deployment {

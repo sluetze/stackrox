@@ -1,6 +1,6 @@
 package protoutils
 
-import "github.com/gogo/protobuf/proto"
+import proto "github.com/CrowdStrike/csproto"
 
 // SliceContains returns whether the given slice of proto objects contains the given proto object.
 func SliceContains[T proto.Message](msg T, slice []T) bool {

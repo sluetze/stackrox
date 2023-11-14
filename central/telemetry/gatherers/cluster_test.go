@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	clusterMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
 	deploymentMocks "github.com/stackrox/rox/central/deployment/datastore/mocks"
 	namespaceMocks "github.com/stackrox/rox/central/namespace/datastore/mocks"
@@ -13,6 +12,7 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

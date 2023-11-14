@@ -3,10 +3,10 @@ package resolvers
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func init() {

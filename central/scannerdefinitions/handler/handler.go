@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	blob "github.com/stackrox/rox/central/blob/datastore"
 	"github.com/stackrox/rox/central/blob/snapshot"
@@ -30,6 +29,7 @@ import (
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/utils"
 	"google.golang.org/grpc/codes"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

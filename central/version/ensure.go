@@ -3,14 +3,14 @@ package version
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
-	timestamp "github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	vStore "github.com/stackrox/rox/central/version/store"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/migrations"
 	versionUtil "github.com/stackrox/rox/pkg/version"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

@@ -1,7 +1,7 @@
 package protoutils
 
 import (
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/golang/protobuf/jsonpb"
 )
 

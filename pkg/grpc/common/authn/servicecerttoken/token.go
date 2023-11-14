@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	ctTLS "github.com/google/certificate-transparency-go/tls"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/pkg/cryptoutils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ParseToken parses a ServiceCert token and returns the parsed x509 certificate. Note that the returned certificate is

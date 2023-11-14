@@ -1,7 +1,7 @@
 package indexer
 
 import (
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/pkg/sync"
 )
 

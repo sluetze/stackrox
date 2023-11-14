@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/jackc/pgx/v5"
 	"github.com/stackrox/rox/central/cve/cluster/datastore/store"
 	"github.com/stackrox/rox/central/cve/converter/v2"
@@ -18,6 +17,7 @@ import (
 	pgSearch "github.com/stackrox/rox/pkg/search/postgres"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/uuid"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

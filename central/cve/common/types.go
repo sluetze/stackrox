@@ -1,6 +1,6 @@
 package common
 
-import "github.com/gogo/protobuf/types"
+import "google.golang.org/protobuf/types/known/timestamppb"
 
 // CVESuppressionCache holds suppressed vulnerabilities' information.
 type CVESuppressionCache map[string]SuppressionCacheEntry

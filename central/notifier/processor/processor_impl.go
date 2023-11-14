@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	timestamp "github.com/gogo/protobuf/types"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/integrationhealth"
@@ -12,6 +11,7 @@ import (
 	pkgNotifier "github.com/stackrox/rox/pkg/notifier"
 	"github.com/stackrox/rox/pkg/notifiers"
 	"github.com/stackrox/rox/pkg/set"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

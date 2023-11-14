@@ -3,9 +3,9 @@ package store
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ClusterStore stores the network edges per cluster.

@@ -3,7 +3,7 @@ package singletonstore
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/pkg/bolthelper"
 	"go.etcd.io/bbolt"

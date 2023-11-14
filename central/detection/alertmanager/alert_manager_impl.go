@@ -4,8 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
-	ptypes "github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	alertDataStore "github.com/stackrox/rox/central/alert/datastore"
 	"github.com/stackrox/rox/central/detection/runtime"
@@ -19,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/protoutils"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/set"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const maxRunTimeViolationsPerAlert = 40

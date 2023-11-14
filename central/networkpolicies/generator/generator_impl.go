@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	dDS "github.com/stackrox/rox/central/deployment/datastore"
 	nsDS "github.com/stackrox/rox/central/namespace/datastore"
@@ -23,6 +22,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

@@ -3,7 +3,7 @@ package proto
 import (
 	"sync/atomic"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/pkg/storecache"
 )
 

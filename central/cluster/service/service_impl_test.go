@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	datastoreMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
 	configDatastoreMocks "github.com/stackrox/rox/central/config/datastore/mocks"
 	probeSourcesMocks "github.com/stackrox/rox/central/probesources/mocks"
@@ -17,6 +16,7 @@ import (
 	"github.com/stackrox/rox/pkg/version/testutils"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestClusterService(t *testing.T) {

@@ -3,9 +3,9 @@ package predicate
 import (
 	"reflect"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/search/predicate/basematchers"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func createTimestampPredicate(fullPath, value string) (internalPredicate, error) {

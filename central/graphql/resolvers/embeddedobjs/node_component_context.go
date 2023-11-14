@@ -3,8 +3,8 @@ package embeddedobjs
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // nodeComponentContextKey is the key for the *storage.EmbeddedNodeScanComponent value in the context.

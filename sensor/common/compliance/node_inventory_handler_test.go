@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
@@ -15,6 +14,7 @@ import (
 	"github.com/stackrox/rox/sensor/common"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/goleak"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestNodeInventoryHandler(t *testing.T) {

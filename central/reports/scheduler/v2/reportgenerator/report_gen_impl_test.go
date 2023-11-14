@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	ptypes "github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	blobDS "github.com/stackrox/rox/central/blob/datastore"
 	clusterDSMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
@@ -33,6 +32,7 @@ import (
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestEnhancedReporting(t *testing.T) {

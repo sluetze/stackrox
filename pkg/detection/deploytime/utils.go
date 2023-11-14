@@ -3,10 +3,10 @@ package deploytime
 import (
 	"fmt"
 
-	ptypes "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/alert/convert"
 	"github.com/stackrox/rox/pkg/uuid"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Label key used for unsatisfiable node constraint enforcement.

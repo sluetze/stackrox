@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/jackc/pgx/v5"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/migrator/migrations/n_30_to_n_31_postgres_network_flows/store"
@@ -19,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // This Flow is custom to match the existing interface and how the functionality works through the system.

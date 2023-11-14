@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	blobDSMocks "github.com/stackrox/rox/central/blob/datastore/mocks"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestDownloadableReportPruning(t *testing.T) {

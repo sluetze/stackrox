@@ -3,8 +3,8 @@ package readable
 import (
 	"time"
 
-	ptypes "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/pkg/logging"
+	ptypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

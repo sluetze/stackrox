@@ -5,12 +5,12 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	pkgNet "github.com/stackrox/rox/pkg/net"
 	"github.com/stackrox/rox/pkg/networkgraph"
 	"github.com/stackrox/rox/pkg/networkgraph/externalsrcs"
 	"github.com/stackrox/rox/pkg/utils"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // GetDeploymentNetworkEntity returns a deployment type network entity.

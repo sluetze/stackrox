@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/alert/datastore/internal/search"
 	"github.com/stackrox/rox/central/alert/datastore/internal/store"
@@ -21,6 +20,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	searchCommon "github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/sync"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

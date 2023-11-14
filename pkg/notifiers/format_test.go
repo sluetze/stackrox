@@ -5,7 +5,6 @@ import (
 	"testing"
 	"text/template"
 
-	types2 "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/fixtures"
 	"github.com/stackrox/rox/pkg/fixtures/fixtureconsts"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/timeutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	types2 "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

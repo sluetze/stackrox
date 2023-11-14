@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/stackrox/rox/pkg/grpc/errors"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

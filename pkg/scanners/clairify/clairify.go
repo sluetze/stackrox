@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff/v3"
-	gogoProto "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
@@ -34,6 +33,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
+	gogoProto "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

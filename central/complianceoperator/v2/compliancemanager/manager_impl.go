@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/adhocore/gronx"
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	compIntegration "github.com/stackrox/rox/central/complianceoperator/v2/integration/datastore"
 	compScanSetting "github.com/stackrox/rox/central/complianceoperator/v2/scanconfigurations/datastore"
@@ -18,6 +17,7 @@ import (
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

@@ -14,7 +14,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/cluster/datastore"
@@ -51,6 +50,7 @@ import (
 	"github.com/stackrox/rox/pkg/telemetry/data"
 	"github.com/stackrox/rox/pkg/version"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type logsMode int

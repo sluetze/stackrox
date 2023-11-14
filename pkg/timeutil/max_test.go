@@ -3,8 +3,8 @@ package timeutil
 import (
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestMaxProtoValid(t *testing.T) {

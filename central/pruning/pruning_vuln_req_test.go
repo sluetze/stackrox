@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	protoTypes "github.com/gogo/protobuf/types"
 	configDS "github.com/stackrox/rox/central/config/datastore"
 	"github.com/stackrox/rox/central/vulnerabilityrequest/cache"
 	vulnReqDataStore "github.com/stackrox/rox/central/vulnerabilityrequest/datastore"
@@ -16,6 +15,7 @@ import (
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func timestampNowMinus(t time.Duration) *protoTypes.Timestamp {

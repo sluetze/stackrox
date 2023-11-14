@@ -3,7 +3,7 @@ package legacy
 import (
 	"context"
 
-	"github.com/gogo/protobuf/proto"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/stackrox/rox/generated/storage"
 	acDackBox "github.com/stackrox/rox/migrator/migrations/dackboxhelpers/activecomponent"
 	clusterDackBox "github.com/stackrox/rox/migrator/migrations/dackboxhelpers/cluster"

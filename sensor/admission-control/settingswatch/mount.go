@@ -6,8 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/gogo/protobuf/types"
+	proto "github.com/CrowdStrike/csproto"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
@@ -16,6 +15,7 @@ import (
 	"github.com/stackrox/rox/pkg/fileutils"
 	"github.com/stackrox/rox/pkg/gziputil"
 	"github.com/stackrox/rox/pkg/k8scfgwatch"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

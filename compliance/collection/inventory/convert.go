@@ -1,10 +1,10 @@
 package inventory
 
 import (
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/uuid"
 	scannerV1 "github.com/stackrox/scanner/generated/scanner/api/v1"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ToNodeInventory converts a NodeInventory response to a native storage.NodeInventory version

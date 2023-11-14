@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	protobufTypes "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	apiTokenStore "github.com/stackrox/rox/migrator/migrations/m_182_to_m_183_remove_default_scope_manager_role/apitokenstore"
 	groupStore "github.com/stackrox/rox/migrator/migrations/m_182_to_m_183_remove_default_scope_manager_role/groupstore"
@@ -20,6 +19,7 @@ import (
 	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stretchr/testify/suite"
+	protobufTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

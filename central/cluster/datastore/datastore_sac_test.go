@@ -6,7 +6,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
 	"github.com/stackrox/rox/pkg/fixtures"
@@ -18,6 +17,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/testutils"
 	searchPkg "github.com/stackrox/rox/pkg/search"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

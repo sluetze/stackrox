@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // FlowDataStore stores all of the flows for a single cluster.

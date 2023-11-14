@@ -1,7 +1,6 @@
 package clairify
 
 import (
-	gogoProto "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/clair"
 	"github.com/stackrox/rox/pkg/cvss/cvssv2"
@@ -11,6 +10,7 @@ import (
 	"github.com/stackrox/rox/pkg/scans"
 	"github.com/stackrox/rox/pkg/stringutils"
 	v1 "github.com/stackrox/scanner/generated/scanner/api/v1"
+	gogoProto "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func convertNodeToVulnRequest(node *storage.Node, inventory *storage.NodeInventory) *v1.GetNodeVulnerabilitiesRequest {

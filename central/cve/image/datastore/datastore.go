@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/cve/common"
 	"github.com/stackrox/rox/central/cve/image/datastore/search"
 	"github.com/stackrox/rox/central/cve/image/datastore/store"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/concurrency"
 	"github.com/stackrox/rox/pkg/postgres"
 	searchPkg "github.com/stackrox/rox/pkg/search"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // DataStore is an intermediary to CVE storage.

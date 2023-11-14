@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/facebookincubator/nvdtools/cvefeed/nvd/schema"
-	protoTypes "github.com/gogo/protobuf/types"
 	"github.com/graph-gophers/graphql-go"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/central/cve/converter/utils"
@@ -18,6 +17,7 @@ import (
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/search/predicate"
 	"github.com/stackrox/rox/pkg/search/scoped"
+	protoTypes "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

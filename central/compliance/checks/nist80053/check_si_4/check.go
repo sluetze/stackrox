@@ -3,9 +3,9 @@ package checksi4
 import (
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/compliance/framework"
 	pkgFramework "github.com/stackrox/rox/pkg/compliance/framework"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/globaldb"
 	pgStore "github.com/stackrox/rox/central/installation/store/postgres"
 	"github.com/stackrox/rox/generated/storage"
@@ -11,6 +10,7 @@ import (
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/uuid"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

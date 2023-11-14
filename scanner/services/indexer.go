@@ -5,7 +5,6 @@ import (
 	"crypto/sha512"
 	"fmt"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/quay/claircore"
@@ -17,6 +16,7 @@ import (
 	"github.com/stackrox/rox/scanner/services/converters"
 	"github.com/stackrox/rox/scanner/services/validators"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type indexerService struct {

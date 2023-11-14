@@ -5,7 +5,6 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/gogo/protobuf/types"
 	pkgErr "github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
@@ -25,6 +24,7 @@ import (
 	"github.com/stackrox/rox/sensor/admission-control/errors"
 	"github.com/stackrox/rox/sensor/admission-control/resources"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	admission "k8s.io/api/admission/v1"
 )
 

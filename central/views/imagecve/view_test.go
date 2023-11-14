@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gogo/protobuf/types"
 	deploymentDS "github.com/stackrox/rox/central/deployment/datastore"
 	imageDS "github.com/stackrox/rox/central/image/datastore"
 	"github.com/stackrox/rox/central/views"
@@ -30,6 +29,7 @@ import (
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type testCase struct {

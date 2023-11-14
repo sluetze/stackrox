@@ -1,7 +1,6 @@
 package compliance
 
 import (
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/compliance/collection/command"
 	"github.com/stackrox/rox/compliance/collection/containerruntimes/crio"
 	"github.com/stackrox/rox/compliance/collection/file"
@@ -14,6 +13,7 @@ import (
 	"github.com/stackrox/rox/pkg/compliance/data"
 	"github.com/stackrox/rox/pkg/compliance/framework"
 	"github.com/stackrox/rox/pkg/logging"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var log = logging.LoggerForModule()

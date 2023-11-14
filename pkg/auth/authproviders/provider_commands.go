@@ -3,10 +3,10 @@ package authproviders
 import (
 	"context"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/auth/tokens"
 	"github.com/stackrox/rox/pkg/dberrors"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Commands that providers can execute.

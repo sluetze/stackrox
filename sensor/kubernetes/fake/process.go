@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"path/filepath"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

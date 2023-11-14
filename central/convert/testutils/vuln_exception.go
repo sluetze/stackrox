@@ -3,8 +3,8 @@ package testutils
 import (
 	"testing"
 
-	timestamp "github.com/gogo/protobuf/types"
 	v2 "github.com/stackrox/rox/generated/api/v2"
+	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
