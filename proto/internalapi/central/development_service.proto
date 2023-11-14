@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./central";
+option go_package = "central";
 option java_package = "io.stackrox.proto.internalapi.central";
 
 

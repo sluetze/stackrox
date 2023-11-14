@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./sensor";
+option go_package = "sensor";
 
 import "internalapi/compliance/compliance_data.proto";
 import "storage/cluster.proto";

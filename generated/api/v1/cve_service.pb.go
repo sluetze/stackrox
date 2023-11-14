@@ -6,11 +6,11 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -30,11 +30,11 @@ const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 type SuppressCVERequest struct {
 	// These are (NVD) vulnerability identifiers, `cve` field of `storage.CVE`, and *not* the `id` field.
 	// For example, CVE-2021-44832.
-	Cves                 []string        `protobuf:"bytes,1,rep,name=cves,proto3" json:"cves,omitempty"`
-	Duration             *types.Duration `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_unrecognized     []byte          `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
+	Cves                 []string             `protobuf:"bytes,1,rep,name=cves,proto3" json:"cves,omitempty"`
+	Duration             *durationpb.Duration `protobuf:"bytes,3,opt,name=duration,proto3" json:"duration,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
+	XXX_unrecognized     []byte               `json:"-"`
+	XXX_sizecache        int32                `json:"-"`
 }
 
 func (m *SuppressCVERequest) Reset()         { *m = SuppressCVERequest{} }
@@ -77,7 +77,7 @@ func (m *SuppressCVERequest) GetCves() []string {
 	return nil
 }
 
-func (m *SuppressCVERequest) GetDuration() *types.Duration {
+func (m *SuppressCVERequest) GetDuration() *durationpb.Duration {
 	if m != nil {
 		return m.Duration
 	}
@@ -781,7 +781,7 @@ func (m *SuppressCVERequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Duration == nil {
-				m.Duration = &types.Duration{}
+				m.Duration = &durationpb.Duration{}
 			}
 			if err := m.Duration.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

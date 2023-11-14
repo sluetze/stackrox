@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./central";
+option go_package = "central";
 
 import "google/protobuf/timestamp.proto";
 import "storage/process_listening_on_port.proto";

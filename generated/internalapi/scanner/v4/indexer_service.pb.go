@@ -6,11 +6,11 @@ package v4
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -390,7 +390,7 @@ type IndexerClient interface {
 	// GetIndexReport returns one index report.
 	GetIndexReport(ctx context.Context, in *GetIndexReportRequest, opts ...grpc.CallOption) (*IndexReport, error)
 	// HasIndexReport checks if an index report for the specified resource exists.
-	HasIndexReport(ctx context.Context, in *HasIndexReportRequest, opts ...grpc.CallOption) (*types.Empty, error)
+	HasIndexReport(ctx context.Context, in *HasIndexReportRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type indexerClient struct {
@@ -419,8 +419,8 @@ func (c *indexerClient) GetIndexReport(ctx context.Context, in *GetIndexReportRe
 	return out, nil
 }
 
-func (c *indexerClient) HasIndexReport(ctx context.Context, in *HasIndexReportRequest, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *indexerClient) HasIndexReport(ctx context.Context, in *HasIndexReportRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/scanner.v4.Indexer/HasIndexReport", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -435,7 +435,7 @@ type IndexerServer interface {
 	// GetIndexReport returns one index report.
 	GetIndexReport(context.Context, *GetIndexReportRequest) (*IndexReport, error)
 	// HasIndexReport checks if an index report for the specified resource exists.
-	HasIndexReport(context.Context, *HasIndexReportRequest) (*types.Empty, error)
+	HasIndexReport(context.Context, *HasIndexReportRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedIndexerServer can be embedded to have forward compatible implementations.
@@ -448,7 +448,7 @@ func (*UnimplementedIndexerServer) CreateIndexReport(ctx context.Context, req *C
 func (*UnimplementedIndexerServer) GetIndexReport(ctx context.Context, req *GetIndexReportRequest) (*IndexReport, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIndexReport not implemented")
 }
-func (*UnimplementedIndexerServer) HasIndexReport(ctx context.Context, req *HasIndexReportRequest) (*types.Empty, error) {
+func (*UnimplementedIndexerServer) HasIndexReport(ctx context.Context, req *HasIndexReportRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HasIndexReport not implemented")
 }
 

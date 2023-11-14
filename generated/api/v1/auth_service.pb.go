@@ -6,12 +6,12 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	storage "github.com/stackrox/rox/generated/storage"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -132,15 +132,15 @@ type AuthStatus struct {
 	// Types that are valid to be assigned to Id:
 	//	*AuthStatus_UserId
 	//	*AuthStatus_ServiceId
-	Id                   isAuthStatus_Id       `protobuf_oneof:"id"`
-	Expires              *types.Timestamp      `protobuf:"bytes,3,opt,name=expires,proto3" json:"expires,omitempty"`
-	RefreshUrl           string                `protobuf:"bytes,4,opt,name=refresh_url,json=refreshUrl,proto3" json:"refresh_url,omitempty"`
-	AuthProvider         *storage.AuthProvider `protobuf:"bytes,5,opt,name=auth_provider,json=authProvider,proto3" json:"auth_provider,omitempty"`
-	UserInfo             *storage.UserInfo     `protobuf:"bytes,6,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
-	UserAttributes       []*UserAttribute      `protobuf:"bytes,7,rep,name=user_attributes,json=userAttributes,proto3" json:"user_attributes,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
+	Id                   isAuthStatus_Id        `protobuf_oneof:"id"`
+	Expires              *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=expires,proto3" json:"expires,omitempty"`
+	RefreshUrl           string                 `protobuf:"bytes,4,opt,name=refresh_url,json=refreshUrl,proto3" json:"refresh_url,omitempty"`
+	AuthProvider         *storage.AuthProvider  `protobuf:"bytes,5,opt,name=auth_provider,json=authProvider,proto3" json:"auth_provider,omitempty"`
+	UserInfo             *storage.UserInfo      `protobuf:"bytes,6,opt,name=user_info,json=userInfo,proto3" json:"user_info,omitempty"`
+	UserAttributes       []*UserAttribute       `protobuf:"bytes,7,rep,name=user_attributes,json=userAttributes,proto3" json:"user_attributes,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
 }
 
 func (m *AuthStatus) Reset()         { *m = AuthStatus{} }
@@ -233,7 +233,7 @@ func (m *AuthStatus) GetServiceId() *storage.ServiceIdentity {
 	return nil
 }
 
-func (m *AuthStatus) GetExpires() *types.Timestamp {
+func (m *AuthStatus) GetExpires() *timestamppb.Timestamp {
 	if m != nil {
 		return m.Expires
 	}
@@ -2403,7 +2403,7 @@ func (m *AuthStatus) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Expires == nil {
-				m.Expires = &types.Timestamp{}
+				m.Expires = &timestamppb.Timestamp{}
 			}
 			if err := m.Expires.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

@@ -6,11 +6,11 @@ package central
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -748,7 +748,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConnInterface.NewStream.
 type SensorUpgradeControlServiceClient interface {
 	UpgradeCheckInFromUpgrader(ctx context.Context, in *UpgradeCheckInFromUpgraderRequest, opts ...grpc.CallOption) (*UpgradeCheckInFromUpgraderResponse, error)
-	UpgradeCheckInFromSensor(ctx context.Context, in *UpgradeCheckInFromSensorRequest, opts ...grpc.CallOption) (*types.Empty, error)
+	UpgradeCheckInFromSensor(ctx context.Context, in *UpgradeCheckInFromSensorRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type sensorUpgradeControlServiceClient struct {
@@ -768,8 +768,8 @@ func (c *sensorUpgradeControlServiceClient) UpgradeCheckInFromUpgrader(ctx conte
 	return out, nil
 }
 
-func (c *sensorUpgradeControlServiceClient) UpgradeCheckInFromSensor(ctx context.Context, in *UpgradeCheckInFromSensorRequest, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *sensorUpgradeControlServiceClient) UpgradeCheckInFromSensor(ctx context.Context, in *UpgradeCheckInFromSensorRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/central.SensorUpgradeControlService/UpgradeCheckInFromSensor", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -780,7 +780,7 @@ func (c *sensorUpgradeControlServiceClient) UpgradeCheckInFromSensor(ctx context
 // SensorUpgradeControlServiceServer is the server API for SensorUpgradeControlService service.
 type SensorUpgradeControlServiceServer interface {
 	UpgradeCheckInFromUpgrader(context.Context, *UpgradeCheckInFromUpgraderRequest) (*UpgradeCheckInFromUpgraderResponse, error)
-	UpgradeCheckInFromSensor(context.Context, *UpgradeCheckInFromSensorRequest) (*types.Empty, error)
+	UpgradeCheckInFromSensor(context.Context, *UpgradeCheckInFromSensorRequest) (*emptypb.Empty, error)
 }
 
 // UnimplementedSensorUpgradeControlServiceServer can be embedded to have forward compatible implementations.
@@ -790,7 +790,7 @@ type UnimplementedSensorUpgradeControlServiceServer struct {
 func (*UnimplementedSensorUpgradeControlServiceServer) UpgradeCheckInFromUpgrader(ctx context.Context, req *UpgradeCheckInFromUpgraderRequest) (*UpgradeCheckInFromUpgraderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpgradeCheckInFromUpgrader not implemented")
 }
-func (*UnimplementedSensorUpgradeControlServiceServer) UpgradeCheckInFromSensor(ctx context.Context, req *UpgradeCheckInFromSensorRequest) (*types.Empty, error) {
+func (*UnimplementedSensorUpgradeControlServiceServer) UpgradeCheckInFromSensor(ctx context.Context, req *UpgradeCheckInFromSensorRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpgradeCheckInFromSensor not implemented")
 }
 

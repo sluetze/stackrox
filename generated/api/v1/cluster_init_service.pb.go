@@ -6,12 +6,12 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	storage "github.com/stackrox/rox/generated/storage"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -32,9 +32,9 @@ type InitBundleMeta struct {
 	Id                   string                            `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name                 string                            `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	ImpactedClusters     []*InitBundleMeta_ImpactedCluster `protobuf:"bytes,6,rep,name=impacted_clusters,json=impactedClusters,proto3" json:"impacted_clusters,omitempty"`
-	CreatedAt            *types.Timestamp                  `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	CreatedAt            *timestamppb.Timestamp            `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	CreatedBy            *storage.User                     `protobuf:"bytes,4,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
-	ExpiresAt            *types.Timestamp                  `protobuf:"bytes,5,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	ExpiresAt            *timestamppb.Timestamp            `protobuf:"bytes,5,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                          `json:"-"`
 	XXX_unrecognized     []byte                            `json:"-"`
 	XXX_sizecache        int32                             `json:"-"`
@@ -94,7 +94,7 @@ func (m *InitBundleMeta) GetImpactedClusters() []*InitBundleMeta_ImpactedCluster
 	return nil
 }
 
-func (m *InitBundleMeta) GetCreatedAt() *types.Timestamp {
+func (m *InitBundleMeta) GetCreatedAt() *timestamppb.Timestamp {
 	if m != nil {
 		return m.CreatedAt
 	}
@@ -108,7 +108,7 @@ func (m *InitBundleMeta) GetCreatedBy() *storage.User {
 	return nil
 }
 
-func (m *InitBundleMeta) GetExpiresAt() *types.Timestamp {
+func (m *InitBundleMeta) GetExpiresAt() *timestamppb.Timestamp {
 	if m != nil {
 		return m.ExpiresAt
 	}
@@ -1773,7 +1773,7 @@ func (m *InitBundleMeta) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.CreatedAt == nil {
-				m.CreatedAt = &types.Timestamp{}
+				m.CreatedAt = &timestamppb.Timestamp{}
 			}
 			if err := m.CreatedAt.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1845,7 +1845,7 @@ func (m *InitBundleMeta) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.ExpiresAt == nil {
-				m.ExpiresAt = &types.Timestamp{}
+				m.ExpiresAt = &timestamppb.Timestamp{}
 			}
 			if err := m.ExpiresAt.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

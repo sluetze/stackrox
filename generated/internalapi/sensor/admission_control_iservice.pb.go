@@ -6,11 +6,11 @@ package sensor
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -252,7 +252,7 @@ const _ = grpc.SupportPackageIsVersion6
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConnInterface.NewStream.
 type AdmissionControlManagementServiceClient interface {
 	Communicate(ctx context.Context, opts ...grpc.CallOption) (AdmissionControlManagementService_CommunicateClient, error)
-	PolicyAlerts(ctx context.Context, in *AdmissionControlAlerts, opts ...grpc.CallOption) (*types.Empty, error)
+	PolicyAlerts(ctx context.Context, in *AdmissionControlAlerts, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type admissionControlManagementServiceClient struct {
@@ -294,8 +294,8 @@ func (x *admissionControlManagementServiceCommunicateClient) Recv() (*MsgToAdmis
 	return m, nil
 }
 
-func (c *admissionControlManagementServiceClient) PolicyAlerts(ctx context.Context, in *AdmissionControlAlerts, opts ...grpc.CallOption) (*types.Empty, error) {
-	out := new(types.Empty)
+func (c *admissionControlManagementServiceClient) PolicyAlerts(ctx context.Context, in *AdmissionControlAlerts, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/sensor.AdmissionControlManagementService/PolicyAlerts", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -306,7 +306,7 @@ func (c *admissionControlManagementServiceClient) PolicyAlerts(ctx context.Conte
 // AdmissionControlManagementServiceServer is the server API for AdmissionControlManagementService service.
 type AdmissionControlManagementServiceServer interface {
 	Communicate(AdmissionControlManagementService_CommunicateServer) error
-	PolicyAlerts(context.Context, *AdmissionControlAlerts) (*types.Empty, error)
+	PolicyAlerts(context.Context, *AdmissionControlAlerts) (*emptypb.Empty, error)
 }
 
 // UnimplementedAdmissionControlManagementServiceServer can be embedded to have forward compatible implementations.
@@ -316,7 +316,7 @@ type UnimplementedAdmissionControlManagementServiceServer struct {
 func (*UnimplementedAdmissionControlManagementServiceServer) Communicate(srv AdmissionControlManagementService_CommunicateServer) error {
 	return status.Errorf(codes.Unimplemented, "method Communicate not implemented")
 }
-func (*UnimplementedAdmissionControlManagementServiceServer) PolicyAlerts(ctx context.Context, req *AdmissionControlAlerts) (*types.Empty, error) {
+func (*UnimplementedAdmissionControlManagementServiceServer) PolicyAlerts(ctx context.Context, req *AdmissionControlAlerts) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PolicyAlerts not implemented")
 }
 

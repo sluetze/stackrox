@@ -6,12 +6,12 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	license "github.com/stackrox/rox/generated/shared/license"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -471,10 +471,10 @@ func (m *GetLicensesResponse) Clone() *GetLicensesResponse {
 }
 
 type GetActiveLicenseExpirationResponse struct {
-	ExpirationTime       *types.Timestamp `protobuf:"bytes,1,opt,name=expiration_time,json=expirationTime,proto3" json:"expiration_time,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+	ExpirationTime       *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=expiration_time,json=expirationTime,proto3" json:"expiration_time,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
 }
 
 func (m *GetActiveLicenseExpirationResponse) Reset()         { *m = GetActiveLicenseExpirationResponse{} }
@@ -510,7 +510,7 @@ func (m *GetActiveLicenseExpirationResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GetActiveLicenseExpirationResponse proto.InternalMessageInfo
 
-func (m *GetActiveLicenseExpirationResponse) GetExpirationTime() *types.Timestamp {
+func (m *GetActiveLicenseExpirationResponse) GetExpirationTime() *timestamppb.Timestamp {
 	if m != nil {
 		return m.ExpirationTime
 	}
@@ -1993,7 +1993,7 @@ func (m *GetActiveLicenseExpirationResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.ExpirationTime == nil {
-				m.ExpirationTime = &types.Timestamp{}
+				m.ExpirationTime = &timestamppb.Timestamp{}
 			}
 			if err := m.ExpirationTime.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

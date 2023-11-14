@@ -5,8 +5,8 @@ package licenseproto
 
 import (
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -187,14 +187,14 @@ func (m *License_Contact) Clone() *License_Contact {
 }
 
 type License_Metadata struct {
-	Id                   string           `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	SigningKeyId         string           `protobuf:"bytes,2,opt,name=signing_key_id,json=signingKeyId,proto3" json:"signing_key_id,omitempty"`
-	IssueDate            *types.Timestamp `protobuf:"bytes,3,opt,name=issue_date,json=issueDate,proto3" json:"issue_date,omitempty"`
-	LicensedForId        string           `protobuf:"bytes,4,opt,name=licensed_for_id,json=licensedForId,proto3" json:"licensed_for_id,omitempty"`
-	LicensedForName      string           `protobuf:"bytes,5,opt,name=licensed_for_name,json=licensedForName,proto3" json:"licensed_for_name,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+	Id                   string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	SigningKeyId         string                 `protobuf:"bytes,2,opt,name=signing_key_id,json=signingKeyId,proto3" json:"signing_key_id,omitempty"`
+	IssueDate            *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=issue_date,json=issueDate,proto3" json:"issue_date,omitempty"`
+	LicensedForId        string                 `protobuf:"bytes,4,opt,name=licensed_for_id,json=licensedForId,proto3" json:"licensed_for_id,omitempty"`
+	LicensedForName      string                 `protobuf:"bytes,5,opt,name=licensed_for_name,json=licensedForName,proto3" json:"licensed_for_name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
 }
 
 func (m *License_Metadata) Reset()         { *m = License_Metadata{} }
@@ -244,7 +244,7 @@ func (m *License_Metadata) GetSigningKeyId() string {
 	return ""
 }
 
-func (m *License_Metadata) GetIssueDate() *types.Timestamp {
+func (m *License_Metadata) GetIssueDate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.IssueDate
 	}
@@ -280,8 +280,8 @@ func (m *License_Metadata) Clone() *License_Metadata {
 }
 
 type License_Restrictions struct {
-	NotValidBefore *types.Timestamp `protobuf:"bytes,1,opt,name=not_valid_before,json=notValidBefore,proto3" json:"not_valid_before,omitempty"`
-	NotValidAfter  *types.Timestamp `protobuf:"bytes,2,opt,name=not_valid_after,json=notValidAfter,proto3" json:"not_valid_after,omitempty"`
+	NotValidBefore *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=not_valid_before,json=notValidBefore,proto3" json:"not_valid_before,omitempty"`
+	NotValidAfter  *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=not_valid_after,json=notValidAfter,proto3" json:"not_valid_after,omitempty"`
 	// URL for on-line license enforcement. Must be set unless allow_offline is true.
 	EnforcementUrl string `protobuf:"bytes,3,opt,name=enforcement_url,json=enforcementUrl,proto3" json:"enforcement_url,omitempty"`
 	// Allow offline use (i.e., no online license enforcement).
@@ -338,14 +338,14 @@ func (m *License_Restrictions) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_License_Restrictions proto.InternalMessageInfo
 
-func (m *License_Restrictions) GetNotValidBefore() *types.Timestamp {
+func (m *License_Restrictions) GetNotValidBefore() *timestamppb.Timestamp {
 	if m != nil {
 		return m.NotValidBefore
 	}
 	return nil
 }
 
-func (m *License_Restrictions) GetNotValidAfter() *types.Timestamp {
+func (m *License_Restrictions) GetNotValidAfter() *timestamppb.Timestamp {
 	if m != nil {
 		return m.NotValidAfter
 	}
@@ -1402,7 +1402,7 @@ func (m *License_Metadata) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.IssueDate == nil {
-				m.IssueDate = &types.Timestamp{}
+				m.IssueDate = &timestamppb.Timestamp{}
 			}
 			if err := m.IssueDate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1553,7 +1553,7 @@ func (m *License_Restrictions) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.NotValidBefore == nil {
-				m.NotValidBefore = &types.Timestamp{}
+				m.NotValidBefore = &timestamppb.Timestamp{}
 			}
 			if err := m.NotValidBefore.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -1589,7 +1589,7 @@ func (m *License_Restrictions) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.NotValidAfter == nil {
-				m.NotValidAfter = &types.Timestamp{}
+				m.NotValidAfter = &timestamppb.Timestamp{}
 			}
 			if err := m.NotValidAfter.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

@@ -6,12 +6,12 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	storage "github.com/stackrox/rox/generated/storage"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -95,10 +95,10 @@ func (m *GetIntegrationHealthResponse) Clone() *GetIntegrationHealthResponse {
 }
 
 type VulnDefinitionsInfo struct {
-	LastUpdatedTimestamp *types.Timestamp `protobuf:"bytes,1,opt,name=last_updated_timestamp,json=lastUpdatedTimestamp,proto3" json:"last_updated_timestamp,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
-	XXX_unrecognized     []byte           `json:"-"`
-	XXX_sizecache        int32            `json:"-"`
+	LastUpdatedTimestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=last_updated_timestamp,json=lastUpdatedTimestamp,proto3" json:"last_updated_timestamp,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}               `json:"-"`
+	XXX_unrecognized     []byte                 `json:"-"`
+	XXX_sizecache        int32                  `json:"-"`
 }
 
 func (m *VulnDefinitionsInfo) Reset()         { *m = VulnDefinitionsInfo{} }
@@ -134,7 +134,7 @@ func (m *VulnDefinitionsInfo) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_VulnDefinitionsInfo proto.InternalMessageInfo
 
-func (m *VulnDefinitionsInfo) GetLastUpdatedTimestamp() *types.Timestamp {
+func (m *VulnDefinitionsInfo) GetLastUpdatedTimestamp() *timestamppb.Timestamp {
 	if m != nil {
 		return m.LastUpdatedTimestamp
 	}
@@ -696,7 +696,7 @@ func (m *VulnDefinitionsInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.LastUpdatedTimestamp == nil {
-				m.LastUpdatedTimestamp = &types.Timestamp{}
+				m.LastUpdatedTimestamp = &timestamppb.Timestamp{}
 			}
 			if err := m.LastUpdatedTimestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

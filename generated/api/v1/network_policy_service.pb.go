@@ -6,12 +6,12 @@ package v1
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	storage "github.com/stackrox/rox/generated/storage"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1181,7 +1181,7 @@ type GenerateNetworkPoliciesRequest struct {
 	ClusterId            string                                                    `protobuf:"bytes,1,opt,name=cluster_id,json=clusterId,proto3" json:"cluster_id,omitempty"`
 	Query                string                                                    `protobuf:"bytes,2,opt,name=query,proto3" json:"query,omitempty"`
 	DeleteExisting       GenerateNetworkPoliciesRequest_DeleteExistingPoliciesMode `protobuf:"varint,3,opt,name=delete_existing,json=deleteExisting,proto3,enum=v1.GenerateNetworkPoliciesRequest_DeleteExistingPoliciesMode" json:"delete_existing,omitempty"`
-	NetworkDataSince     *types.Timestamp                                          `protobuf:"bytes,4,opt,name=network_data_since,json=networkDataSince,proto3" json:"network_data_since,omitempty"`
+	NetworkDataSince     *timestamppb.Timestamp                                    `protobuf:"bytes,4,opt,name=network_data_since,json=networkDataSince,proto3" json:"network_data_since,omitempty"`
 	IncludePorts         bool                                                      `protobuf:"varint,5,opt,name=include_ports,json=includePorts,proto3" json:"include_ports,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                                                  `json:"-"`
 	XXX_unrecognized     []byte                                                    `json:"-"`
@@ -1242,7 +1242,7 @@ func (m *GenerateNetworkPoliciesRequest) GetDeleteExisting() GenerateNetworkPoli
 	return GenerateNetworkPoliciesRequest_UNKNOWN
 }
 
-func (m *GenerateNetworkPoliciesRequest) GetNetworkDataSince() *types.Timestamp {
+func (m *GenerateNetworkPoliciesRequest) GetNetworkDataSince() *timestamppb.Timestamp {
 	if m != nil {
 		return m.NetworkDataSince
 	}
@@ -6982,7 +6982,7 @@ func (m *GenerateNetworkPoliciesRequest) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.NetworkDataSince == nil {
-				m.NetworkDataSince = &types.Timestamp{}
+				m.NetworkDataSince = &timestamppb.Timestamp{}
 			}
 			if err := m.NetworkDataSince.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

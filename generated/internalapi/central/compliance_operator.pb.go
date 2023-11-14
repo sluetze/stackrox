@@ -5,8 +5,8 @@ package central
 
 import (
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1751,7 +1751,7 @@ type ComplianceOperatorCheckResultV2 struct {
 	Instructions         string                                      `protobuf:"bytes,8,opt,name=instructions,proto3" json:"instructions,omitempty"`
 	Labels               map[string]string                           `protobuf:"bytes,9,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	Annotations          map[string]string                           `protobuf:"bytes,10,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	CreatedTime          *types.Timestamp                            `protobuf:"bytes,11,opt,name=created_time,json=createdTime,proto3" json:"created_time,omitempty"`
+	CreatedTime          *timestamppb.Timestamp                      `protobuf:"bytes,11,opt,name=created_time,json=createdTime,proto3" json:"created_time,omitempty"`
 	Standard             string                                      `protobuf:"bytes,12,opt,name=standard,proto3" json:"standard,omitempty"`
 	Control              string                                      `protobuf:"bytes,13,opt,name=control,proto3" json:"control,omitempty"`
 	ScanName             string                                      `protobuf:"bytes,14,opt,name=scan_name,json=scanName,proto3" json:"scan_name,omitempty"`
@@ -1864,7 +1864,7 @@ func (m *ComplianceOperatorCheckResultV2) GetAnnotations() map[string]string {
 	return nil
 }
 
-func (m *ComplianceOperatorCheckResultV2) GetCreatedTime() *types.Timestamp {
+func (m *ComplianceOperatorCheckResultV2) GetCreatedTime() *timestamppb.Timestamp {
 	if m != nil {
 		return m.CreatedTime
 	}
@@ -7122,7 +7122,7 @@ func (m *ComplianceOperatorCheckResultV2) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.CreatedTime == nil {
-				m.CreatedTime = &types.Timestamp{}
+				m.CreatedTime = &timestamppb.Timestamp{}
 			}
 			if err := m.CreatedTime.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package tools;
 
-option go_package = "./tools";
+option go_package = "tools";
 
 import "google/protobuf/descriptor.proto";
 

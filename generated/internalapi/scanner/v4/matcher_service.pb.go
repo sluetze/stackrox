@@ -6,11 +6,12 @@ package v4
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/gogo/protobuf/types"
 	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -97,10 +98,10 @@ func (m *GetVulnerabilitiesRequest) Clone() *GetVulnerabilitiesRequest {
 }
 
 type Metadata struct {
-	LastVulnerabilityUpdate *types.Timestamp `protobuf:"bytes,1,opt,name=LastVulnerabilityUpdate,proto3" json:"LastVulnerabilityUpdate,omitempty"`
-	XXX_NoUnkeyedLiteral    struct{}         `json:"-"`
-	XXX_unrecognized        []byte           `json:"-"`
-	XXX_sizecache           int32            `json:"-"`
+	LastVulnerabilityUpdate *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=LastVulnerabilityUpdate,proto3" json:"LastVulnerabilityUpdate,omitempty"`
+	XXX_NoUnkeyedLiteral    struct{}               `json:"-"`
+	XXX_unrecognized        []byte                 `json:"-"`
+	XXX_sizecache           int32                  `json:"-"`
 }
 
 func (m *Metadata) Reset()         { *m = Metadata{} }
@@ -136,7 +137,7 @@ func (m *Metadata) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Metadata proto.InternalMessageInfo
 
-func (m *Metadata) GetLastVulnerabilityUpdate() *types.Timestamp {
+func (m *Metadata) GetLastVulnerabilityUpdate() *timestamppb.Timestamp {
 	if m != nil {
 		return m.LastVulnerabilityUpdate
 	}
@@ -207,7 +208,7 @@ type MatcherClient interface {
 	// GetVulnerabilities returns a VulnerabilityReport for a previously indexed manifest.
 	GetVulnerabilities(ctx context.Context, in *GetVulnerabilitiesRequest, opts ...grpc.CallOption) (*VulnerabilityReport, error)
 	// GetMetadata returns information on vulnerability metadata, ek.g., last update timestamp.
-	GetMetadata(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*Metadata, error)
+	GetMetadata(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Metadata, error)
 }
 
 type matcherClient struct {
@@ -227,7 +228,7 @@ func (c *matcherClient) GetVulnerabilities(ctx context.Context, in *GetVulnerabi
 	return out, nil
 }
 
-func (c *matcherClient) GetMetadata(ctx context.Context, in *types.Empty, opts ...grpc.CallOption) (*Metadata, error) {
+func (c *matcherClient) GetMetadata(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*Metadata, error) {
 	out := new(Metadata)
 	err := c.cc.Invoke(ctx, "/scanner.v4.Matcher/GetMetadata", in, out, opts...)
 	if err != nil {
@@ -241,7 +242,7 @@ type MatcherServer interface {
 	// GetVulnerabilities returns a VulnerabilityReport for a previously indexed manifest.
 	GetVulnerabilities(context.Context, *GetVulnerabilitiesRequest) (*VulnerabilityReport, error)
 	// GetMetadata returns information on vulnerability metadata, ek.g., last update timestamp.
-	GetMetadata(context.Context, *types.Empty) (*Metadata, error)
+	GetMetadata(context.Context, *emptypb.Empty) (*Metadata, error)
 }
 
 // UnimplementedMatcherServer can be embedded to have forward compatible implementations.
@@ -251,7 +252,7 @@ type UnimplementedMatcherServer struct {
 func (*UnimplementedMatcherServer) GetVulnerabilities(ctx context.Context, req *GetVulnerabilitiesRequest) (*VulnerabilityReport, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVulnerabilities not implemented")
 }
-func (*UnimplementedMatcherServer) GetMetadata(ctx context.Context, req *types.Empty) (*Metadata, error) {
+func (*UnimplementedMatcherServer) GetMetadata(ctx context.Context, req *emptypb.Empty) (*Metadata, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetadata not implemented")
 }
 
@@ -278,7 +279,7 @@ func _Matcher_GetVulnerabilities_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _Matcher_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(types.Empty)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -290,7 +291,7 @@ func _Matcher_GetMetadata_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/scanner.v4.Matcher/GetMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MatcherServer).GetMetadata(ctx, req.(*types.Empty))
+		return srv.(MatcherServer).GetMetadata(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -628,7 +629,7 @@ func (m *Metadata) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.LastVulnerabilityUpdate == nil {
-				m.LastVulnerabilityUpdate = &types.Timestamp{}
+				m.LastVulnerabilityUpdate = &timestamppb.Timestamp{}
 			}
 			if err := m.LastVulnerabilityUpdate.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
