@@ -1,22 +1,22 @@
 syntax = "proto3";
 
-option go_package = "storage";
+option go_package = "./storage";
 option java_package = "io.stackrox.proto.storage";
 
 import "google/protobuf/timestamp.proto";
-import "gogoproto/gogo.proto";
+import "tools/ext.proto";
 import "storage/traits.proto";
 
 package storage;
 
 // Next Tag: 15.
 message AuthProvider {
-    string id                  = 1 [(gogoproto.moretags) = 'sql:"pk"'];
-    string name                = 2 [(gogoproto.moretags) = 'sql:"unique"'];
+    string id                  = 1 [(tools.moretags) = 'sql:"pk"'];
+    string name                = 2 [(tools.moretags) = 'sql:"unique"'];
     string type                = 3;
     string ui_endpoint         = 4;
     bool enabled               = 5;
-    map<string, string> config = 6 [(gogoproto.moretags) = 'scrub:"map-values"'];
+    map<string, string> config = 6 [(tools.moretags) = 'scrub:"map-values"'];
     // The login URL will be provided by the backend, and may not be specified in a request.
     string login_url = 7;
     bool validated   = 8 [deprecated = true];

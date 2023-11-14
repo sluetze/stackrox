@@ -1,16 +1,16 @@
 syntax = "proto3";
 
-option go_package = "storage";
+option go_package = "./storage";
 option java_package = "io.stackrox.proto.storage";
 
-import "gogoproto/gogo.proto";
+import "tools/ext.proto";
 import "storage/role.proto";
 
 package storage;
 
 message SlimUser {
-    string id    = 1 [(gogoproto.moretags) = 'search:"User ID"'];
-    string name  = 2 [(gogoproto.moretags) = 'search:"User Name"'];
+    string id    = 1 [(tools.moretags) = 'search:"User ID"'];
+    string name  = 2 [(tools.moretags) = 'search:"User Name"'];
 }
 
 // User is an object that allows us to track the roles a user is tied to, and how they logged in.

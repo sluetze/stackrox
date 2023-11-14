@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "sensor";
+option go_package = "./sensor";
 option cc_enable_arenas = true;
 
 import "google/protobuf/timestamp.proto";

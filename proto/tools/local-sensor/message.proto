@@ -2,6 +2,8 @@ syntax = "proto3";
 
 import "storage/policy.proto";
 
+option go_package = "./local-sensor";
+
 package localSensor;
 
 message LocalSensorPolicies {

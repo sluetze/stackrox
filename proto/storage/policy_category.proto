@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-option go_package = "storage";
+option go_package = "./storage";
 option cc_enable_arenas = true;
 option java_package = "io.stackrox.proto.storage";
 
-import "gogoproto/gogo.proto";
+import "tools/ext.proto";
 
 package storage;
 
 message PolicyCategory {
-    string id       = 1 [(gogoproto.moretags) = 'sql:"pk"'];
-    string name     = 2 [(gogoproto.moretags) = 'search:"Policy Category,store,hidden" sql:"unique"'];
+    string id       = 1 [(tools.moretags) = 'sql:"pk"'];
+    string name     = 2 [(tools.moretags) = 'search:"Policy Category,store,hidden" sql:"unique"'];
     bool isDefault  = 3 ;
 }
