@@ -14,7 +14,7 @@ module.exports = {
     viewportHeight: 850, // Viewport options
     viewportWidth: 1440, // Viewport options
 
-    retries: 5
+    retries: 5,
     pageLoadTimeout: 1000000,
     requestTimeout: 1000000,
     responseTimeout: 1000000,
