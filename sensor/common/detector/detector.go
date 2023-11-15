@@ -573,6 +573,10 @@ func (d *detectorImpl) getNetworkFlowEntityDetails(info *storage.NetworkEntityIn
 		return networkEntityDetails{
 			name: networkgraph.InternetExternalSourceName,
 		}, nil
+	case storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE:
+		return networkEntityDetails{
+			name: networkgraph.InternalUnknownSourceName,
+		}, nil
 	default:
 		return networkEntityDetails{}, errors.Errorf("Unsupported network entity type: %q", info.GetType())
 	}
