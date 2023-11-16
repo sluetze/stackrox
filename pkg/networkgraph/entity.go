@@ -17,7 +17,7 @@ var (
 		storage.NetworkEntityInfo_INTERNET: func(info *storage.NetworkEntityInfo) string {
 			return InternetExternalSourceName
 		},
-		storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE: func(info *storage.NetworkEntityInfo) string {
+		storage.NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY: func(info *storage.NetworkEntityInfo) string {
 			return InternalUnknownSourceName
 		},
 	}
@@ -70,7 +70,7 @@ func InternetEntity() Entity {
 func InternalUnknownEntity() Entity {
 	return Entity{
 		ID:   InternalUnknownSourceID,
-		Type: storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE,
+		Type: storage.NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY,
 	}
 }
 

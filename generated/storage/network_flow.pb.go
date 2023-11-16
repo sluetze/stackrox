@@ -72,7 +72,7 @@ const (
 	NetworkEntityInfo_INTERNET               NetworkEntityInfo_Type = 2
 	NetworkEntityInfo_LISTEN_ENDPOINT        NetworkEntityInfo_Type = 3
 	NetworkEntityInfo_EXTERNAL_SOURCE        NetworkEntityInfo_Type = 4
-	NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE NetworkEntityInfo_Type = 5
+	NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY NetworkEntityInfo_Type = 5
 )
 
 var NetworkEntityInfo_Type_name = map[int32]string{
@@ -81,7 +81,7 @@ var NetworkEntityInfo_Type_name = map[int32]string{
 	2: "INTERNET",
 	3: "LISTEN_ENDPOINT",
 	4: "EXTERNAL_SOURCE",
-	5: "UKNOWN_INTERNAL_SOURCE",
+	5: "UKNOWN_INTERNAL_ENTITY",
 }
 
 var NetworkEntityInfo_Type_value = map[string]int32{
@@ -90,7 +90,7 @@ var NetworkEntityInfo_Type_value = map[string]int32{
 	"INTERNET":               2,
 	"LISTEN_ENDPOINT":        3,
 	"EXTERNAL_SOURCE":        4,
-	"UKNOWN_INTERNAL_SOURCE": 5,
+	"UKNOWN_INTERNAL_ENTITY": 5,
 }
 
 func (x NetworkEntityInfo_Type) String() string {

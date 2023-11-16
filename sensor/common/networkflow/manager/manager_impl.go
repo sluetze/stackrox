@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/gogo/protobuf/types"
@@ -482,16 +481,6 @@ func (m *networkFlowManager) enrichConnection(conn *connection, status *connStat
 					Entity:         m.resolveEntityType(conn),
 					ContainerPorts: []uint16{port},
 				},
-			}
-			// TODO(ROX-20847): Adjust those log lines to include "Uknown Internal Entities"
-			if conn.incoming {
-				log.Debugf("Incoming connection to container %s/%s from %s:%s. "+
-					"Marking it as 'External Entities' in the network graph.",
-					container.Namespace, container.ContainerName, conn.remote.IPAndPort.String(), strconv.Itoa(int(port)))
-			} else {
-				log.Debugf("Outgoing connection from container %s/%s to %s. "+
-					"Marking it as 'External Entities' in the network graph.",
-					container.Namespace, container.ContainerName, conn.remote.IPAndPort.String())
 			}
 		} else {
 			lookupResults = []clusterentities.LookupResult{

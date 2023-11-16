@@ -237,7 +237,7 @@ func (m *manager) lookUpPeerInfo(entity networkgraph.Entity) peerInfo {
 		}
 	case storage.NetworkEntityInfo_INTERNET:
 		return peerInfo{name: networkgraph.InternetExternalSourceName}
-	case storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE:
+	case storage.NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY:
 		return peerInfo{name: networkgraph.InternalUnknownSourceName}
 	default:
 		// Unsupported type.

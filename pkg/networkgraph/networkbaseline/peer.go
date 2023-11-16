@@ -30,7 +30,7 @@ var (
 		storage.NetworkEntityInfo_INTERNET: func(name string, info *storage.NetworkEntityInfo, _ EntityProperties) {
 			// No-op.
 		},
-		storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE: func(name string, info *storage.NetworkEntityInfo, _ EntityProperties) {
+		storage.NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY: func(name string, info *storage.NetworkEntityInfo, _ EntityProperties) {
 			// No-op.
 		},
 	}
@@ -40,7 +40,7 @@ var (
 		storage.NetworkEntityInfo_DEPLOYMENT:             {},
 		storage.NetworkEntityInfo_EXTERNAL_SOURCE:        {},
 		storage.NetworkEntityInfo_INTERNET:               {},
-		storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE: {},
+		storage.NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY: {},
 	}
 )
 

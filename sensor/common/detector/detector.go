@@ -573,7 +573,7 @@ func (d *detectorImpl) getNetworkFlowEntityDetails(info *storage.NetworkEntityIn
 		return networkEntityDetails{
 			name: networkgraph.InternetExternalSourceName,
 		}, nil
-	case storage.NetworkEntityInfo_UKNOWN_INTERNAL_SOURCE:
+	case storage.NetworkEntityInfo_UKNOWN_INTERNAL_ENTITY:
 		return networkEntityDetails{
 			name: networkgraph.InternalUnknownSourceName,
 		}, nil
