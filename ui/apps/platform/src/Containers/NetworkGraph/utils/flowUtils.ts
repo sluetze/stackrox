@@ -264,7 +264,7 @@ export function createFlowsFromGroupedDiffFlows(
         } else if (entity.type === 'INTERNET') {
             entityName = 'External entities';
             type = 'EXTERNAL_ENTITIES';
-        } else if (entity.type === 'EXTERNAL_SOURCE') {
+        } else if (entity.type === 'EXTERNAL_SOURCE' || entity.type === 'UKNOWN_INTERNAL_ENTITY') {
             entityName = entity.externalSource.name;
             type = 'CIDR_BLOCK';
         }

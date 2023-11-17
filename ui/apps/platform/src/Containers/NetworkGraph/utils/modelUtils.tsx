@@ -8,7 +8,7 @@ import {
     Node,
     OutEdges,
     L4Protocol,
-    EdgeProperties,
+    EdgeProperties, UnknownInternalEntityNetworkEntityInfo,
 } from 'types/networkFlow.proto';
 import { ensureExhaustive } from 'utils/type.utils';
 import {
@@ -112,7 +112,7 @@ function getDeploymentNodeModel(
 }
 
 function getExternalNodeModel(
-    entity: ExternalSourceNetworkEntityInfo | InternetNetworkEntityInfo,
+    entity: ExternalSourceNetworkEntityInfo | InternetNetworkEntityInfo | UnknownInternalEntityNetworkEntityInfo,
     outEdges: OutEdges
 ): ExternalEntitiesNodeModel | CIDRBlockNodeModel {
     const baseNode = getBaseNode(entity.id);
@@ -124,6 +124,7 @@ function getExternalNodeModel(
                 label: 'External Entities',
                 data: { ...entity, type: 'EXTERNAL_ENTITIES', outEdges, isFadedOut: false },
             };
+        case 'UKNOWN_INTERNAL_ENTITY':
         case 'EXTERNAL_SOURCE':
             // eslint-disable-next-line no-case-declarations
             const cidrBlockData: CIDRBlockData = {
@@ -159,6 +160,7 @@ function getNodeModel(
                 isExternallyConnected
             );
         case 'EXTERNAL_SOURCE':
+        case 'UKNOWN_INTERNAL_ENTITY':
         case 'INTERNET':
             return getExternalNodeModel(entity, outEdges);
         default:
