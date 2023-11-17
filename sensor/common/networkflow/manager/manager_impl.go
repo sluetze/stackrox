@@ -418,7 +418,7 @@ func (m *networkFlowManager) resolveEntityType(conn *connection) networkgraph.En
 	if conn.remote.IPAndPort.Address.String() == "255.255.255.255" {
 		return networkgraph.InternetEntity()
 	}
-	return networkgraph.InternalUnknownEntity()
+	return networkgraph.InternalUnknownEntity(fmt.Sprintf("__ip_%s", conn.remote.IPAndPort.Address.String()))
 }
 
 func (m *networkFlowManager) enrichConnection(conn *connection, status *connStatus, enrichedConnections map[networkConnIndicator]timestamp.MicroTS) {
