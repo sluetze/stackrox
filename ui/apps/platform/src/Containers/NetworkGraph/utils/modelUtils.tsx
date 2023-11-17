@@ -8,7 +8,8 @@ import {
     Node,
     OutEdges,
     L4Protocol,
-    EdgeProperties, UnknownInternalEntityNetworkEntityInfo,
+    EdgeProperties,
+    UnknownInternalEntityNetworkEntityInfo,
 } from 'types/networkFlow.proto';
 import { ensureExhaustive } from 'utils/type.utils';
 import {
@@ -112,7 +113,9 @@ function getDeploymentNodeModel(
 }
 
 function getExternalNodeModel(
-    entity: ExternalSourceNetworkEntityInfo | InternetNetworkEntityInfo | UnknownInternalEntityNetworkEntityInfo,
+    entity: ExternalSourceNetworkEntityInfo
+        | InternetNetworkEntityInfo
+        | UnknownInternalEntityNetworkEntityInfo,
     outEdges: OutEdges
 ): ExternalEntitiesNodeModel | CIDRBlockNodeModel {
     const baseNode = getBaseNode(entity.id);

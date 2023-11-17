@@ -168,7 +168,7 @@ export function getNetworkFlows(
 }
 
 /*
-  This function takes network flows and filters the data based on a text search value 
+  This function takes network flows and filters the data based on a text search value
   for entity name and some advanced filters specific to network flows. These include:
   flow types, directionality, protocols, and ports
 */
@@ -229,6 +229,8 @@ export function transformFlowsToPeers(flows: Flow[]): Peer[] {
             backendType = 'EXTERNAL_SOURCE';
         } else if (type === 'EXTERNAL_ENTITIES') {
             backendType = 'INTERNET';
+        } else if (type === 'UKNOWN_INTERNAL_ENTITY') {
+                backendType = 'UKNOWN_INTERNAL_ENTITY';
         } else {
             backendType = 'DEPLOYMENT';
         }
