@@ -30,7 +30,10 @@ export type ExternalGroupNodeModel = Override<NodeModel, { data: ExternalGroupDa
 
 export type ExternalEntitiesNodeModel = Override<NodeModel, { data: ExternalEntitiesData }>;
 
-export type UnknownInternalEntityNodeModel = Override<NodeModel, { data: UnknownInternalEntityData }>;
+export type UnknownInternalEntityNodeModel = Override<
+    NodeModel,
+    { data: UnknownInternalEntityData }
+>;
 
 export type CIDRBlockNodeModel = Override<NodeModel, { data: CIDRBlockData }>;
 
@@ -38,7 +41,11 @@ export type ExtraneousNodeModel = Override<NodeModel, { data: ExtraneousData }>;
 
 export type CustomGroupNodeData = NamespaceData | ExternalGroupData;
 
-export type CustomSingleNodeData = DeploymentData | ExternalEntitiesData | CIDRBlockData | UnknownInternalEntityData;
+export type CustomSingleNodeData =
+    | DeploymentData
+    | ExternalEntitiesData
+    | CIDRBlockData
+    | UnknownInternalEntityData;
 
 export type CustomNodeData =
     | NamespaceData

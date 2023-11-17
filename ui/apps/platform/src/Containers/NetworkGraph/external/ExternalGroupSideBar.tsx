@@ -54,13 +54,20 @@ function ExternalGroupSideBar({
     // derived data
     const externalGroupNode = getNodeById(nodes, id) as ExternalGroupNodeModel;
     const externalNodes = nodes.filter(
-        (node) => node.data.type === 'CIDR_BLOCK'
-            || node.data.type === 'EXTERNAL_ENTITIES'
-            || node.data.type === 'UKNOWN_INTERNAL_ENTITY'
+        (node) =>
+            node.data.type === 'CIDR_BLOCK' ||
+            node.data.type === 'EXTERNAL_ENTITIES' ||
+            node.data.type === 'UKNOWN_INTERNAL_ENTITY'
     ) as (ExternalEntitiesNodeModel | UnknownInternalEntityNodeModel | CIDRBlockNodeModel)[];
 
     const onNodeSelectHandler =
-        (externalNode: ExternalEntitiesNodeModel | UnknownInternalEntityNodeModel | CIDRBlockNodeModel) => () => {
+        (
+            externalNode:
+                | ExternalEntitiesNodeModel
+                | UnknownInternalEntityNodeModel
+                | CIDRBlockNodeModel
+        ) =>
+        () => {
             onNodeSelect(externalNode.id);
         };
 

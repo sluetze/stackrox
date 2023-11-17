@@ -230,7 +230,7 @@ export function transformFlowsToPeers(flows: Flow[]): Peer[] {
         } else if (type === 'EXTERNAL_ENTITIES') {
             backendType = 'INTERNET';
         } else if (type === 'UKNOWN_INTERNAL_ENTITY') {
-                backendType = 'UKNOWN_INTERNAL_ENTITY';
+            backendType = 'UKNOWN_INTERNAL_ENTITY';
         } else {
             backendType = 'DEPLOYMENT';
         }
