@@ -1008,7 +1008,7 @@
         "INTERNET",
         "LISTEN_ENDPOINT",
         "EXTERNAL_SOURCE",
-        "UKNOWN_INTERNAL_SOURCE"
+        "UKNOWN_INTERNAL_ENTITY"
       ],
       "default": "UNKNOWN_TYPE"
     },
