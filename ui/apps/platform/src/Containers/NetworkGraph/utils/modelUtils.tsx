@@ -26,7 +26,7 @@ import {
     CIDRBlockNodeModel,
     CustomEdgeModel,
     DeploymentData,
-    CIDRBlockData,
+    CIDRBlockData, UnknownInternalEntityNodeModel,
 } from '../types/topology.type';
 import { protocolLabel } from './flowUtils';
 
@@ -117,7 +117,7 @@ function getExternalNodeModel(
         | InternetNetworkEntityInfo
         | UnknownInternalEntityNetworkEntityInfo,
     outEdges: OutEdges
-): ExternalEntitiesNodeModel | CIDRBlockNodeModel {
+): ExternalEntitiesNodeModel | UnknownInternalEntityNodeModel | CIDRBlockNodeModel {
     const baseNode = getBaseNode(entity.id);
     switch (entity.type) {
         case 'INTERNET':
@@ -222,7 +222,7 @@ export function transformActiveData(
     };
 
     const namespaceNodes: Record<string, NamespaceNodeModel> = {};
-    const externalNodes: Record<string, ExternalEntitiesNodeModel | CIDRBlockNodeModel> = {};
+    const externalNodes: Record<string, ExternalEntitiesNodeModel | UnknownInternalEntityNodeModel | CIDRBlockNodeModel> = {};
     const deploymentNodes: Record<string, DeploymentNodeModel> = {};
     const activeEdgeMap: Record<string, CustomEdgeModel> = {};
 
