@@ -130,6 +130,12 @@ function getExternalNodeModel(
                 data: { ...entity, type: 'EXTERNAL_ENTITIES', outEdges, isFadedOut: false },
             };
         case 'UKNOWN_INTERNAL_ENTITY':
+            return {
+                ...baseNode,
+                shape: NodeShape.trapezoid,
+                label: entity?.id || 'Unknown entity',
+                data: { ...entity, type: 'UKNOWN_INTERNAL_ENTITY', outEdges, isFadedOut: false },
+            };
         case 'EXTERNAL_SOURCE':
             // eslint-disable-next-line no-case-declarations
             const cidrBlockData: CIDRBlockData = {
@@ -268,7 +274,7 @@ export function transformActiveData(
         }
 
         // to group external entities and cidr blocks to external grouping
-        if (type === 'EXTERNAL_SOURCE' || type === 'INTERNET') {
+        if (type === 'EXTERNAL_SOURCE' || type === 'INTERNET' || type === 'UKNOWN_INTERNAL_ENTITY') {
             const externalNode = getExternalNodeModel(entity, outEdges);
             if (!externalNodes[id]) {
                 externalNodes[id] = externalNode;
