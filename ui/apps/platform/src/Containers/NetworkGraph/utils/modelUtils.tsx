@@ -141,7 +141,7 @@ function getExternalNodeModel(
             return {
                 ...baseNode,
                 shape: NodeShape.rect,
-                label: entity.externalSource.name,
+                label: entity?.externalSource?.name || 'Unknown entity',
                 data: cidrBlockData,
             };
         default:
@@ -238,7 +238,7 @@ export function transformActiveData(
             const { entity: targetEntity } = nodes[nodeIdx];
             return targetEntity.type === 'EXTERNAL_SOURCE' || targetEntity.type === 'INTERNET';
         });
-        const policyIds = policyNodeMap[id]?.data.policyIds || [];
+        const policyIds = policyNodeMap[id]?.data?.policyIds || [];
 
         // to group deployments into namespaces
         if (type === 'DEPLOYMENT') {
