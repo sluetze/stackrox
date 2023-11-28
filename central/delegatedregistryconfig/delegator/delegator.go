@@ -131,6 +131,9 @@ func (d *delegatorImpl) inferNamespace(ctx context.Context, imgName *storage.Ima
 
 	defer centralMetrics.SetFunctionSegmentDuration(time.Now(), "ScanDelegatorInferNamespace")
 
+	// TODO: perhaps add check here, if ctx has no global access scope, to prevent panic, return no namespace.
+	// however this will cause inconsistent results if the context passed during watch had the appropriate permission to
+	// successfully scan the image.
 	namespaces, err := d.namespaceSACHelper.GetNamespacesForClusterAndPermissions(ctx, clusterID, inferNamespacePermissions)
 	if err != nil {
 		log.Warnf("Skipping namespace inference for %q (%s) and cluster %q due to error: %v", imgName.GetFullName(), namespace, clusterID, err)

@@ -24,6 +24,7 @@ import (
 	"github.com/stackrox/rox/pkg/logging"
 	nodeEnricher "github.com/stackrox/rox/pkg/nodes/enricher"
 	"github.com/stackrox/rox/pkg/sac"
+	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/search/options/deployments"
 	imageMapping "github.com/stackrox/rox/pkg/search/options/images"
@@ -449,8 +450,19 @@ func (l *loopImpl) reprocessNodes() {
 }
 
 func (l *loopImpl) reprocessWatchedImage(name string) bool {
-	img, err := imageEnricher.EnrichImageByName(emptyCtx, l.imageEnricher, imageEnricher.EnrichmentContext{
-		FetchOpt: imageEnricher.IgnoreExistingImages,
+	// Delegated scanning performs an access check, an empty context will
+	// trigger a hard panic, create a context with delegation access.
+	elevatedCtx := sac.WithGlobalAccessScopeChecker(
+		emptyCtx,
+		sac.AllowFixedScopes(
+			sac.AccessModeScopeKeys(storage.Access_READ_ACCESS),
+			sac.ResourceScopeKeys(resources.Image),
+		),
+	)
+
+	img, err := imageEnricher.EnrichImageByName(elevatedCtx, l.imageEnricher, imageEnricher.EnrichmentContext{
+		FetchOpt:  imageEnricher.IgnoreExistingImages,
+		Delegable: true,
 	}, name)
 	if err != nil {
 		log.Errorw("Error enriching watched image", logging.ImageName(name), logging.Err(err))
