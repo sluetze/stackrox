@@ -55,14 +55,14 @@ func (r *runInstance) updateStatus(s v1.ComplianceRun_State) {
 	r.status = s
 }
 
-func (r *runInstance) Start(perClusterSemaphore *clusterBasedSemaphore, dataPromise dataPromise, resultsStore complianceDS.DataStore) {
-	go r.Run(perClusterSemaphore, dataPromise, resultsStore)
+func (r *runInstance) Start(dataPromise dataPromise, resultsStore complianceDS.DataStore) {
+	go r.Run(dataPromise, resultsStore)
 }
 
-func (r *runInstance) Run(perClusterSemaphore *clusterBasedSemaphore, dataPromise dataPromise, resultsStore complianceDS.DataStore) {
+func (r *runInstance) Run(dataPromise dataPromise, resultsStore complianceDS.DataStore) {
 	defer r.cancel()
 
-	run, nodeResults, err := r.doRun(perClusterSemaphore, dataPromise)
+	run, nodeResults, err := r.doRun(dataPromise)
 	defer concurrency.WithLock(&r.mutex, func() {
 		r.finishTime = time.Now()
 		r.status = v1.ComplianceRun_FINISHED
@@ -88,21 +88,13 @@ func (r *runInstance) Run(perClusterSemaphore *clusterBasedSemaphore, dataPromis
 	log.Infof("Completed compliance run %s", r.id)
 }
 
-func (r *runInstance) doRun(perClusterSemaphore *clusterBasedSemaphore, dataPromise dataPromise) (framework.ComplianceRun, map[string]map[string]*compliance.ComplianceStandardResult, error) {
-	if err := perClusterSemaphore.Acquire(r.ctx, 1); err != nil {
-		return nil, nil, err
-	}
-	defer perClusterSemaphore.Release(1)
-
+func (r *runInstance) doRun(dataPromise dataPromise) (framework.ComplianceRun, map[string]map[string]*compliance.ComplianceStandardResult, error) {
 	concurrency.WithLock(&r.mutex, func() {
 		r.startTime = time.Now()
 		r.status = v1.ComplianceRun_STARTED
 	})
 
 	log.Infof("Starting compliance run %s for cluster %q and standard %q", r.id, r.domain.Cluster().Cluster().Name, r.standard.Standard.Name)
-
-	log.Infof("Sleeping for 1 minute to emulate slowness")
-	time.Sleep(1 * time.Minute)
 
 	r.updateStatus(v1.ComplianceRun_WAIT_FOR_DATA)
 	data, err := dataPromise.WaitForResult(r.ctx)

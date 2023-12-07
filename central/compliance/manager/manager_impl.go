@@ -29,7 +29,6 @@ import (
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/uuid"
-	"golang.org/x/sync/semaphore"
 )
 
 const (
@@ -289,26 +288,6 @@ type perClusterDataRepoFactory struct {
 	err      error
 }
 
-type clusterBasedSemaphore struct {
-	acquireOnce sync.Once
-	releaseOnce sync.Once
-	*semaphore.Weighted
-	err error
-}
-
-func (c *clusterBasedSemaphore) Acquire(ctx context.Context, n int64) error {
-	c.acquireOnce.Do(func() {
-		c.err = c.Weighted.Acquire(ctx, n)
-	})
-	return c.err
-}
-
-func (c *clusterBasedSemaphore) Release(n int64) {
-	c.releaseOnce.Do(func() {
-		c.Weighted.Release(n)
-	})
-}
-
 func (p *perClusterDataRepoFactory) CreateDataRepository(ctx context.Context, domain framework.ComplianceDomain) (framework.ComplianceDataRepository, error) {
 	p.once.Do(func() {
 		p.dataRepo, p.err = p.dataRepoFactory.CreateDataRepository(ctx, domain)
@@ -340,7 +319,6 @@ func (m *manager) createAndLaunchRuns(ctx context.Context, clusterStandardPairs 
 		standardsByClusterID[clusterAndStandard.ClusterID] = append(standardsByClusterID[clusterAndStandard.ClusterID], standard)
 	}
 
-	maxParallelismSemaphore := semaphore.NewWeighted(1)
 	var runs []*runInstance
 	// Step 2: For each cluster, instantiate domains and scrape promises, and create runs.
 	for clusterID, standardImpls := range standardsByClusterID {
@@ -367,10 +345,6 @@ func (m *manager) createAndLaunchRuns(ctx context.Context, clusterStandardPairs 
 		perClusterDataRepoOnce := &perClusterDataRepoFactory{
 			dataRepoFactory: m.dataRepoFactory,
 		}
-		perClusterSemaphore := &clusterBasedSemaphore{
-			Weighted: maxParallelismSemaphore,
-		}
-
 		for _, standard := range standardImpls {
 			if !m.complianceOperatorManager.IsStandardActiveForCluster(standard.ID, clusterID) {
 				continue
@@ -393,7 +367,7 @@ func (m *manager) createAndLaunchRuns(ctx context.Context, clusterStandardPairs 
 				dataPromise = scrapeLessPromise
 			}
 
-			run.Start(perClusterSemaphore, dataPromise, m.resultsStore)
+			run.Start(dataPromise, m.resultsStore)
 			runs = append(runs, run)
 		}
 	}
