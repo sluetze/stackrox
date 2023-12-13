@@ -404,7 +404,7 @@ function JiraIntegrationForm({
                                                                     }
                                                                     onChange={onChange}
                                                                     onBlur={handleBlur}
-                                                                    isDisabled={values.notifier.jira.disablePriority}
+                                                                    isDisabled={!isEditable || values.notifier.jira.disablePriority}
                                                                 />
                                                             </FormLabelGroup>
                                                         </FlexItem>
