@@ -40,21 +40,16 @@ func (m *MockFactory) EXPECT() *MockFactoryMockRecorder {
 }
 
 // CreateRegistry mocks base method.
-func (m *MockFactory) CreateRegistry(source *storage.ImageIntegration, options ...types.CreatorOption) (types.ImageRegistry, error) {
+func (m *MockFactory) CreateRegistry(source *storage.ImageIntegration, options *types.CreatorOptions) (types.ImageRegistry, error) {
 	m.ctrl.T.Helper()
-	varargs := []any{source}
-	for _, a := range options {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "CreateRegistry", varargs...)
+	ret := m.ctrl.Call(m, "CreateRegistry", source, options)
 	ret0, _ := ret[0].(types.ImageRegistry)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateRegistry indicates an expected call of CreateRegistry.
-func (mr *MockFactoryMockRecorder) CreateRegistry(source any, options ...any) *gomock.Call {
+func (mr *MockFactoryMockRecorder) CreateRegistry(source, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]any{source}, options...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRegistry", reflect.TypeOf((*MockFactory)(nil).CreateRegistry), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRegistry", reflect.TypeOf((*MockFactory)(nil).CreateRegistry), source, options)
 }

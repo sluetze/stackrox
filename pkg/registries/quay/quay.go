@@ -117,7 +117,7 @@ func NewRegistryFromConfig(config *storage.QuayConfig, integration *storage.Imag
 		Insecure:        config.GetInsecure(),
 		DisableRepoList: disableRepoList,
 	}
-	dockerRegistry, err := docker.NewDockerRegistryWithConfig(cfg, integration)
+	dockerRegistry, err := docker.NewDockerRegistryWithConfig(cfg, integration, cfg.Transport())
 	if err != nil {
 		return nil, err
 	}

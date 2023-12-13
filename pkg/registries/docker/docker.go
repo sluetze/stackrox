@@ -86,34 +86,39 @@ type Config struct {
 	TokenSource oauth2.TokenSource
 }
 
-// NewDockerRegistryWithConfig creates a new instantiation of the docker registry
-// TODO(cgorman) AP-386 - properly put the base docker registry into another pkg
-func NewDockerRegistryWithConfig(cfg Config, integration *storage.ImageIntegration) (*Registry, error) {
-	endpoint := cfg.Endpoint
+func (c *Config) formatURL() string {
+	endpoint := c.Endpoint
 	if strings.EqualFold(endpoint, "https://docker.io") || strings.EqualFold(endpoint, "docker.io") {
 		endpoint = "https://registry-1.docker.io"
 	}
-	url := urlfmt.FormatURL(endpoint, urlfmt.HTTPS, urlfmt.NoTrailingSlash)
+	return urlfmt.FormatURL(endpoint, urlfmt.HTTPS, urlfmt.NoTrailingSlash)
+}
 
+// Transport returns a transport that provides authentication for the Docker registry.
+func (c *Config) Transport() registry.Transport {
+	transport := proxy.RoundTripper()
+	if c.Insecure {
+		transport = proxy.RoundTripperWithTLSConfig(&tls.Config{
+			InsecureSkipVerify: true,
+		})
+	}
+	if c.TokenSource != nil {
+		transport = &oauth2.Transport{Base: transport, Source: c.TokenSource}
+	}
+	return registry.WrapTransport(transport, strings.TrimSuffix(c.formatURL(), "/"), c.Username, c.Password)
+}
+
+// NewDockerRegistryWithConfig creates a new instantiation of the docker registry
+// TODO(cgorman) AP-386 - properly put the base docker registry into another pkg
+func NewDockerRegistryWithConfig(cfg Config, integration *storage.ImageIntegration, transport registry.Transport) (*Registry, error) {
+	url := cfg.formatURL()
 	// if the registryServer endpoint contains docker.io then the image will be docker.io/namespace/repo:tag
 	registryServer := urlfmt.GetServerFromURL(url)
 	if strings.Contains(cfg.Endpoint, "docker.io") {
 		registryServer = "docker.io"
 	}
-	var transport http.RoundTripper
-	if cfg.Insecure {
-		transport = proxy.RoundTripperWithTLSConfig(&tls.Config{
-			InsecureSkipVerify: true,
-		})
-	} else {
-		transport = proxy.RoundTripper()
-	}
-	if cfg.TokenSource != nil {
-		transport = &oauth2.Transport{Base: transport, Source: cfg.TokenSource}
-	}
 
-	client, err := registry.NewFromTransport(
-		url, registry.WrapTransport(transport, strings.TrimSuffix(url, "/"), cfg.Username, cfg.Password), registry.Quiet)
+	client, err := registry.NewFromTransport(url, transport, registry.Quiet)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +164,7 @@ func NewDockerRegistry(integration *storage.ImageIntegration, disableRepoList bo
 		Insecure:        dockerConfig.Docker.GetInsecure(),
 		DisableRepoList: disableRepoList,
 	}
-	return NewDockerRegistryWithConfig(cfg, integration)
+	return NewDockerRegistryWithConfig(cfg, integration, cfg.Transport())
 }
 
 func retrieveRepositoryList(client *registry.Registry) (set.StringSet, error) {

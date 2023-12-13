@@ -105,7 +105,7 @@ func NewRegistry(integration *storage.ImageIntegration, disableRepoList bool, ma
 		return nil, errors.Wrap(err, "failed to create token source")
 	}
 	dockerConfig.TokenSource = tokenSource
-	reg, err := docker.NewDockerRegistryWithConfig(dockerConfig, integration)
+	reg, err := docker.NewDockerRegistryWithConfig(dockerConfig, integration, dockerConfig.Transport())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create docker registry")
 	}

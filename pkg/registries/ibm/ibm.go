@@ -59,7 +59,7 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 		Endpoint:        config.GetEndpoint(),
 		DisableRepoList: disableRepoList,
 	}
-	registry, err := docker.NewDockerRegistryWithConfig(cfg, integration)
+	registry, err := docker.NewDockerRegistryWithConfig(cfg, integration, cfg.Transport())
 	if err != nil {
 		return nil, err
 	}
