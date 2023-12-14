@@ -117,7 +117,6 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 	reg := &ecr{
 		config:      conf,
 		integration: integration,
-		// docker endpoint
 	}
 	endpoint := fmt.Sprintf("%s.dkr.ecr.%s.amazonaws.com", conf.GetRegistryId(), conf.GetRegion())
 	// If the ECR configuration provides Authorization Data, we do not initialize an
