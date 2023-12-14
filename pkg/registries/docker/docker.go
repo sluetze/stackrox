@@ -1,7 +1,6 @@
 package docker
 
 import (
-	"crypto/tls"
 	"fmt"
 	"net/http"
 	"strings"
@@ -14,14 +13,12 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
-	"github.com/stackrox/rox/pkg/httputil/proxy"
 	"github.com/stackrox/rox/pkg/images/utils"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/registries/types"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/urlfmt"
-	"golang.org/x/oauth2"
 )
 
 const (
@@ -70,47 +67,9 @@ type Registry struct {
 	repositoryListLock   sync.RWMutex
 }
 
-// Config is the basic config for the docker registry
-type Config struct {
-	// Endpoint defines the Docker Registry URL
-	Endpoint string
-	// Username defines the Username for the Docker Registry
-	Username string
-	// Password defines the password for the Docker Registry
-	Password string
-	// Insecure defines if the registry should be insecure
-	Insecure bool
-	// DisableRepoList when true disables populating list of repos from remote registry.
-	DisableRepoList bool
-	// TokenSource defines a token source for generating access tokens.
-	TokenSource oauth2.TokenSource
-}
-
-func (c *Config) formatURL() string {
-	endpoint := c.Endpoint
-	if strings.EqualFold(endpoint, "https://docker.io") || strings.EqualFold(endpoint, "docker.io") {
-		endpoint = "https://registry-1.docker.io"
-	}
-	return urlfmt.FormatURL(endpoint, urlfmt.HTTPS, urlfmt.NoTrailingSlash)
-}
-
-// Transport returns a transport that provides authentication for the Docker registry.
-func (c *Config) Transport() registry.Transport {
-	transport := proxy.RoundTripper()
-	if c.Insecure {
-		transport = proxy.RoundTripperWithTLSConfig(&tls.Config{
-			InsecureSkipVerify: true,
-		})
-	}
-	if c.TokenSource != nil {
-		transport = &oauth2.Transport{Base: transport, Source: c.TokenSource}
-	}
-	return registry.WrapTransport(transport, strings.TrimSuffix(c.formatURL(), "/"), c.Username, c.Password)
-}
-
 // NewDockerRegistryWithConfig creates a new instantiation of the docker registry
 // TODO(cgorman) AP-386 - properly put the base docker registry into another pkg
-func NewDockerRegistryWithConfig(cfg Config, integration *storage.ImageIntegration, transport registry.Transport) (*Registry, error) {
+func NewDockerRegistryWithConfig(cfg *Config, integration *storage.ImageIntegration) (*Registry, error) {
 	url := cfg.formatURL()
 	// if the registryServer endpoint contains docker.io then the image will be docker.io/namespace/repo:tag
 	registryServer := urlfmt.GetServerFromURL(url)
@@ -118,7 +77,7 @@ func NewDockerRegistryWithConfig(cfg Config, integration *storage.ImageIntegrati
 		registryServer = "docker.io"
 	}
 
-	client, err := registry.NewFromTransport(url, transport, registry.Quiet)
+	client, err := registry.NewFromTransport(url, cfg.GetTransport(), registry.Quiet)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +102,7 @@ func NewDockerRegistryWithConfig(cfg Config, integration *storage.ImageIntegrati
 		url:                   url,
 		registry:              registryServer,
 		Client:                client,
-		cfg:                   cfg,
+		cfg:                   *cfg,
 		protoImageIntegration: integration,
 
 		repositoryList:       repoSet,
@@ -157,14 +116,14 @@ func NewDockerRegistry(integration *storage.ImageIntegration, disableRepoList bo
 	if !ok {
 		return nil, errors.New("Docker configuration required")
 	}
-	cfg := Config{
+	cfg := &Config{
 		Endpoint:        dockerConfig.Docker.GetEndpoint(),
 		Username:        dockerConfig.Docker.GetUsername(),
 		Password:        dockerConfig.Docker.GetPassword(),
 		Insecure:        dockerConfig.Docker.GetInsecure(),
 		DisableRepoList: disableRepoList,
 	}
-	return NewDockerRegistryWithConfig(cfg, integration, cfg.Transport())
+	return NewDockerRegistryWithConfig(cfg, integration)
 }
 
 func retrieveRepositoryList(client *registry.Registry) (set.StringSet, error) {

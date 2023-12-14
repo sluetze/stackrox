@@ -52,10 +52,10 @@ func TestGoogleMatch(t *testing.T) {
 			matches: false, // matches us.gcr.io, but not stackrox-ci
 		},
 	}
-	cfg := docker.Config{
+	cfg := &docker.Config{
 		Endpoint: "us.gcr.io",
 	}
-	reg, err := docker.NewDockerRegistryWithConfig(cfg, &storage.ImageIntegration{}, cfg.Transport())
+	reg, err := docker.NewDockerRegistryWithConfig(cfg, &storage.ImageIntegration{})
 	require.NoError(t, err)
 
 	gr := &googleRegistry{

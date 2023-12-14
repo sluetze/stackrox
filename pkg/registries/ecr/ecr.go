@@ -122,10 +122,7 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 	// If the ECR configuration provides Authorization Data, we do not initialize an
 	// ECR client, but instead, we create the registry immediately since the
 	// Authorization Data payload provides the credentials statically.
-	var (
-		cfg       *docker.Config
-		transport registry.Transport
-	)
+	var cfg *docker.Config
 	if authData := conf.GetAuthorizationData(); authData != nil {
 		cfg = &docker.Config{
 			Username:        authData.GetUsername(),
@@ -133,7 +130,6 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 			Endpoint:        endpoint,
 			DisableRepoList: disableRepoList,
 		}
-		transport = cfg.Transport()
 	} else {
 		client, err := createECRClient(conf)
 		if err != nil {
@@ -142,10 +138,10 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 		cfg = &docker.Config{
 			Endpoint:        endpoint,
 			DisableRepoList: disableRepoList,
+			Transport:       newAWSTransport(cfg, client),
 		}
-		transport = newAWSTransport(cfg, client)
 	}
-	dockerRegistry, err := docker.NewDockerRegistryWithConfig(*cfg, reg.integration, transport)
+	dockerRegistry, err := docker.NewDockerRegistryWithConfig(cfg, reg.integration)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create docker registry")
 	}
