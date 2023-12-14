@@ -10,15 +10,15 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Config is the basic config for the docker registry
+// Config is the basic config for the docker registry.
 type Config struct {
-	// Endpoint defines the Docker Registry URL
+	// Endpoint defines the Docker Registry URL.
 	Endpoint string
-	// Username defines the Username for the Docker Registry
+	// Username defines the Username for the Docker Registry.
 	Username string
-	// Password defines the password for the Docker Registry
+	// Password defines the password for the Docker Registry.
 	Password string
-	// Insecure defines if the registry should be insecure
+	// Insecure defines if the registry should be insecure.
 	Insecure bool
 	// DisableRepoList when true disables populating list of repos from remote registry.
 	DisableRepoList bool
