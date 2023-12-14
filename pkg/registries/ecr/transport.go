@@ -44,7 +44,7 @@ func (t *awsTransport) refreshNoLock() error {
 		return errors.Wrap(err, "failed to get authorization token")
 	}
 	if len(authToken.AuthorizationData) == 0 {
-		return errors.Errorf("received empty authorization data in token: %s", authToken)
+		return errors.New("received empty authorization data in token")
 	}
 	authData := authToken.AuthorizationData[0]
 	decoded, err := base64.StdEncoding.DecodeString(*authData.AuthorizationToken)
@@ -54,7 +54,7 @@ func (t *awsTransport) refreshNoLock() error {
 	basicAuth := string(decoded)
 	colon := strings.Index(basicAuth, ":")
 	if colon == -1 {
-		return errors.Errorf("malformed basic auth response from AWS '%s'", basicAuth)
+		return errors.New("malformed basic auth response from AWS")
 	}
 	t.config.Username = basicAuth[:colon]
 	t.config.Password = basicAuth[colon+1:]
