@@ -54,7 +54,7 @@ var _ types.Registry = (*Registry)(nil)
 
 // Registry is the basic docker registry implementation
 type Registry struct {
-	cfg                   Config
+	cfg                   *Config
 	protoImageIntegration *storage.ImageIntegration
 
 	Client *registry.Registry
@@ -102,7 +102,7 @@ func NewDockerRegistryWithConfig(cfg *Config, integration *storage.ImageIntegrat
 		url:                   url,
 		registry:              registryServer,
 		Client:                client,
-		cfg:                   *cfg,
+		cfg:                   cfg,
 		protoImageIntegration: integration,
 
 		repositoryList:       repoSet,
