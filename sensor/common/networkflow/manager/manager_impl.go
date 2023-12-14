@@ -477,11 +477,9 @@ func (m *networkFlowManager) enrichConnection(conn *connection, status *connStat
 					},
 				}
 			} else {
-				log.Debugf("Unknown entity: %s", conn.remote.IPAndPort.String())
 				lookupResults = []clusterentities.LookupResult{
 					{
-						// TODO: have collector send a network directly
-						Entity:         networkgraph.LearnedExternalEntity(net.IPNetworkFromAddress(conn.remote.IPAndPort.Address)),
+						Entity:         networkgraph.LearnedExternalEntity(conn.remote.IPAndPort.IPNetwork),
 						ContainerPorts: []uint16{port},
 					},
 				}
