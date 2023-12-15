@@ -42,18 +42,19 @@ func (c *Config) GetTransport() registry.Transport {
 	if c.Transport != nil {
 		return c.Transport
 	}
-	return c.defaultTransport()
+	return DefaultTransport(c)
 }
 
-func (c *Config) defaultTransport() registry.Transport {
+// DefaultTransport returns the default transport based on the configuration.
+func DefaultTransport(cfg *Config) registry.Transport {
 	transport := proxy.RoundTripper()
-	if c.Insecure {
+	if cfg.Insecure {
 		transport = proxy.RoundTripperWithTLSConfig(&tls.Config{
 			InsecureSkipVerify: true,
 		})
 	}
-	if c.TokenSource != nil {
-		transport = &oauth2.Transport{Base: transport, Source: c.TokenSource}
+	if cfg.TokenSource != nil {
+		transport = &oauth2.Transport{Base: transport, Source: cfg.TokenSource}
 	}
-	return registry.WrapTransport(transport, strings.TrimSuffix(c.formatURL(), "/"), c.Username, c.Password)
+	return registry.WrapTransport(transport, strings.TrimSuffix(cfg.formatURL(), "/"), cfg.Username, cfg.Password)
 }

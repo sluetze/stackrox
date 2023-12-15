@@ -59,6 +59,6 @@ func (t *awsTransport) refreshNoLock() error {
 	t.config.Username = basicAuth[:colon]
 	t.config.Password = basicAuth[colon+1:]
 	t.expiresAt = authData.ExpiresAt
-	t.Transport = t.config.GetTransport()
+	t.Transport = docker.DefaultTransport(t.config)
 	return nil
 }
