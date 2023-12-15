@@ -138,8 +138,8 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 		cfg = &docker.Config{
 			Endpoint:        endpoint,
 			DisableRepoList: disableRepoList,
-			Transport:       newAWSTransport(cfg, client),
 		}
+		cfg.Transport = newAWSTransport(cfg, client)
 	}
 	dockerRegistry, err := docker.NewDockerRegistryWithConfig(cfg, reg.integration)
 	if err != nil {
