@@ -133,6 +133,7 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 	} else {
 		client, err := createECRClient(conf)
 		if err != nil {
+			log.Error("Failed to create client: ", err)
 			return nil, err
 		}
 		cfg = &docker.Config{

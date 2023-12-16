@@ -6,10 +6,13 @@ import (
 	"github.com/heroku/docker-registry-client/registry"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/pkg/concurrency"
+	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/registries/docker"
 	"github.com/stackrox/rox/pkg/sync"
 	"golang.org/x/oauth2"
 )
+
+var log = logging.LoggerForModule()
 
 // googleTransport represents a transport that converts an oauth token source
 // into docker registry credentials.
@@ -24,7 +27,11 @@ type googleTransport struct {
 }
 
 func newGoogleTransport(config *docker.Config, tokenSource oauth2.TokenSource) *googleTransport {
-	return &googleTransport{config: config, tokenSource: tokenSource}
+	transport := &googleTransport{config: config, tokenSource: tokenSource}
+	if err := transport.refreshNoLock(); err != nil {
+		log.Error("Failed to refresh token: ", err)
+	}
+	return transport
 }
 
 func (t *googleTransport) RoundTrip(req *http.Request) (*http.Response, error) {

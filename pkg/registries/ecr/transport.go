@@ -23,7 +23,11 @@ type awsTransport struct {
 }
 
 func newAWSTransport(config *docker.Config, client *awsECR.ECR) *awsTransport {
-	return &awsTransport{config: config, client: client}
+	transport := &awsTransport{config: config, client: client}
+	if err := transport.refreshNoLock(); err != nil {
+		log.Error("Failed to refresh token: ", err)
+	}
+	return transport
 }
 
 func (t *awsTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -64,9 +68,9 @@ func (t *awsTransport) refreshNoLock() error {
 	if colon == -1 {
 		return errors.New("malformed basic auth response from AWS")
 	}
+	t.expiresAt = authData.ExpiresAt
 	t.config.Username = basicAuth[:colon]
 	t.config.Password = basicAuth[colon+1:]
-	t.expiresAt = authData.ExpiresAt
 	t.Transport = docker.DefaultTransport(t.config)
 	return nil
 }
