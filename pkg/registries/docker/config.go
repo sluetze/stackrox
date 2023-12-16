@@ -7,7 +7,6 @@ import (
 	"github.com/heroku/docker-registry-client/registry"
 	"github.com/stackrox/rox/pkg/httputil/proxy"
 	"github.com/stackrox/rox/pkg/urlfmt"
-	"golang.org/x/oauth2"
 )
 
 // Config is the basic config for the docker registry.
@@ -22,8 +21,6 @@ type Config struct {
 	Insecure bool
 	// DisableRepoList when true disables populating list of repos from remote registry.
 	DisableRepoList bool
-	// TokenSource defines a token source for generating access tokens.
-	TokenSource oauth2.TokenSource
 	// Transport defines a transport for authenticating to the Docker registry.
 	Transport registry.Transport
 }
@@ -52,9 +49,6 @@ func DefaultTransport(cfg *Config) registry.Transport {
 		transport = proxy.RoundTripperWithTLSConfig(&tls.Config{
 			InsecureSkipVerify: true,
 		})
-	}
-	if cfg.TokenSource != nil {
-		transport = &oauth2.Transport{Base: transport, Source: cfg.TokenSource}
 	}
 	return registry.WrapTransport(transport, strings.TrimSuffix(cfg.formatURL(), "/"), cfg.Username, cfg.Password)
 }
