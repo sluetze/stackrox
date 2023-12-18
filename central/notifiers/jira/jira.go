@@ -487,13 +487,13 @@ func createClient(notifier *storage.Notifier, cryptoCodec cryptocodec.CryptoCode
 		return nil, err
 	}
 
-	log.Infof("Making request to %s", urlPath)
+	log.Debugf("Making request to %s", urlPath)
 	_, err = client.Do(req, nil)
 
 	if err != nil {
 		errStr := err.Error()
 		if strings.Contains(errStr, "401") || strings.Contains(errStr, "403") {
-			log.Infof("Retrying request using bearer auth")
+			log.Debug("Retrying request using bearer auth")
 			httpClient := &http.Client{
 				Timeout: timeout,
 				Transport: &jiraLib.BearerAuthTransport{
@@ -531,10 +531,10 @@ func canCreateIssuesInProject(client *jiraLib.Client, project string) (bool, err
 		return false, err
 	}
 
-	log.Infof("Making request to %s", urlPath)
+	log.Debugf("Making request to %s", urlPath)
 	resp, err := client.Do(req, nil)
 	if err != nil {
-		log.Infof("Error: %s", err.Error())
+		log.Debugf("Raw error message from jira lib: %s", err.Error())
 		if resp != nil && resp.StatusCode == 404 {
 			return false, fmt.Errorf("Project %s not found", project)
 		}
