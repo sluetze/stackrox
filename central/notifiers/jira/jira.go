@@ -647,26 +647,6 @@ func (j *jira) Test(ctx context.Context) error {
 	return j.createIssue(ctx, storage.Severity_LOW_SEVERITY, i)
 }
 
-// Optimistically tries to match all of the Jira priorities with the known mapping defined in defaultPriorities
-// If any severity is not matched, then it returns a nil map
-func optimisticMatching(prios []jiraLib.Priority) map[storage.Severity]string {
-	shortened := make(map[string]string)
-	for _, prio := range prios {
-		if match := pattern.FindString(prio.Name); len(match) > 0 {
-			shortened[match] = prio.Name
-		}
-	}
-	output := make(map[storage.Severity]string)
-	for k, name := range defaultPriorities {
-		match, ok := shortened[name]
-		if !ok {
-			return nil
-		}
-		output[k] = match
-	}
-	return output
-}
-
 func init() {
 	cryptoKey := ""
 	var err error
