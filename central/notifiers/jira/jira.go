@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
 	"strings"
 	"text/template"
 	"time"
@@ -42,14 +41,6 @@ var (
 		storage.Severity_MEDIUM_SEVERITY,
 		storage.Severity_LOW_SEVERITY,
 	}
-
-	defaultPriorities = map[storage.Severity]string{
-		storage.Severity_CRITICAL_SEVERITY: "P0",
-		storage.Severity_HIGH_SEVERITY:     "P1",
-		storage.Severity_MEDIUM_SEVERITY:   "P2",
-		storage.Severity_LOW_SEVERITY:      "P3",
-	}
-	pattern = regexp.MustCompile(`^(P[0-9])\b`)
 )
 
 // jira notifier plugin.
@@ -78,7 +69,7 @@ type issueTypeResult struct {
 type issueField struct {
 	Name    string `json:"name"`
 	Key     string `json:"key"`
-	FieldId string `json:"fieldId"`
+	FieldID string `json:"fieldId"`
 }
 
 type issueFieldsResult struct {
@@ -93,10 +84,6 @@ type permissionResult struct {
 	Permissions map[string]struct {
 		HavePermission bool
 	}
-}
-
-type jiraField struct {
-	Name string
 }
 
 func callJira(client *jiraLib.Client, urlPath string, result interface{}, startAt int) error {
@@ -146,7 +133,7 @@ func getIssueTypes(client *jiraLib.Client, project string) ([]*jiraLib.MetaIssue
 
 	for result.Total != len(returnList) {
 		result = issueTypeResult{}
-		callJira(client, urlPath, &result, len(returnList))
+		err = callJira(client, urlPath, &result, len(returnList))
 
 		if err != nil {
 			return []*jiraLib.MetaIssueType{}, err
@@ -165,8 +152,8 @@ func getIssueTypes(client *jiraLib.Client, project string) ([]*jiraLib.MetaIssue
 	return returnList, nil
 }
 
-func getIssueFields(client *jiraLib.Client, project, issueId string) ([]*issueField, error) {
-	urlPath := fmt.Sprintf("rest/api/2/issue/createmeta/%s/issuetypes/%s", project, issueId)
+func getIssueFields(client *jiraLib.Client, project, issueID string) ([]*issueField, error) {
+	urlPath := fmt.Sprintf("rest/api/2/issue/createmeta/%s/issuetypes/%s", project, issueID)
 
 	result := issueFieldsResult{}
 
@@ -186,7 +173,7 @@ func getIssueFields(client *jiraLib.Client, project, issueId string) ([]*issueFi
 
 	for result.Total != len(returnList) {
 		result = issueFieldsResult{}
-		callJira(client, urlPath, &result, len(returnList))
+		err = callJira(client, urlPath, &result, len(returnList))
 
 		if err != nil {
 			return []*issueField{}, err
@@ -218,19 +205,19 @@ func isPriorityFieldOnIssueType(client *jiraLib.Client, project, issueType strin
 	}
 
 	// Validate that the desired type exists and get its ID
-	var issueId string
+	var issueID string
 	for _, issue := range issueTypes {
 		if strings.EqualFold(issue.Name, issueType) {
-			issueId = issue.Id
+			issueID = issue.Id
 		}
 	}
 
-	if issueId == "" {
+	if issueID == "" {
 		return false, errors.Errorf("could not find issue type %q in project %q.", issueType, project)
 	}
 
 	// Fetch its fields
-	issueTypeFields, err := getIssueFields(client, project, issueId)
+	issueTypeFields, err := getIssueFields(client, project, issueID)
 
 	if err != nil {
 		return false, errors.Wrapf(err, "could not get meta information for JIRA project %q and issue type %s", project, issueType)
@@ -480,7 +467,7 @@ func createClient(notifier *storage.Notifier, cryptoCodec cryptocodec.CryptoCode
 
 	// Test auth
 
-	urlPath := fmt.Sprintf("rest/api/2/configuration")
+	urlPath := "rest/api/2/configuration"
 
 	req, err := client.NewRequest("GET", urlPath, nil)
 	if err != nil {
@@ -507,7 +494,7 @@ func createClient(notifier *storage.Notifier, cryptoCodec cryptocodec.CryptoCode
 				return nil, errors.Wrap(err, "could not create JIRA client")
 			}
 
-			req, err := client.NewRequest("GET", urlPath, nil)
+			req, err = client.NewRequest("GET", urlPath, nil)
 			if err != nil {
 				return nil, err
 			}

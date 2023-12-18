@@ -65,7 +65,7 @@ func (j *fakeJira) handleConfiguration(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(200)
 }
 
-func (j *fakeJira) handleIssueTypeFields(w http.ResponseWriter, r *http.Request) {
+func (j *fakeJira) handleIssueTypeFields(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	targetIssueType := j.project.GetIssueTypeWithName("IssueWithPrio")
 	result := issueFieldsResult{
