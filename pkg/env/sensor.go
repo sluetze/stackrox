@@ -48,4 +48,7 @@ var (
 
 	// DeduperStateSyncTimeout defines the maximum time Sensor will wait for the expected deduper state coming from Central
 	DeduperStateSyncTimeout = registerDurationSetting("ROX_DEDUPER_STATE_TIMEOUT", 30*time.Second)
+
+	// ProcessIndicatorBufferSize indicates how many process indicators will be kept in Sensor while offline.
+	ProcessIndicatorBufferSize = RegisterIntegerSetting("ROX_SENSOR_PROCESS_INDICATOR_OFFLINE_BUFFER_SIZE", 100)
 )
