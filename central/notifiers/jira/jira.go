@@ -136,12 +136,12 @@ func getIssueTypes(client *jiraLib.Client, project string) ([]*jiraLib.MetaIssue
 		return []*jiraLib.MetaIssueType{}, err
 	}
 
-	returnList := make([]*jiraLib.MetaIssueType, result.Total)
+	returnList := make([]*jiraLib.MetaIssueType, 0, result.Total)
 
 	if len(result.IssueTypes) == 0 {
-		returnList = result.IssueTypesCloud
+		returnList = append(returnList, result.IssueTypesCloud...)
 	} else {
-		returnList = result.IssueTypes
+		returnList = append(returnList, result.IssueTypes...)
 	}
 
 	for result.Total != len(returnList) {
@@ -176,12 +176,12 @@ func getIssueFields(client *jiraLib.Client, project, issueId string) ([]*issueFi
 		return []*issueField{}, err
 	}
 
-	returnList := make([]*issueField, result.Total)
+	returnList := make([]*issueField, 0, result.Total)
 
 	if len(result.IssueFields) == 0 {
-		returnList = result.IssueFieldsCloud
+		returnList = append(returnList, result.IssueFieldsCloud...)
 	} else {
-		returnList = result.IssueFields
+		returnList = append(returnList, result.IssueFields...)
 	}
 
 	for result.Total != len(returnList) {
