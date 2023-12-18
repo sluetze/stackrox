@@ -646,3 +646,7 @@ var (
 func (c *Central) IsScannerEnabled() bool {
 	return c.Spec.Scanner.IsEnabled()
 }
+
+func (c *Central) IsScannerV4Enabled() bool {
+	return c.Spec.ScannerV4.IsEnabled()
+}
