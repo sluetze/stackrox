@@ -568,18 +568,22 @@ func configurePriority(client *jiraLib.Client, jiraConf *storage.Jira, project s
 		return nil, errors.Wrap(err, "could not get the priority list")
 	}
 
+	return mapPriorities(prios, jiraConf.GetPriorityMappings())
+}
+
+func mapPriorities(prios []jiraLib.Priority, storageMapping []*storage.Jira_PriorityMapping) (map[storage.Severity]string, error) {
 	prioNameSet := map[string]string{}
 	for _, prio := range prios {
 		prioNameSet[prio.Name] = ""
 	}
 
-	if len(jiraConf.GetPriorityMappings()) == 0 {
+	if len(storageMapping) == 0 {
 		return nil, fmt.Errorf("Please define priority mappings")
 	}
 
 	finalizedMapping := map[storage.Severity]string{}
 	missingFromJira := []string{}
-	for _, prioMapping := range jiraConf.GetPriorityMappings() {
+	for _, prioMapping := range storageMapping {
 		if _, exists := prioNameSet[prioMapping.PriorityName]; exists {
 			finalizedMapping[prioMapping.Severity] = prioMapping.PriorityName
 		} else {
