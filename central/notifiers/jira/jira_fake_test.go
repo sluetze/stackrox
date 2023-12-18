@@ -38,8 +38,11 @@ type fakeJira struct {
 
 func (j *fakeJira) Handler() http.Handler {
 	mux := http.NewServeMux()
+	mux.HandleFunc("/rest/api/2/configuration", j.handleConfiguration)
+	mux.HandleFunc("/rest/api/2/mypermissions/", j.handleMyPermissions)
 	mux.HandleFunc("/rest/api/2/priority", j.handlePriority)
-	mux.HandleFunc("/rest/api/2/issue/createmeta/", j.handleCreateMeta)
+	mux.HandleFunc("/rest/api/2/issue/createmeta/FJ/issuetypes", j.handleIssueType)
+	mux.HandleFunc("/rest/api/2/issue/createmeta/FJ/issuetypes/25", j.handleIssueTypeFields)
 	mux.HandleFunc("/rest/api/2/issue", j.handleCreateIssue)
 
 	if j.username == "" && j.password == "" {
@@ -49,6 +52,7 @@ func (j *fakeJira) Handler() http.Handler {
 	basicAuthHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", j.username, j.password))))
 	tokenAuthHeader := fmt.Sprintf("Bearer %s", j.token)
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		fmt.Printf("Handling call to endpoint %s\n", req.RequestURI)
 		if req.Header.Get("Authorization") != basicAuthHeader && req.Header.Get("Authorization") != tokenAuthHeader {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
@@ -57,12 +61,54 @@ func (j *fakeJira) Handler() http.Handler {
 	})
 }
 
+func (j *fakeJira) handleConfiguration(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(200)
+}
+
+func (j *fakeJira) handleIssueTypeFields(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	targetIssueType := j.project.GetIssueTypeWithName("IssueWithPrio")
+	result := issueFieldsResult{
+		Total: len(targetIssueType.Fields),
+	}
+
+	iField := issueField{
+		Name: "Priority",
+	}
+
+	if j.cloud {
+		result.IssueFieldsCloud = []*issueField{&iField}
+	} else {
+		result.IssueFields = []*issueField{&iField}
+	}
+
+	require.NoError(j.t, json.NewEncoder(w).Encode(result))
+}
+
+func (j *fakeJira) handleMyPermissions(w http.ResponseWriter, r *http.Request) {
+	projectKey := r.URL.Query().Get("projectKey")
+
+	if projectKey == "" {
+		w.WriteHeader(404)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	require.NoError(j.t, json.NewEncoder(w).Encode(permissionResult{
+		Permissions: map[string]struct {
+			HavePermission bool
+		}{
+			"CREATE_ISSUES": {HavePermission: true},
+		},
+	}))
+}
+
 func (j *fakeJira) handlePriority(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	require.NoError(j.t, json.NewEncoder(w).Encode(j.priorities))
 }
 
-func (j *fakeJira) handleCreateMeta(w http.ResponseWriter, req *http.Request) {
+func (j *fakeJira) handleIssueType(w http.ResponseWriter, req *http.Request) {
 	pathSuffix, found := strings.CutPrefix(req.URL.Path, "/rest/api/2/issue/createmeta/")
 
 	if !found {
@@ -156,9 +202,11 @@ func testWithFakeJira(t *testing.T, cloud bool) {
 		IssueTypes: []*jiraLib.MetaIssueType{
 			{
 				Name: "IssueWithoutPrio",
+				Id:   "24",
 			},
 			{
 				Name: "IssueWithPrio",
+				Id:   "25",
 				Fields: map[string]interface{}{
 					"priority": true,
 				},
@@ -184,6 +232,24 @@ func testWithFakeJira(t *testing.T, cloud bool) {
 		Username:  "fakejirauser",
 		Password:  "badpassword",
 		IssueType: "IssueWithPrio",
+		PriorityMappings: []*storage.Jira_PriorityMapping{
+			{
+				Severity:     storage.Severity_CRITICAL_SEVERITY,
+				PriorityName: "P0",
+			},
+			{
+				Severity:     storage.Severity_HIGH_SEVERITY,
+				PriorityName: "P1",
+			},
+			{
+				Severity:     storage.Severity_MEDIUM_SEVERITY,
+				PriorityName: "P2",
+			},
+			{
+				Severity:     storage.Severity_LOW_SEVERITY,
+				PriorityName: "P3",
+			},
+		},
 	}
 	fakeJiraConfig := &storage.Notifier{
 		Name:         "FakeJIRA",
@@ -204,7 +270,7 @@ func testWithFakeJira(t *testing.T, cloud bool) {
 
 	// Test with invalid password
 	_, err := newJira(fakeJiraConfig, metadataGetter, mitreStore, cryptocodec.Singleton(), "stackrox")
-	assert.Contains(t, err.Error(), "could not get the priority list")
+	assert.Contains(t, err.Error(), "Status code: 401")
 
 	// Test with valid username/password combo
 	fakeJiraStorageConfig.Password = password
