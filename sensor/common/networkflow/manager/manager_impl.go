@@ -469,7 +469,7 @@ func (m *networkFlowManager) enrichConnection(conn *connection, status *connStat
 		}
 
 		if extSrc == nil {
-			if isInternet || !conn.remote.IPAndPort.IPNetwork.IsValid() {
+			if isInternet {
 				lookupResults = []clusterentities.LookupResult{
 					{
 						Entity:         networkgraph.InternetEntity(),
@@ -479,7 +479,7 @@ func (m *networkFlowManager) enrichConnection(conn *connection, status *connStat
 			} else {
 				lookupResults = []clusterentities.LookupResult{
 					{
-						Entity:         networkgraph.LearnedExternalEntity(conn.remote.IPAndPort.IPNetwork),
+						Entity:         networkgraph.LearnedExternalEntity(net.IPNetworkFromNetworkPeerID(conn.remote.IPAndPort)),
 						ContainerPorts: []uint16{port},
 					},
 				}
