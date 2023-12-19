@@ -469,7 +469,7 @@ func (m *networkFlowManager) enrichConnection(conn *connection, status *connStat
 		}
 
 		if extSrc == nil {
-			if isInternet {
+			if isInternet || !conn.remote.IPAndPort.IPNetwork.IsValid() {
 				lookupResults = []clusterentities.LookupResult{
 					{
 						Entity:         networkgraph.InternetEntity(),
