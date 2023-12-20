@@ -283,7 +283,7 @@ func (m *handlerImpl) processScanConfigScheduleChangeRequest(requestID string, c
 		scanSetting.Suspend = *config.Suspend
 	} else {
 		// Handle the case where the field doesn't exist (older CRD)
-		return m.composeAndSendApplyScanConfigResponse(requestID, errors.New("Compliance operator version is too old"))
+		return m.composeAndSendApplyScanConfigResponse(requestID, errors.New("suspending a scan is not supported on this version of the compliance operator"))
 	}
 
 	obj, err = runtimeObjToUnstructured(&scanSetting)
