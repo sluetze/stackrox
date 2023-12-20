@@ -140,8 +140,12 @@ func registerGeneratedTypes(builder generator.SchemaBuilder) {
 	}))
 	generator.RegisterProtoEnum(builder, reflect.TypeOf(storage.Alert_Violation_Type(0)))
 	utils.Must(builder.AddType("AzureProviderMetadata", []string{
+		"clusterId: String!",
+		"clusterName: String!",
+		"clusterType: AzureProviderMetadata_ClusterType!",
 		"subscriptionId: String!",
 	}))
+	generator.RegisterProtoEnum(builder, reflect.TypeOf(storage.AzureProviderMetadata_ClusterType(0)))
 	generator.RegisterProtoEnum(builder, reflect.TypeOf(storage.BooleanOperator(0)))
 	utils.Must(builder.AddType("CSCC", []string{
 		"serviceAccount: String!",
@@ -2730,9 +2734,42 @@ func (resolver *Resolver) wrapAzureProviderMetadatasWithContext(ctx context.Cont
 	return output, nil
 }
 
+func (resolver *azureProviderMetadataResolver) ClusterId(ctx context.Context) string {
+	value := resolver.data.GetClusterId()
+	return value
+}
+
+func (resolver *azureProviderMetadataResolver) ClusterName(ctx context.Context) string {
+	value := resolver.data.GetClusterName()
+	return value
+}
+
+func (resolver *azureProviderMetadataResolver) ClusterType(ctx context.Context) string {
+	value := resolver.data.GetClusterType()
+	return value.String()
+}
+
 func (resolver *azureProviderMetadataResolver) SubscriptionId(ctx context.Context) string {
 	value := resolver.data.GetSubscriptionId()
 	return value
+}
+
+func toAzureProviderMetadata_ClusterType(value *string) storage.AzureProviderMetadata_ClusterType {
+	if value != nil {
+		return storage.AzureProviderMetadata_ClusterType(storage.AzureProviderMetadata_ClusterType_value[*value])
+	}
+	return storage.AzureProviderMetadata_ClusterType(0)
+}
+
+func toAzureProviderMetadata_ClusterTypes(values *[]string) []storage.AzureProviderMetadata_ClusterType {
+	if values == nil {
+		return nil
+	}
+	output := make([]storage.AzureProviderMetadata_ClusterType, len(*values))
+	for i, v := range *values {
+		output[i] = toAzureProviderMetadata_ClusterType(&v)
+	}
+	return output
 }
 
 func toBooleanOperator(value *string) storage.BooleanOperator {

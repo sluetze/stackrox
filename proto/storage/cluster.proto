@@ -27,7 +27,16 @@ message AWSProviderMetadata {
 }
 
 message AzureProviderMetadata {
-    string subscription_id = 1;
+    enum ClusterType {
+        UNKNOWN = 0;
+        AKS     = 1;
+        ARO     = 2;
+    }
+
+    string subscription_id   = 1;
+    string cluster_name      = 2;
+    string cluster_id        = 3;
+    ClusterType cluster_type = 4;
 }
 
 message ProviderMetadata {

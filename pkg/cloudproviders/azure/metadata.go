@@ -9,8 +9,14 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/httputil"
+	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/utils"
+)
+
+const (
+	aksAssetType        = "aks"
+	aksClusterNameLabel = "kubernetes.azure.com/cluster"
 )
 
 type azureInstanceMetadata struct {
@@ -22,9 +28,12 @@ type azureInstanceMetadata struct {
 	} `json:"compute"`
 }
 
-var (
-	log = logging.LoggerForModule()
-)
+type clusterMetadata struct {
+	name        string
+	clusterType string
+}
+
+var log = logging.LoggerForModule()
 
 // GetMetadata tries to obtain the Azure instance metadata.
 // If not on Azure, returns nil, nil.
@@ -59,10 +68,11 @@ func GetMetadata(ctx context.Context) (*storage.ProviderMetadata, error) {
 	}
 
 	var metadata azureInstanceMetadata
-
 	if err := json.Unmarshal(contents, &metadata); err != nil {
 		return nil, errors.Wrap(err, "unmarshaling response")
 	}
+
+	clusterMetadata := getClusterMetadata(ctx)
 
 	attestedVMID, err := getAttestedVMID(ctx)
 	if err != nil {
@@ -76,8 +86,29 @@ func GetMetadata(ctx context.Context) (*storage.ProviderMetadata, error) {
 		Provider: &storage.ProviderMetadata_Azure{
 			Azure: &storage.AzureProviderMetadata{
 				SubscriptionId: metadata.Compute.SubscriptionID,
+				ClusterName:    clusterMetadata.name,
 			},
 		},
 		Verified: verified,
 	}, nil
+}
+
+func getClusterMetadata(ctx context.Context) *clusterMetadata {
+	metadata := &clusterMetadata{}
+	k8sClient, err := k8sutil.GetK8sInClusterClient()
+	if err != nil {
+		log.Error("Failed to kubernetes client: ", err)
+		return metadata
+	}
+	nodeLabels, err := k8sutil.GetAnyNodeLabels(ctx, k8sClient)
+	log.Infof("All node labels: %+v", nodeLabels)
+	if err != nil {
+		log.Error("Failed to get node labels: ", err)
+		return metadata
+	}
+	if clusterName, ok := nodeLabels[aksClusterNameLabel]; ok {
+		metadata.name = clusterName
+		metadata.clusterType = aksAssetType
+	}
+	return metadata
 }

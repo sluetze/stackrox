@@ -396,8 +396,26 @@
       "properties": {
         "subscriptionId": {
           "type": "string"
+        },
+        "clusterName": {
+          "type": "string"
+        },
+        "clusterId": {
+          "type": "string"
+        },
+        "clusterType": {
+          "$ref": "#/definitions/storageAzureProviderMetadataClusterType"
         }
       }
+    },
+    "storageAzureProviderMetadataClusterType": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "AKS",
+        "ARO"
+      ],
+      "default": "UNKNOWN"
     },
     "storageCluster": {
       "type": "object",

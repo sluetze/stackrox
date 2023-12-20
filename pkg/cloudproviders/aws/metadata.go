@@ -15,6 +15,7 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/errorhelpers"
 	"github.com/stackrox/rox/pkg/httputil/proxy"
+	"github.com/stackrox/rox/pkg/k8sutil"
 	"github.com/stackrox/rox/pkg/logging"
 )
 
@@ -30,6 +31,11 @@ var (
 		Transport: proxy.Without(),
 	}
 )
+
+type clusterMetadata struct {
+	name        string
+	clusterType string
+}
 
 // GetMetadata tries to obtain the AWS instance metadata.
 // If not on AWS, returns nil, nil.
@@ -113,4 +119,20 @@ func plaintextIdentityDoc(ctx context.Context, mdClient *ec2metadata.EC2Metadata
 	}
 
 	return doc, nil
+}
+
+func getClusterMetadata(ctx context.Context) *clusterMetadata {
+	metadata := &clusterMetadata{}
+	k8sClient, err := k8sutil.GetK8sInClusterClient()
+	if err != nil {
+		log.Error("Failed to kubernetes client: ", err)
+		return metadata
+	}
+	nodeLabels, err := k8sutil.GetAnyNodeLabels(ctx, k8sClient)
+	log.Infof("All node labels: %+v", nodeLabels)
+	if err != nil {
+		log.Error("Failed to get node labels: ", err)
+		return metadata
+	}
+	return metadata
 }
