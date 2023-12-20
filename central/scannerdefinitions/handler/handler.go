@@ -49,7 +49,9 @@ const (
 	// TODO(ROX-20481): Replace this URL with prod GCS bucket domain
 	v4StorageDomain   = "https://storage.googleapis.com/scanner-v4-test"
 	mappingFile       = "redhat-repository-mappings/mapping.zip"
+	cvssFile          = "nvd-bundle/nvd-data.tar.gz"
 	mappingUpdaterKey = "mapping"
+	cvssUpdaterKey    = "cvss"
 )
 
 var (
@@ -190,12 +192,18 @@ func (h *httpHandler) getUpdater(key string) *requestedUpdater {
 	updater, exists := h.updaters[key]
 	if !exists {
 		filePath := filepath.Join(h.onlineVulnDir, key+".zip")
-		var url string
+		buildURL := func(values []string) string {
+			return strings.Join(values, "/")
+		}
 
-		if key == mappingUpdaterKey {
-			url = strings.Join([]string{v4StorageDomain, mappingFile}, "/")
-		} else { // if it's uuid
-			url = strings.Join([]string{scannerUpdateDomain, key, scannerUpdateURLSuffix}, "/")
+		var url string
+		switch key {
+		case mappingUpdaterKey:
+			url = buildURL([]string{v4StorageDomain, mappingFile})
+		case cvssUpdaterKey:
+			url = buildURL([]string{v4StorageDomain, cvssFile})
+		default: // uuid
+			url = buildURL([]string{scannerUpdateDomain, key, scannerUpdateURLSuffix})
 		}
 
 		h.updaters[key] = &requestedUpdater{
