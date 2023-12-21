@@ -50,5 +50,5 @@ var (
 	DeduperStateSyncTimeout = registerDurationSetting("ROX_DEDUPER_STATE_TIMEOUT", 30*time.Second)
 
 	// NetworkFlowBufferSize holds the size of how many network flows updates will be kept in Sensor while offline.
-	NetworkFlowBufferSize = RegisterIntegerSetting("ROX_SENSOR_NETFLOW_OFFLINE_BUFFER_SIZE", 100)
+	NetworkFlowBufferSize = RegisterIntegerSetting("ROX_SENSOR_NETFLOW_BUFFER_SIZE", 100)
 )
