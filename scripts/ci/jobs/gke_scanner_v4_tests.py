@@ -14,6 +14,8 @@ os.environ["ORCHESTRATOR_FLAVOR"] = "k8s"
 os.environ["STORE_METRICS"] = "true"
 os.environ["ROX_POSTGRES_DATASTORE"] = "true"
 os.environ["ROX_BASELINE_GENERATION_DURATION"] = "5m"
+os.environ["CENTRAL_NAMESPACE"] = "stackrox"
+os.environ["SENSOR_NAMESPACE"] = "stackrox-sc"
 
 ClusterTestRunner(
     cluster=GKECluster("scanner-v4-test", machine_type="e2-standard-8"),
