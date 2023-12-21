@@ -6,11 +6,11 @@ import (
 	"reflect"
 
 	"github.com/gogo/protobuf/proto"
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/central/declarativeconfig/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/declarativeconfig"
 	"github.com/stackrox/rox/pkg/errox"
+	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/stringutils"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
@@ -55,7 +55,7 @@ func HealthStatusForProtoMessage(message proto.Message, handler string, err erro
 		Status: utils.IfThenElse(err != nil, storage.DeclarativeConfigHealth_UNHEALTHY,
 			storage.DeclarativeConfigHealth_HEALTHY),
 		ErrorMessage:  errMsg,
-		LastTimestamp: timestamp.TimestampNow(),
+		LastTimestamp: protoconv.TimestampNow(),
 	}
 }
 
@@ -75,7 +75,7 @@ func HealthStatusForHandler(handlerID string, err error) *storage.DeclarativeCon
 		Status: utils.IfThenElse(err != nil, storage.DeclarativeConfigHealth_UNHEALTHY,
 			storage.DeclarativeConfigHealth_HEALTHY),
 		ErrorMessage:  errMsg,
-		LastTimestamp: timestamp.TimestampNow(),
+		LastTimestamp: protoconv.TimestampNow(),
 	}
 }
 

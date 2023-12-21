@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	clusterDatastore "github.com/stackrox/rox/central/cluster/datastore"
 	scanConfigSearch "github.com/stackrox/rox/central/complianceoperator/v2/scanconfigurations/datastore/search"
@@ -12,6 +11,7 @@ import (
 	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
+	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/search"
@@ -82,7 +82,7 @@ func (ds *datastoreImpl) UpsertScanConfiguration(ctx context.Context, scanConfig
 	defer ds.keyedMutex.Unlock(scanConfig.GetId())
 
 	// Update the last updated time
-	scanConfig.LastUpdatedTime = types.TimestampNow()
+	scanConfig.LastUpdatedTime = protoconv.TimestampNow()
 	return ds.storage.Upsert(ctx, scanConfig)
 }
 

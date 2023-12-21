@@ -6,7 +6,6 @@ import (
 	"sort"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
@@ -375,7 +374,7 @@ func (e *enricherImpl) enrichWithMetadata(ctx context.Context, enrichmentContext
 					Name:          registry.Source().GetName(),
 					Type:          storage.IntegrationHealth_IMAGE_INTEGRATION,
 					Status:        storage.IntegrationHealth_UNHEALTHY,
-					LastTimestamp: timestamp.TimestampNow(),
+					LastTimestamp: protoconv.TimestampNow(),
 					ErrorMessage:  err.Error(),
 				})
 			}
@@ -403,7 +402,7 @@ func (e *enricherImpl) enrichWithMetadata(ctx context.Context, enrichmentContext
 				Name:          name,
 				Type:          storage.IntegrationHealth_IMAGE_INTEGRATION,
 				Status:        storage.IntegrationHealth_HEALTHY,
-				LastTimestamp: timestamp.TimestampNow(),
+				LastTimestamp: protoconv.TimestampNow(),
 				ErrorMessage:  "",
 			})
 			return true, nil
@@ -577,7 +576,7 @@ func (e *enricherImpl) enrichWithScan(ctx context.Context, enrichmentContext Enr
 					Name:          scanner.DataSource().Name,
 					Type:          storage.IntegrationHealth_IMAGE_INTEGRATION,
 					Status:        storage.IntegrationHealth_UNHEALTHY,
-					LastTimestamp: timestamp.TimestampNow(),
+					LastTimestamp: protoconv.TimestampNow(),
 					ErrorMessage:  err.Error(),
 				})
 			}
@@ -601,7 +600,7 @@ func (e *enricherImpl) enrichWithScan(ctx context.Context, enrichmentContext Enr
 				Name:          scanner.DataSource().Name,
 				Type:          storage.IntegrationHealth_IMAGE_INTEGRATION,
 				Status:        storage.IntegrationHealth_HEALTHY,
-				LastTimestamp: timestamp.TimestampNow(),
+				LastTimestamp: protoconv.TimestampNow(),
 				ErrorMessage:  "",
 			})
 			return result, nil

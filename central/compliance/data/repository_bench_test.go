@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/internalapi/compliance"
 	"github.com/stackrox/rox/pkg/compliance/compress"
+	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/utils"
 )
 
@@ -55,7 +55,7 @@ func getCompressedCheckResults() *compliance.ComplianceReturn {
 	return &compliance.ComplianceReturn{
 		NodeName: "test",
 		ScrapeId: "test scrape",
-		Time:     types.TimestampNow(),
+		Time:     protoconv.TimestampNow(),
 		Evidence: compressedResults,
 	}
 }

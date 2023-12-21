@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/adhocore/gronx"
-	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	compIntegration "github.com/stackrox/rox/central/complianceoperator/v2/integration/datastore"
 	compScanSetting "github.com/stackrox/rox/central/complianceoperator/v2/scanconfigurations/datastore"
@@ -13,6 +12,7 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/features"
 	"github.com/stackrox/rox/pkg/logging"
+	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/protoconv/schedule"
 	"github.com/stackrox/rox/pkg/protoutils"
 	"github.com/stackrox/rox/pkg/search"
@@ -128,7 +128,7 @@ func (m *managerImpl) ProcessScanRequest(ctx context.Context, scanRequest *stora
 	}
 
 	scanRequest.Id = uuid.NewV4().String()
-	scanRequest.CreatedTime = types.TimestampNow()
+	scanRequest.CreatedTime = protoconv.TimestampNow()
 	err = m.scanSettingDS.UpsertScanConfiguration(ctx, scanRequest)
 	if err != nil {
 		log.Error(err)
