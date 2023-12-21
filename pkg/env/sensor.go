@@ -50,5 +50,5 @@ var (
 	DeduperStateSyncTimeout = registerDurationSetting("ROX_DEDUPER_STATE_TIMEOUT", 30*time.Second)
 
 	// ProcessIndicatorBufferSize indicates how many process indicators will be kept in Sensor while offline.
-	ProcessIndicatorBufferSize = RegisterIntegerSetting("ROX_SENSOR_PROCESS_INDICATOR_OFFLINE_BUFFER_SIZE", 100)
+	ProcessIndicatorBufferSize = RegisterIntegerSetting("ROX_SENSOR_PROCESS_INDICATOR_BUFFER_SIZE", 1000)
 )
