@@ -18,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/errorhelpers"
 	"github.com/stackrox/rox/pkg/errox"
 	"github.com/stackrox/rox/pkg/logging"
+	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/registries/docker"
 	"github.com/stackrox/rox/pkg/registries/types"
 )
@@ -188,7 +189,7 @@ func newRegistry(integration *storage.ImageIntegration, disableRepoList bool) (*
 	// ECR client, but instead, we create the registry immediately since the
 	// Authorization Data payload provides the credentials statically.
 	if authData := conf.GetAuthorizationData(); authData != nil {
-		expiresAt, err := protobuftypes.TimestampFromProto(authData.GetExpiresAt())
+		expiresAt, err := protoconv.ConvertTimestampToTimeOrError(authData.GetExpiresAt())
 		if err != nil {
 			return nil, errors.New("invalid authorization data")
 		}

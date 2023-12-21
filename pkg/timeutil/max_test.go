@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gogo/protobuf/types"
+	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +14,7 @@ func TestMaxProtoValid(t *testing.T) {
 	tsProto, err := types.TimestampProto(MaxProtoValid)
 	assert.NoError(t, err)
 
-	ts, err := types.TimestampFromProto(tsProto)
+	ts, err := protoconv.ConvertTimestampToTimeOrError(tsProto)
 	assert.NoError(t, err)
 	assert.Equal(t, MaxProtoValid, ts)
 }
