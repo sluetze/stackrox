@@ -20,7 +20,7 @@ type DataStore interface {
 	UpsertRules(ctx context.Context, rules []*storage.ComplianceOperatorRuleV2) error
 
 	// DeleteRule removes a rule from the database
-	DeleteRule(ctx context.Context, ruleID string) error
+	DeleteRule(ctx context.Context, id string) error
 }
 
 // New returns an instance of DataStore.

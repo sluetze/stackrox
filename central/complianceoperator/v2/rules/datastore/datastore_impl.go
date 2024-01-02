@@ -22,6 +22,6 @@ func (d *datastoreImpl) UpsertRules(ctx context.Context, rules []*storage.Compli
 }
 
 // DeleteRule removes a rule from the database
-func (d *datastoreImpl) DeleteRule(ctx context.Context, ruleID string) error {
-	return d.store.Delete(ctx, ruleID)
+func (d *datastoreImpl) DeleteRule(ctx context.Context, id string) error {
+	return d.store.Delete(ctx, id)
 }

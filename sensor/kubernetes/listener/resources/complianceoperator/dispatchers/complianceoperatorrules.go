@@ -58,7 +58,7 @@ func (c *RulesDispatcher) ProcessEvent(obj, _ interface{}, action central.Resour
 						RuleUid:     id,
 						Name:        complianceRule.Name,
 						RuleType:    complianceRule.CheckType,
-						Severity:    complianceRule.Severity,
+						Severity:    ruleSeverityToV2Severity(complianceRule.Severity),
 						Labels:      complianceRule.Labels,
 						Annotations: complianceRule.Annotations,
 						Title:       complianceRule.Title,
