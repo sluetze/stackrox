@@ -85,7 +85,7 @@ message ComplianceOperatorRuleV2 {
 // Next Tag: 3
 message RuleControls {
     string          standard = 1 [(gogoproto.moretags) = 'search:"Compliance Standard,hidden"'];
-    repeated string controls = 2 [(gogoproto.moretags) = 'search:"Compliance Control,hidden"'];
+    repeated string controls = 2;
 }
 
 // Next Tag: 16

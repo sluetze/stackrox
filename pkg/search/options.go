@@ -215,13 +215,13 @@ var (
 	ComplianceOperatorProfileUID           = newFieldLabel("Compliance Profile UID")
 	ComplianceOperatorProfileVersion       = newFieldLabel("Compliance Profile Version")
 	ComplianceOperatorStandard             = newFieldLabel("Compliance Standard")
-	ComplianceOperatorControl              = newFieldLabel("Compliance Control")
 	ComplianceOperatorScanConfig           = newFieldLabel("Compliance Scan Config ID")
 	ComplianceOperatorCheckID              = newFieldLabel("Compliance Check ID")
 	ComplianceOperatorCheckName            = newFieldLabel("Compliance Check Name")
 	ComplianceOperatorScanUpdateTime       = newFieldLabel("Compliance Scan Config Last Updated Time")
 	ComplianceOperatorResultCreateTime     = newFieldLabel("Compliance Check Result Created Time")
 	ComplianceOperatorScanLastExecutedTime = newFieldLabel("Compliance Scan Last Executed Time")
+	ComplianceOperatorRuleType             = newFieldLabel("Compliance Rule Type")
 
 	// Node search fields
 	Node             = newFieldLabel("Node")

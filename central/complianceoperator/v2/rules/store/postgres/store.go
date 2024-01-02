@@ -45,6 +45,7 @@ type Store interface {
 	Exists(ctx context.Context, id string) (bool, error)
 
 	Get(ctx context.Context, id string) (*storeType, bool, error)
+	GetByQuery(ctx context.Context, query *v1.Query) ([]*storeType, error)
 	GetMany(ctx context.Context, identifiers []string) ([]*storeType, []int, error)
 	GetIDs(ctx context.Context) ([]string, error)
 
@@ -120,10 +121,9 @@ func insertIntoComplianceOperatorRuleV2Controls(batch *pgx.Batch, obj *storage.R
 		complianceOperatorRuleV2ID,
 		idx,
 		obj.GetStandard(),
-		obj.GetControls(),
 	}
 
-	finalStr := "INSERT INTO compliance_operator_rule_v2_controls (compliance_operator_rule_v2_Id, idx, Standard, Controls) VALUES($1, $2, $3, $4) ON CONFLICT(compliance_operator_rule_v2_Id, idx) DO UPDATE SET compliance_operator_rule_v2_Id = EXCLUDED.compliance_operator_rule_v2_Id, idx = EXCLUDED.idx, Standard = EXCLUDED.Standard, Controls = EXCLUDED.Controls"
+	finalStr := "INSERT INTO compliance_operator_rule_v2_controls (compliance_operator_rule_v2_Id, idx, Standard) VALUES($1, $2, $3) ON CONFLICT(compliance_operator_rule_v2_Id, idx) DO UPDATE SET compliance_operator_rule_v2_Id = EXCLUDED.compliance_operator_rule_v2_Id, idx = EXCLUDED.idx, Standard = EXCLUDED.Standard"
 	batch.Queue(finalStr, values...)
 
 	return nil
@@ -213,7 +213,6 @@ func copyFromComplianceOperatorRuleV2Controls(ctx context.Context, s pgSearch.De
 		"compliance_operator_rule_v2_id",
 		"idx",
 		"standard",
-		"controls",
 	}
 
 	for idx, obj := range objs {
@@ -226,7 +225,6 @@ func copyFromComplianceOperatorRuleV2Controls(ctx context.Context, s pgSearch.De
 			complianceOperatorRuleV2ID,
 			idx,
 			obj.GetStandard(),
-			obj.GetControls(),
 		})
 
 		// if we hit our batch size we need to push the data

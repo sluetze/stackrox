@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/lib/pq"
+	v1 "github.com/stackrox/rox/generated/api/v1"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/features"
 	"github.com/stackrox/rox/pkg/postgres"
 	"github.com/stackrox/rox/pkg/postgres/walker"
 	"github.com/stackrox/rox/pkg/sac/resources"
+	"github.com/stackrox/rox/pkg/search"
+	"github.com/stackrox/rox/pkg/search/postgres/mapping"
 )
 
 var (
@@ -40,8 +42,10 @@ var (
 		schema.ResolveReferences(func(messageTypeName string) *walker.Schema {
 			return referencedSchemas[fmt.Sprintf("storage.%s", messageTypeName)]
 		})
+		schema.SetOptionsMap(search.Walk(v1.SearchCategory_COMPLIANCE_RULES, "complianceoperatorrulev2", (*storage.ComplianceOperatorRuleV2)(nil)))
 		schema.ScopingResource = resources.ComplianceOperator
 		RegisterTable(schema, CreateTableComplianceOperatorRuleV2Stmt, features.ComplianceEnhancements.Enabled)
+		mapping.RegisterCategoryToTable(v1.SearchCategory_COMPLIANCE_RULES, schema)
 		return schema
 	}()
 )
@@ -68,6 +72,5 @@ type ComplianceOperatorRuleV2Controls struct {
 	ComplianceOperatorRuleV2ID  string                   `gorm:"column:compliance_operator_rule_v2_id;type:varchar;primaryKey"`
 	Idx                         int                      `gorm:"column:idx;type:integer;primaryKey;index:complianceoperatorrulev2controls_idx,type:btree"`
 	Standard                    string                   `gorm:"column:standard;type:varchar"`
-	Controls                    *pq.StringArray          `gorm:"column:controls;type:text[]"`
 	ComplianceOperatorRuleV2Ref ComplianceOperatorRuleV2 `gorm:"foreignKey:compliance_operator_rule_v2_id;references:id;belongsTo;constraint:OnDelete:CASCADE"`
 }
