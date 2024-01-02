@@ -41,17 +41,17 @@ func (m *MockDataStore) EXPECT() *MockDataStoreMockRecorder {
 }
 
 // DeleteRule mocks base method.
-func (m *MockDataStore) DeleteRule(ctx context.Context, ruleID string) error {
+func (m *MockDataStore) DeleteRule(ctx context.Context, id string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteRule", ctx, ruleID)
+	ret := m.ctrl.Call(m, "DeleteRule", ctx, id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteRule indicates an expected call of DeleteRule.
-func (mr *MockDataStoreMockRecorder) DeleteRule(ctx, ruleID any) *gomock.Call {
+func (mr *MockDataStoreMockRecorder) DeleteRule(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRule", reflect.TypeOf((*MockDataStore)(nil).DeleteRule), ctx, ruleID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRule", reflect.TypeOf((*MockDataStore)(nil).DeleteRule), ctx, id)
 }
 
 // UpsertRule mocks base method.
