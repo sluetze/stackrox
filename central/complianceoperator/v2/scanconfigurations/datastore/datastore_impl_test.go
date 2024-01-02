@@ -223,7 +223,7 @@ func (s *complianceScanConfigDataStoreTestSuite) TestDeleteScanConfiguration() {
 	s.Require().NoError(err)
 	s.Require().Equal(1, len(clusterStatuses))
 	// Now delete it
-	scanConfigName, err := s.dataStore.DeleteScanConfiguration(s.hasWriteCtx, configID)
+	scanConfigName, err := s.dataStore.DeleteScanConfiguration(s.hasWriteNoClusterCtx, configID)
 	s.Require().NoError(err)
 	s.Require().Equal(mockScanName, scanConfigName)
 

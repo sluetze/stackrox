@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	scanConfigurationsSAC = sac.ForResource(resources.Compliance)
+	complianceSAC = sac.ForResource(resources.Compliance)
 )
 
 type datastoreImpl struct {
@@ -32,23 +32,11 @@ type datastoreImpl struct {
 
 // GetScanConfiguration retrieves the scan configuration specified by id
 func (ds *datastoreImpl) GetScanConfiguration(ctx context.Context, id string) (*storage.ComplianceOperatorScanConfigurationV2, bool, error) {
-	if ok, err := scanConfigurationsSAC.ReadAllowed(ctx); err != nil {
-		return nil, false, err
-	} else if !ok {
-		return nil, false, nil
-	}
-
 	return ds.storage.Get(ctx, id)
 }
 
 // ScanConfigurationExists retrieves the existence of scan configuration specified by name
 func (ds *datastoreImpl) ScanConfigurationExists(ctx context.Context, scanName string) (bool, error) {
-	if ok, err := scanConfigurationsSAC.ReadAllowed(ctx); err != nil {
-		return false, err
-	} else if !ok {
-		return false, nil
-	}
-
 	scanConfigs, err := ds.storage.GetByQuery(ctx, search.NewQueryBuilder().
 		AddExactMatches(search.ComplianceOperatorScanName, scanName).ProtoQuery())
 	if err != nil {
@@ -60,18 +48,12 @@ func (ds *datastoreImpl) ScanConfigurationExists(ctx context.Context, scanName s
 
 // GetScanConfigurations retrieves the scan configurations specified by query
 func (ds *datastoreImpl) GetScanConfigurations(ctx context.Context, query *v1.Query) ([]*storage.ComplianceOperatorScanConfigurationV2, error) {
-	if ok, err := scanConfigurationsSAC.ReadAllowed(ctx); err != nil {
-		return nil, err
-	} else if !ok {
-		return nil, nil
-	}
-
 	return ds.storage.GetByQuery(ctx, query)
 }
 
 // UpsertScanConfiguration adds or updates the scan configuration
 func (ds *datastoreImpl) UpsertScanConfiguration(ctx context.Context, scanConfig *storage.ComplianceOperatorScanConfigurationV2) error {
-	if ok, err := scanConfigurationsSAC.WriteAllowed(ctx); err != nil {
+	if ok, err := complianceSAC.WriteAllowed(ctx); err != nil {
 		return err
 	} else if !ok {
 		return sac.ErrResourceAccessDenied
@@ -87,9 +69,29 @@ func (ds *datastoreImpl) UpsertScanConfiguration(ctx context.Context, scanConfig
 
 // DeleteScanConfiguration deletes the scan configuration specified by id
 func (ds *datastoreImpl) DeleteScanConfiguration(ctx context.Context, id string) (string, error) {
-	if ok, err := scanConfigurationsSAC.WriteAllowed(ctx); err != nil {
+	if ok, err := complianceSAC.WriteAllowed(ctx); err != nil {
 		return "", err
 	} else if !ok {
+		return "", sac.ErrResourceAccessDenied
+	}
+
+	// Need to verify that write to all clusters used in this configuration is allowed.
+	elevatedSACReadCtx := sac.WithGlobalAccessScopeChecker(context.Background(),
+		sac.AllowFixedScopes(
+			sac.AccessModeScopeKeys(storage.Access_READ_WRITE_ACCESS),
+			sac.ResourceScopeKeys(resources.Compliance),
+		))
+
+	// Use elevated privileges to get all clusters associated with this configuration.
+	scanClusters, err := ds.GetScanConfigClusterStatus(elevatedSACReadCtx, id)
+	if err != nil {
+		return "", err
+	}
+	clusterScopeKeys := make([][]sac.ScopeKey, 0, len(scanClusters))
+	for _, scanCluster := range scanClusters {
+		clusterScopeKeys = append(clusterScopeKeys, []sac.ScopeKey{sac.NamespaceScopeKey(scanCluster.GetClusterId())})
+	}
+	if !complianceSAC.ScopeChecker(ctx, storage.Access_READ_WRITE_ACCESS).AllAllowed(clusterScopeKeys) {
 		return "", sac.ErrResourceAccessDenied
 	}
 
@@ -123,9 +125,7 @@ func (ds *datastoreImpl) DeleteScanConfiguration(ctx context.Context, id string)
 
 // UpdateClusterStatus updates the scan configuration with the cluster status
 func (ds *datastoreImpl) UpdateClusterStatus(ctx context.Context, scanID string, clusterID string, clusterStatus string) error {
-	if ok, err := scanConfigurationsSAC.WriteAllowed(ctx); err != nil {
-		return err
-	} else if !ok {
+	if !complianceSAC.ScopeChecker(ctx, storage.Access_READ_WRITE_ACCESS).IsAllowed(sac.ClusterScopeKey(clusterID)) {
 		return sac.ErrResourceAccessDenied
 	}
 
@@ -167,21 +167,10 @@ func (ds *datastoreImpl) UpdateClusterStatus(ctx context.Context, scanID string,
 
 // GetScanConfigClusterStatus retrieves the scan configurations status per cluster specified by scan id
 func (ds *datastoreImpl) GetScanConfigClusterStatus(ctx context.Context, scanID string) ([]*storage.ComplianceOperatorClusterScanConfigStatus, error) {
-	if ok, err := scanConfigurationsSAC.ReadAllowed(ctx); err != nil {
-		return nil, err
-	} else if !ok {
-		return nil, nil
-	}
-
 	return ds.statusStorage.GetByQuery(ctx, search.NewQueryBuilder().
 		AddExactMatches(search.ComplianceOperatorScanConfig, scanID).ProtoQuery())
 }
 
 func (ds *datastoreImpl) CountScanConfigurations(ctx context.Context, q *v1.Query) (int, error) {
-	if ok, err := scanConfigurationsSAC.ReadAllowed(ctx); err != nil {
-		return 0, err
-	} else if !ok {
-		return 0, nil
-	}
 	return ds.searcher.Count(ctx, q)
 }

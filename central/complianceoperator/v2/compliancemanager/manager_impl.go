@@ -15,6 +15,8 @@ import (
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/protoconv/schedule"
 	"github.com/stackrox/rox/pkg/protoutils"
+	"github.com/stackrox/rox/pkg/sac"
+	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/uuid"
@@ -26,6 +28,8 @@ const (
 )
 
 var (
+	complianceSAC = sac.ForResource(resources.Compliance)
+
 	log = logging.LoggerForModule()
 )
 
@@ -94,6 +98,15 @@ func (m *managerImpl) ProcessComplianceOperatorInfo(ctx context.Context, complia
 func (m *managerImpl) ProcessScanRequest(ctx context.Context, scanRequest *storage.ComplianceOperatorScanConfigurationV2, clusters []string) (*storage.ComplianceOperatorScanConfigurationV2, error) {
 	if !features.ComplianceEnhancements.Enabled() {
 		return nil, errors.Errorf("Compliance is disabled. Cannot process scan request: %q", scanRequest.GetScanName())
+	}
+
+	// User MUST have permissions on all clusters being applied.
+	clusterScopeKeys := make([][]sac.ScopeKey, 0, len(clusters))
+	for _, cluster := range clusters {
+		clusterScopeKeys = append(clusterScopeKeys, []sac.ScopeKey{sac.NamespaceScopeKey(cluster)})
+	}
+	if !complianceSAC.ScopeChecker(ctx, storage.Access_READ_WRITE_ACCESS).AllAllowed(clusterScopeKeys) {
+		return nil, sac.ErrResourceAccessDenied
 	}
 
 	// Convert and validate schedule
