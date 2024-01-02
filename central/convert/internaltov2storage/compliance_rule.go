@@ -5,6 +5,7 @@ import (
 
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/storage"
+	"github.com/stackrox/rox/pkg/logging"
 )
 
 const (
@@ -13,8 +14,13 @@ const (
 	controlAnnotationBase = "control.compliance.openshift.io/"
 )
 
+var (
+	log = logging.LoggerForModule()
+)
+
 // ComplianceOperatorRule converts message from sensor to V2 storage
 func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, clusterID string) *storage.ComplianceOperatorRuleV2 {
+	log.Info("SHREWS -- in v2 converter")
 	fixes := make([]*storage.ComplianceOperatorRuleV2_Fix, len(sensorData.Fixes))
 	for _, fix := range sensorData.Fixes {
 		fixes = append(fixes, &storage.ComplianceOperatorRuleV2_Fix{
@@ -22,6 +28,7 @@ func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, cluste
 			Disruption: fix.GetDisruption(),
 		})
 	}
+	log.Info("SHREWS -- in v2 converter -- done with fixes")
 
 	// TODO:  figure out where to grab this.  Basically is policies.open-cluster-management.io/standards legit to
 	// grab the standards so that then we can get the controls via control.compliance.openshift.io/STANDARD
@@ -33,6 +40,7 @@ func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, cluste
 			Controls: strings.Split(sensorData.GetAnnotations()[controlAnnotationBase+standard], ","),
 		})
 	}
+	log.Info("SHREWS -- in v2 converter -- done with controls")
 
 	return &storage.ComplianceOperatorRuleV2{
 		Id:          sensorData.GetRuleUid(),
@@ -46,7 +54,7 @@ func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, cluste
 		Description: sensorData.GetDescription(),
 		Rationale:   sensorData.GetRationale(),
 		Fixes:       fixes,
-		Warning:     sensorData.Warning,
+		Warning:     sensorData.GetWarning(),
 		Controls:    controls,
 		ClusterId:   clusterID,
 	}
