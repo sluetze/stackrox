@@ -10,7 +10,7 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/features"
 	"github.com/stackrox/rox/pkg/fixtures/fixtureconsts"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	createdTime = protoconv.TimestampNow()
+	createdTime = protocompat.TimestampNow()
 	id          = uuid.NewV4().String()
 	checkID     = uuid.NewV4().String()
 )

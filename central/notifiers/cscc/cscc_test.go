@@ -7,7 +7,7 @@ import (
 	"cloud.google.com/go/securitycenter/apiv1/securitycenterpb"
 	clusterMocks "github.com/stackrox/rox/central/cluster/datastore/mocks"
 	"github.com/stackrox/rox/generated/storage"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
@@ -76,7 +76,7 @@ func TestWithFakeCSCC(t *testing.T) {
 			Id:        "myDeploymentID",
 			ClusterId: "test_id",
 		}},
-		Time: protoconv.TimestampNow(),
+		Time: protocompat.TimestampNow(),
 	}
 	findingID := ""
 	var finding *securitycenterpb.Finding

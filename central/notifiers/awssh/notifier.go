@@ -26,7 +26,7 @@ import (
 	"github.com/stackrox/rox/pkg/httputil/proxy"
 	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/notifiers"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/set"
 	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stackrox/rox/pkg/uuid"
@@ -471,8 +471,8 @@ func (n *notifier) Test(ctx context.Context) error {
 				},
 			},
 		}},
-		FirstOccurred: protoconv.TimestampNow(),
-		Time:          protoconv.TimestampNow(),
+		FirstOccurred: protocompat.TimestampNow(),
+		Time:          protocompat.TimestampNow(),
 		// Mark the state as resolved, thus indicating to security hub that all is good and avoiding raising a false alert.
 		State: storage.ViolationState_RESOLVED,
 	}

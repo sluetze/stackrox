@@ -18,7 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/netutil"
 	"github.com/stackrox/rox/pkg/networkgraph"
 	"github.com/stackrox/rox/pkg/process/normalize"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/sync"
 	"github.com/stackrox/rox/pkg/timestamp"
 	"github.com/stackrox/rox/sensor/common"
@@ -367,7 +367,7 @@ func (m *networkFlowManager) enrichAndSend() {
 	protoToSend := &central.NetworkFlowUpdate{
 		Updated:          updatedConns,
 		UpdatedEndpoints: updatedEndpoints,
-		Time:             protoconv.TimestampNow(),
+		Time:             protocompat.TimestampNow(),
 	}
 
 	// Before sending, run the flows through policies asynchronously
@@ -403,7 +403,7 @@ func (m *networkFlowManager) enrichAndSendProcesses() {
 
 	processesToSend := &central.ProcessListeningOnPortsUpdate{
 		ProcessesListeningOnPorts: updatedProcesses,
-		Time:                      protoconv.TimestampNow(),
+		Time:                      protocompat.TimestampNow(),
 	}
 
 	if m.sendToCentral(message.NewExpiring(ctx, &central.MsgFromSensor{

@@ -23,7 +23,7 @@ import (
 	"github.com/stackrox/rox/pkg/fixtures"
 	"github.com/stackrox/rox/pkg/postgres"
 	"github.com/stackrox/rox/pkg/postgres/pgtest"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
 	"github.com/stackrox/rox/pkg/scancomponent"
@@ -207,7 +207,7 @@ func (s *ImagePostgresDataStoreTestSuite) TestFixableWithPostgres() {
 	s.Len(results, 1)
 	s.Equal(image.GetId(), results[0].ID)
 
-	image.Scan.ScanTime = protoconv.TimestampNow()
+	image.Scan.ScanTime = protocompat.TimestampNow()
 	for _, component := range image.GetScan().GetComponents() {
 		for _, vuln := range component.GetVulns() {
 			vuln.SetFixedBy = nil
@@ -359,7 +359,7 @@ func (s *ImagePostgresDataStoreTestSuite) TestImageDeletes() {
 	s.Equal(expectedImage, storedImage)
 
 	// Verify that new scan with less components cleans up the old relations correctly.
-	testImage.Scan.ScanTime = protoconv.TimestampNow()
+	testImage.Scan.ScanTime = protocompat.TimestampNow()
 	testImage.Scan.Components = testImage.Scan.Components[:len(testImage.Scan.Components)-1]
 	cveIDsSet := set.NewStringSet()
 	for _, component := range testImage.GetScan().GetComponents() {
@@ -432,7 +432,7 @@ func (s *ImagePostgresDataStoreTestSuite) TestImageDeletes() {
 			},
 		}
 	}
-	testImage2.Scan.ScanTime = protoconv.TimestampNow()
+	testImage2.Scan.ScanTime = protocompat.TimestampNow()
 
 	s.NoError(s.datastore.UpsertImage(ctx, testImage2))
 	storedImage, found, err = s.datastore.GetImage(ctx, testImage2.GetId())
@@ -459,7 +459,7 @@ func (s *ImagePostgresDataStoreTestSuite) TestImageDeletes() {
 	s.ElementsMatch([]string{pkgCVE.ID("cve", "")}, pkgSearch.ResultsToIDs(results))
 
 	// Verify that new scan with less components cleans up the old relations correctly.
-	testImage2.Scan.ScanTime = protoconv.TimestampNow()
+	testImage2.Scan.ScanTime = protocompat.TimestampNow()
 	testImage2.Scan.Components = testImage2.Scan.Components[:len(testImage2.Scan.Components)-1]
 	s.NoError(s.datastore.UpsertImage(ctx, testImage2))
 
@@ -481,7 +481,7 @@ func (s *ImagePostgresDataStoreTestSuite) TestImageDeletes() {
 	s.ElementsMatch([]string{pkgCVE.ID("cve", "")}, pkgSearch.ResultsToIDs(results))
 
 	// Verify that new scan with no components and vulns cleans up the old relations correctly.
-	testImage2.Scan.ScanTime = protoconv.TimestampNow()
+	testImage2.Scan.ScanTime = protocompat.TimestampNow()
 	testImage2.Scan.Components = nil
 	s.NoError(s.datastore.UpsertImage(ctx, testImage2))
 
@@ -543,7 +543,7 @@ func getTestImage(id string) *storage.Image {
 		Id: id,
 		Scan: &storage.ImageScan{
 			OperatingSystem: "blah",
-			ScanTime:        protoconv.TimestampNow(),
+			ScanTime:        protocompat.TimestampNow(),
 			Components: []*storage.EmbeddedImageScanComponent{
 				{
 					Name:    "comp1",

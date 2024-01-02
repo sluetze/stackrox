@@ -10,7 +10,7 @@ import (
 
 	"github.com/stackrox/rox/generated/internalapi/compliance"
 	"github.com/stackrox/rox/pkg/compliance/compress"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/utils"
 )
 
@@ -55,7 +55,7 @@ func getCompressedCheckResults() *compliance.ComplianceReturn {
 	return &compliance.ComplianceReturn{
 		NodeName: "test",
 		ScrapeId: "test scrape",
-		Time:     protoconv.TimestampNow(),
+		Time:     protocompat.TimestampNow(),
 		Evidence: compressedResults,
 	}
 }

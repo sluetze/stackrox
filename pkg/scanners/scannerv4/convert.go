@@ -6,7 +6,7 @@ import (
 	v4 "github.com/stackrox/rox/generated/internalapi/scanner/v4"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/clair"
-	"github.com/stackrox/rox/pkg/protoconv"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/set"
 )
 
@@ -14,7 +14,7 @@ func imageScan(metadata *storage.ImageMetadata, report *v4.VulnerabilityReport) 
 	scan := &storage.ImageScan{
 		// TODO(ROX-21362): Get ScannerVersion from ScannerV4 matcher API
 		// ScannerVersion: ,
-		ScanTime:        protoconv.TimestampNow(),
+		ScanTime:        protocompat.TimestampNow(),
 		OperatingSystem: os(report),
 		Components:      components(metadata, report),
 	}
