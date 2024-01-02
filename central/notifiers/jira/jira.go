@@ -153,7 +153,7 @@ func getIssueTypes(client *jiraLib.Client, project string) ([]*jiraLib.MetaIssue
 func getIssueFields(client *jiraLib.Client, project, issueID string) ([]*issueField, error) {
 	urlPath := fmt.Sprintf("rest/api/2/issue/createmeta/%s/issuetypes/%s", project, issueID)
 
-	result := issueFieldsResult{}
+	var result issueFieldsResult
 
 	err := callJira(client, urlPath, &result, 0)
 	if err != nil {
