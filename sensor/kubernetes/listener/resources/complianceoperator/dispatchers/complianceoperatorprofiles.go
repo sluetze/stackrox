@@ -54,7 +54,7 @@ func (c *ProfileDispatcher) ProcessEvent(obj, _ interface{}, action central.Reso
 			Id:             uid,
 			ProfileId:      complianceProfile.ID,
 			Name:           complianceProfile.Name,
-			ProfileVersion: "", // TODO(ROX-20536)
+			ProfileVersion: complianceProfile.Version,
 			Labels:         complianceProfile.Labels,
 			Annotations:    complianceProfile.Annotations,
 			Description:    complianceProfile.Description,

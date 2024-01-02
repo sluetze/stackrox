@@ -71,14 +71,14 @@ func (s *pipelineImpl) Reconcile(ctx context.Context, clusterID string, storeMap
 	if features.ComplianceEnhancements.Enabled() {
 		// For nextgen compliance, reconciliation means disassociating a profile with a cluster.
 		// The profile itself will still remain.
-		profileEdges, err := s.v2ProfileDatastore.GetProfileEdgesByCluster(ctx, clusterID)
+		profiles, err := s.v2ProfileDatastore.GetProfilesByCluster(ctx, clusterID)
 		if err != nil {
 			return err
 		}
 
-		for _, profileEdge := range profileEdges {
+		for _, profile := range profiles {
 			// The UID is used for reconciliation
-			existingIDs.Add(profileEdge.GetProfileUid())
+			existingIDs.Add(profile.GetId())
 		}
 	}
 
@@ -154,7 +154,7 @@ func (s *pipelineImpl) processComplianceProfileV2(ctx context.Context, event *ce
 		if err := s.manager.AddProfile(internaltostorage.ComplianceOperatorProfileV1(profile, clusterID)); err != nil {
 			return err
 		}
-		return s.v2ProfileDatastore.UpsertProfile(ctx, internaltostorage.ComplianceOperatorProfileV2(profile), clusterID, profile.GetId())
+		return s.v2ProfileDatastore.UpsertProfile(ctx, internaltostorage.ComplianceOperatorProfileV2(profile, clusterID))
 	}
 }
 

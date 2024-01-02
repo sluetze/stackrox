@@ -4,11 +4,9 @@ package datastore
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	profileSearch "github.com/stackrox/rox/central/complianceoperator/v2/profiles/datastore/search"
-	profileEdgeStorage "github.com/stackrox/rox/central/complianceoperator/v2/profiles/profileclusteredge/store/postgres"
 	profileStorage "github.com/stackrox/rox/central/complianceoperator/v2/profiles/store/postgres"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/features"
@@ -16,10 +14,16 @@ import (
 	"github.com/stackrox/rox/pkg/postgres/pgtest"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
+	"github.com/stackrox/rox/pkg/sac/testutils"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
+)
+
+var (
+	profileUID1 = uuid.NewV4().String()
+	profileUID2 = uuid.NewV4().String()
 )
 
 func TestComplianceProfileDataStore(t *testing.T) {
@@ -30,14 +34,14 @@ type complianceProfileDataStoreTestSuite struct {
 	suite.Suite
 	mockCtrl *gomock.Controller
 
-	hasReadCtx  context.Context
-	hasWriteCtx context.Context
-	noAccessCtx context.Context
+	hasReadCtx   context.Context
+	hasWriteCtx  context.Context
+	noAccessCtx  context.Context
+	testContexts map[string]context.Context
 
-	dataStore   DataStore
-	storage     profileStorage.Store
-	edgeStorage profileEdgeStorage.Store
-	db          *pgtest.TestPostgres
+	dataStore DataStore
+	storage   profileStorage.Store
+	db        *pgtest.TestPostgres
 }
 
 func (s *complianceProfileDataStoreTestSuite) SetupSuite() {
@@ -58,16 +62,16 @@ func (s *complianceProfileDataStoreTestSuite) SetupTest() {
 			sac.AccessModeScopeKeys(storage.Access_READ_ACCESS, storage.Access_READ_WRITE_ACCESS),
 			sac.ResourceScopeKeys(resources.Compliance)))
 	s.noAccessCtx = sac.WithGlobalAccessScopeChecker(context.Background(), sac.DenyAllAccessScopeChecker())
+	s.testContexts = testutils.GetNamespaceScopedTestContexts(context.Background(), s.T(), resources.Compliance)
 
 	s.mockCtrl = gomock.NewController(s.T())
 
 	s.db = pgtest.ForT(s.T())
 
 	s.storage = profileStorage.New(s.db)
-	s.edgeStorage = profileEdgeStorage.New(s.db)
 	indexer := profileStorage.NewIndexer(s.db)
 	search := profileSearch.New(s.storage, indexer)
-	s.dataStore = New(s.storage, s.edgeStorage, s.db, search)
+	s.dataStore = New(s.storage, s.db, search)
 }
 
 func (s *complianceProfileDataStoreTestSuite) TearDownTest() {
@@ -80,32 +84,27 @@ func (s *complianceProfileDataStoreTestSuite) TestUpsertProfile() {
 	s.Require().NoError(err)
 	s.Require().Empty(profileIDs)
 
-	rec1 := getTestProfile("ocp4", "1.2")
-	rec2 := getTestProfile("rhcos-moderate", "7.6")
+	rec1 := getTestProfile(profileUID1, "ocp4", "1.2", fixtureconsts.Cluster1)
+	rec2 := getTestProfile(profileUID2, "rhcos-moderate", "7.6", fixtureconsts.Cluster1)
 	ids := []string{rec1.GetId(), rec2.GetId()}
 
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1, fixtureconsts.Cluster1, uuid.NewV4().String()))
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster1, uuid.NewV4().String()))
-
-	// Add an existing profile to another cluster
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster2, uuid.NewV4().String()))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2))
 
 	count, err := s.storage.Count(s.hasReadCtx)
 	s.Require().NoError(err)
 	s.Require().Equal(len(ids), count)
 
 	// upsert with read context
-	s.Require().Error(s.dataStore.UpsertProfile(s.hasReadCtx, rec2, fixtureconsts.Cluster1, uuid.NewV4().String()))
+	s.Require().Error(s.dataStore.UpsertProfile(s.hasReadCtx, rec2))
+
+	// upsert without permissions on the cluster 1 with only cluster 2 access
+	s.Require().Error(s.dataStore.UpsertProfile(s.testContexts[testutils.Cluster2ReadWriteCtx], rec2))
 
 	retrieveRec1, found, err := s.storage.Get(s.hasReadCtx, rec1.GetId())
 	s.Require().NoError(err)
 	s.Require().True(found)
 	s.Require().Equal(rec1, retrieveRec1)
-
-	edgeRecs, err := s.edgeStorage.GetByQuery(s.hasReadCtx, search.NewQueryBuilder().
-		AddExactMatches(search.ClusterID, fixtureconsts.Cluster1).ProtoQuery())
-	s.Require().NoError(err)
-	s.Require().Equal(2, len(edgeRecs))
 }
 
 func (s *complianceProfileDataStoreTestSuite) TestDeleteProfileForCluster() {
@@ -114,14 +113,12 @@ func (s *complianceProfileDataStoreTestSuite) TestDeleteProfileForCluster() {
 	s.Require().NoError(err)
 	s.Require().Empty(profileIDs)
 
-	rec1 := getTestProfile("ocp4", "1.2")
-	rec2 := getTestProfile("rhcos-moderate", "7.6")
+	rec1 := getTestProfile(profileUID1, "ocp4", "1.2", fixtureconsts.Cluster1)
+	rec2 := getTestProfile(profileUID2, "rhcos-moderate", "7.6", fixtureconsts.Cluster2)
 	ids := []string{rec1.GetId(), rec2.GetId()}
 
-	profileUID1 := uuid.NewV4().String()
-	profileUID2 := uuid.NewV4().String()
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1, fixtureconsts.Cluster1, profileUID1))
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster2, profileUID2))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2))
 
 	count, err := s.storage.Count(s.hasReadCtx)
 	s.Require().NoError(err)
@@ -132,55 +129,45 @@ func (s *complianceProfileDataStoreTestSuite) TestDeleteProfileForCluster() {
 	s.Require().True(found)
 	s.Require().Equal(rec1, retrieveRec1)
 
-	edgeRecs, err := s.edgeStorage.GetByQuery(s.hasReadCtx, search.NewQueryBuilder().
-		AddExactMatches(search.ClusterID, fixtureconsts.Cluster1).ProtoQuery())
-	s.Require().NoError(err)
-	s.Require().Equal(1, len(edgeRecs))
-
 	s.Require().NoError(s.dataStore.DeleteProfileForCluster(s.hasWriteCtx, profileUID1, fixtureconsts.Cluster1))
 
-	edgeRecs, err = s.edgeStorage.GetByQuery(s.hasReadCtx, search.NewQueryBuilder().
-		AddExactMatches(search.ClusterID, fixtureconsts.Cluster1).ProtoQuery())
+	profiles, err := s.dataStore.GetProfilesByCluster(s.hasReadCtx, fixtureconsts.Cluster1)
 	s.Require().NoError(err)
-	s.Require().Equal(0, len(edgeRecs))
+	s.Require().Equal(0, len(profiles))
 
-	edgeRecs, err = s.edgeStorage.GetByQuery(s.hasReadCtx, search.NewQueryBuilder().
-		AddExactMatches(search.ClusterID, fixtureconsts.Cluster2).ProtoQuery())
+	profiles, err = s.dataStore.GetProfilesByCluster(s.hasReadCtx, fixtureconsts.Cluster2)
 	s.Require().NoError(err)
-	s.Require().Equal(1, len(edgeRecs))
-	s.Require().Equal(profileUID2, edgeRecs[0].ProfileUid)
+	s.Require().Equal(1, len(profiles))
+	s.Require().Equal(profileUID2, profiles[0].Id)
 
 	// Without write access
-	s.Require().Error(s.dataStore.DeleteProfileForCluster(s.hasReadCtx, profileUID1, fixtureconsts.Cluster1))
+	s.Require().Error(s.dataStore.DeleteProfileForCluster(s.noAccessCtx, profileUID1, fixtureconsts.Cluster1))
+
+	// Without write access to Cluster 1
+	s.Require().Error(s.dataStore.DeleteProfileForCluster(s.testContexts[testutils.Cluster2ReadWriteCtx], profileUID1, fixtureconsts.Cluster1))
 }
 
-func (s *complianceProfileDataStoreTestSuite) TestGetProfileEdgesByCluster() {
+func (s *complianceProfileDataStoreTestSuite) TestGetProfilesByCluster() {
 	// make sure we have nothing
 	profileIDs, err := s.storage.GetIDs(s.hasReadCtx)
 	s.Require().NoError(err)
 	s.Require().Empty(profileIDs)
 
-	edgeIDs, err := s.edgeStorage.GetIDs(s.hasReadCtx)
+	rec1 := getTestProfile(profileUID1, "ocp4", "1.2", fixtureconsts.Cluster1)
+	rec2 := getTestProfile(profileUID2, "rhcos-moderate", "7.6", fixtureconsts.Cluster2)
+
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2))
+
+	profiles, err := s.dataStore.GetProfilesByCluster(s.hasReadCtx, fixtureconsts.Cluster2)
 	s.Require().NoError(err)
-	s.Require().Empty(edgeIDs)
-
-	rec1 := getTestProfile("ocp4", "1.2")
-	rec2 := getTestProfile("rhcos-moderate", "7.6")
-
-	profileUID1 := uuid.NewV4().String()
-	profileUID2 := uuid.NewV4().String()
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1, fixtureconsts.Cluster1, profileUID1))
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster2, profileUID2))
-
-	edgeRecs, err := s.dataStore.GetProfileEdgesByCluster(s.hasReadCtx, fixtureconsts.Cluster2)
-	s.Require().NoError(err)
-	s.Require().Equal(1, len(edgeRecs))
-	s.Require().Equal(profileUID2, edgeRecs[0].ProfileUid)
+	s.Require().Equal(1, len(profiles))
+	s.Require().Equal(profileUID2, profiles[0].Id)
 
 	// Test with no access
-	edgeRecs, err = s.dataStore.GetProfileEdgesByCluster(s.noAccessCtx, fixtureconsts.Cluster2)
-	s.Require().Error(err)
-	s.Require().Equal(0, len(edgeRecs))
+	profiles, err = s.dataStore.GetProfilesByCluster(s.noAccessCtx, fixtureconsts.Cluster2)
+	s.Require().NoError(err)
+	s.Require().Empty(profiles)
 }
 
 func (s *complianceProfileDataStoreTestSuite) TestGetProfile() {
@@ -189,12 +176,12 @@ func (s *complianceProfileDataStoreTestSuite) TestGetProfile() {
 	s.Require().NoError(err)
 	s.Require().Empty(profileIDs)
 
-	rec1 := getTestProfile("ocp4", "1.2")
-	rec2 := getTestProfile("rhcos-moderate", "7.6")
+	rec1 := getTestProfile(profileUID1, "ocp4", "1.2", fixtureconsts.Cluster1)
+	rec2 := getTestProfile(profileUID2, "rhcos-moderate", "7.6", fixtureconsts.Cluster1)
 	records := map[string]*storage.ComplianceOperatorProfileV2{rec1.GetId(): rec1, rec2.GetId(): rec2}
 
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1, fixtureconsts.Cluster1, uuid.NewV4().String()))
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster1, uuid.NewV4().String()))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2))
 
 	for profileID, profile := range records {
 		returnedProfile, found, err := s.dataStore.GetProfile(s.hasReadCtx, profileID)
@@ -205,7 +192,7 @@ func (s *complianceProfileDataStoreTestSuite) TestGetProfile() {
 
 	// Test with no access
 	_, found, err := s.dataStore.GetProfile(s.noAccessCtx, rec1.GetProfileId())
-	s.Require().Error(err)
+	s.Require().NoError(err)
 	s.Require().False(found)
 }
 
@@ -215,11 +202,11 @@ func (s *complianceProfileDataStoreTestSuite) TestSearchProfiles() {
 	s.Require().NoError(err)
 	s.Require().Empty(profileIDs)
 
-	rec1 := getTestProfile("ocp4", "1.2")
-	rec2 := getTestProfile("rhcos-moderate", "7.6")
+	rec1 := getTestProfile(profileUID1, "ocp4", "1.2", fixtureconsts.Cluster1)
+	rec2 := getTestProfile(profileUID2, "rhcos-moderate", "7.6", fixtureconsts.Cluster1)
 
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1, fixtureconsts.Cluster1, uuid.NewV4().String()))
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster1, uuid.NewV4().String()))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2))
 
 	returnedProfiles, err := s.dataStore.SearchProfiles(s.hasReadCtx, search.NewQueryBuilder().
 		AddExactMatches(search.ComplianceOperatorProfileName, rec1.GetName()).ProtoQuery())
@@ -235,16 +222,16 @@ func (s *complianceProfileDataStoreTestSuite) TestSearchProfiles() {
 	// Test with no access
 	returnedProfiles, err = s.dataStore.SearchProfiles(s.noAccessCtx, search.NewQueryBuilder().
 		AddExactMatches(search.ComplianceOperatorProfileName, rec1.GetName()).ProtoQuery())
-	s.Require().Error(err)
-	s.Require().Equal(0, len(returnedProfiles))
+	s.Require().NoError(err)
+	s.Require().Empty(returnedProfiles)
 }
 
 func (s *complianceProfileDataStoreTestSuite) TestGetProfileCount() {
-	rec1 := getTestProfile("ocp4", "1.2")
-	rec2 := getTestProfile("rhcos-moderate", "7.6")
+	rec1 := getTestProfile(profileUID1, "ocp4", "1.2", fixtureconsts.Cluster1)
+	rec2 := getTestProfile(profileUID2, "rhcos-moderate", "7.6", fixtureconsts.Cluster1)
 
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1, fixtureconsts.Cluster1, uuid.NewV4().String()))
-	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2, fixtureconsts.Cluster1, uuid.NewV4().String()))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec1))
+	s.Require().NoError(s.dataStore.UpsertProfile(s.hasWriteCtx, rec2))
 
 	q := search.NewQueryBuilder().AddExactMatches(search.ComplianceOperatorProfileName, rec1.GetName()).ProtoQuery()
 	count, err := s.dataStore.CountProfiles(s.hasReadCtx, q)
@@ -257,9 +244,9 @@ func (s *complianceProfileDataStoreTestSuite) TestGetProfileCount() {
 	s.Require().Equal(2, count)
 }
 
-func getTestProfile(profileName string, version string) *storage.ComplianceOperatorProfileV2 {
+func getTestProfile(profileUID string, profileName string, version string, clusterID string) *storage.ComplianceOperatorProfileV2 {
 	return &storage.ComplianceOperatorProfileV2{
-		Id:             fmt.Sprintf("%s-%s", profileName, version),
+		Id:             profileUID,
 		ProfileId:      uuid.NewV4().String(),
 		Name:           profileName,
 		ProfileVersion: version,
@@ -269,5 +256,6 @@ func getTestProfile(profileName string, version string) *storage.ComplianceOpera
 		Labels:         nil,
 		Annotations:    nil,
 		Product:        "test",
+		ClusterId:      clusterID,
 	}
 }

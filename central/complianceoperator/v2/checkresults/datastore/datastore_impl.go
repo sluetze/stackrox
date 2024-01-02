@@ -195,5 +195,6 @@ func withSACFilter(ctx context.Context, targetResource permissions.ResourceMetad
 	if err != nil {
 		return nil, err
 	}
+
 	return search.FilterQueryByQuery(query, sacQueryFilter), nil
 }

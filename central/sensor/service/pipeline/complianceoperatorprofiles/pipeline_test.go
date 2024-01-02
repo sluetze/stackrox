@@ -13,7 +13,6 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/features"
 	"github.com/stackrox/rox/pkg/fixtures/fixtureconsts"
-	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/mock/gomock"
 )
@@ -57,7 +56,7 @@ func (s *PipelineTestSuite) TestRunCreate() {
 
 	pipeline := NewPipeline(s.v1ProfileDS, s.manager, s.v2ProfileDS)
 	s.manager.EXPECT().AddProfile(testutils.GetProfileV1SensorMsg(s.T())).Return(nil).Times(1)
-	s.v2ProfileDS.EXPECT().UpsertProfile(ctx, testutils.GetProfileV2Storage(s.T()), fixtureconsts.Cluster1, testutils.ProfileUID).Return(nil).Times(1)
+	s.v2ProfileDS.EXPECT().UpsertProfile(ctx, testutils.GetProfileV2Storage(s.T())).Return(nil).Times(1)
 
 	msg := &central.MsgFromSensor{
 		Msg: &central.MsgFromSensor_Event{
@@ -148,7 +147,7 @@ func (s *PipelineTestSuite) TestRunReconcileNoOp() {
 	pipeline := NewPipeline(s.v1ProfileDS, s.manager, s.v2ProfileDS)
 
 	s.v1ProfileDS.EXPECT().Walk(ctx, gomock.Any()).Return(nil).Times(1)
-	s.v2ProfileDS.EXPECT().GetProfileEdgesByCluster(ctx, fixtureconsts.Cluster1).Return(nil, nil).Times(1)
+	s.v2ProfileDS.EXPECT().GetProfilesByCluster(ctx, fixtureconsts.Cluster1).Return(nil, nil).Times(1)
 
 	err := pipeline.Reconcile(ctx, fixtureconsts.Cluster1, reconciliation.NewStoreMap())
 	s.NoError(err)
@@ -156,21 +155,11 @@ func (s *PipelineTestSuite) TestRunReconcileNoOp() {
 
 func (s *PipelineTestSuite) TestRunReconcile() {
 	ctx := context.Background()
-
-	edgeID := uuid.NewV4().String()
-	edgeRecs := []*storage.ComplianceOperatorProfileClusterEdge{
-		{
-			Id:         edgeID,
-			ProfileId:  "",
-			ProfileUid: testutils.ProfileUID,
-			ClusterId:  fixtureconsts.Cluster1,
-		},
-	}
 	pipeline := NewPipeline(s.v1ProfileDS, s.manager, s.v2ProfileDS)
 
 	s.v1ProfileDS.EXPECT().Walk(ctx, gomock.Any()).Return(nil).Times(1)
 	s.v1ProfileDS.EXPECT().Delete(ctx, testutils.ProfileUID).Return(nil).Times(1)
-	s.v2ProfileDS.EXPECT().GetProfileEdgesByCluster(ctx, fixtureconsts.Cluster1).Return(edgeRecs, nil).Times(1)
+	s.v2ProfileDS.EXPECT().GetProfilesByCluster(ctx, fixtureconsts.Cluster1).Return([]*storage.ComplianceOperatorProfileV2{testutils.GetProfileV2Storage(s.T())}, nil).Times(1)
 	s.v2ProfileDS.EXPECT().DeleteProfileForCluster(ctx, testutils.ProfileUID, fixtureconsts.Cluster1).Return(nil).Times(1)
 
 	err := pipeline.Reconcile(ctx, fixtureconsts.Cluster1, reconciliation.NewStoreMap())
