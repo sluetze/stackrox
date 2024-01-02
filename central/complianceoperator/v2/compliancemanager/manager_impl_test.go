@@ -13,6 +13,8 @@ import (
 	"github.com/stackrox/rox/pkg/fixtures/fixtureconsts"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/sac/resources"
+	"github.com/stackrox/rox/pkg/sac/testconsts"
+	"github.com/stackrox/rox/pkg/sac/testutils"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
@@ -45,8 +47,9 @@ func TestComplianceManager(t *testing.T) {
 type complianceManagerTestSuite struct {
 	suite.Suite
 
-	hasWriteCtx context.Context
-	noAccessCtx context.Context
+	hasWriteCtx  context.Context
+	noAccessCtx  context.Context
+	testContexts map[string]context.Context
 
 	mockCtrl      *gomock.Controller
 	integrationDS *mocks.MockDataStore
@@ -69,8 +72,9 @@ func (suite *complianceManagerTestSuite) SetupTest() {
 	suite.hasWriteCtx = sac.WithGlobalAccessScopeChecker(context.Background(),
 		sac.AllowFixedScopes(
 			sac.AccessModeScopeKeys(storage.Access_READ_ACCESS, storage.Access_READ_WRITE_ACCESS),
-			sac.ResourceScopeKeys(resources.Administration)))
+			sac.ResourceScopeKeys(resources.Compliance)))
 	suite.noAccessCtx = sac.WithNoAccess(context.Background())
+	suite.testContexts = testutils.GetNamespaceScopedTestContexts(context.Background(), suite.T(), resources.Compliance)
 
 	suite.integrationDS = mocks.NewMockDataStore(suite.mockCtrl)
 	suite.scanConfigDS = scanConfigMocks.NewMockDataStore(suite.mockCtrl)
@@ -175,8 +179,8 @@ func (suite *complianceManagerTestSuite) TestProcessScanRequest() {
 			setMocks: func() {
 				suite.scanConfigDS.EXPECT().ScanConfigurationExists(gomock.Any(), mockScanName).Return(false, nil).Times(1)
 				suite.scanConfigDS.EXPECT().UpsertScanConfiguration(gomock.Any(), gomock.Any()).Return(nil).Times(1)
-				suite.connectionMgr.EXPECT().SendMessage(fixtureconsts.Cluster1, gomock.Any()).Return(nil).Times(1)
-				suite.scanConfigDS.EXPECT().UpdateClusterStatus(gomock.Any(), gomock.Any(), fixtureconsts.Cluster1, "")
+				suite.connectionMgr.EXPECT().SendMessage(testconsts.Cluster1, gomock.Any()).Return(nil).Times(1)
+				suite.scanConfigDS.EXPECT().UpdateClusterStatus(gomock.Any(), gomock.Any(), testconsts.Cluster1, "")
 			},
 			isErrorTest: false,
 		},
@@ -202,8 +206,8 @@ func (suite *complianceManagerTestSuite) TestProcessScanRequest() {
 			setMocks: func() {
 				suite.scanConfigDS.EXPECT().ScanConfigurationExists(gomock.Any(), mockScanName).Return(false, nil).Times(1)
 				suite.scanConfigDS.EXPECT().UpsertScanConfiguration(gomock.Any(), gomock.Any()).Return(nil).Times(1)
-				suite.connectionMgr.EXPECT().SendMessage(fixtureconsts.Cluster1, gomock.Any()).Return(errors.New("Unable to process sensor message")).Times(1)
-				suite.scanConfigDS.EXPECT().UpdateClusterStatus(gomock.Any(), gomock.Any(), fixtureconsts.Cluster1, "Unable to process sensor message")
+				suite.connectionMgr.EXPECT().SendMessage(testconsts.Cluster1, gomock.Any()).Return(errors.New("Unable to process sensor message")).Times(1)
+				suite.scanConfigDS.EXPECT().UpdateClusterStatus(gomock.Any(), gomock.Any(), testconsts.Cluster1, "Unable to process sensor message")
 			},
 			isErrorTest: false,
 		},
@@ -212,7 +216,7 @@ func (suite *complianceManagerTestSuite) TestProcessScanRequest() {
 		suite.T().Run(tc.desc, func(t *testing.T) {
 			tc.setMocks()
 
-			config, err := suite.manager.ProcessScanRequest(suite.hasWriteCtx, getTestRec(), []string{fixtureconsts.Cluster1})
+			config, err := suite.manager.ProcessScanRequest(suite.testContexts[testutils.UnrestrictedReadWriteCtx], getTestRec(), []string{testconsts.Cluster1})
 			if tc.isErrorTest {
 				suite.Require().NotNil(err)
 				suite.Require().Nil(config)

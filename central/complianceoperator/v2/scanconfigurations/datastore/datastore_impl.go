@@ -89,7 +89,7 @@ func (ds *datastoreImpl) DeleteScanConfiguration(ctx context.Context, id string)
 	}
 	clusterScopeKeys := make([][]sac.ScopeKey, 0, len(scanClusters))
 	for _, scanCluster := range scanClusters {
-		clusterScopeKeys = append(clusterScopeKeys, []sac.ScopeKey{sac.NamespaceScopeKey(scanCluster.GetClusterId())})
+		clusterScopeKeys = append(clusterScopeKeys, []sac.ScopeKey{sac.ClusterScopeKey(scanCluster.GetClusterId())})
 	}
 	if !complianceSAC.ScopeChecker(ctx, storage.Access_READ_WRITE_ACCESS).AllAllowed(clusterScopeKeys) {
 		return "", sac.ErrResourceAccessDenied

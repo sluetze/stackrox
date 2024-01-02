@@ -100,12 +100,17 @@ func (m *managerImpl) ProcessScanRequest(ctx context.Context, scanRequest *stora
 		return nil, errors.Errorf("Compliance is disabled. Cannot process scan request: %q", scanRequest.GetScanName())
 	}
 
+	log.Infof("clusters -- %v", clusters)
 	// User MUST have permissions on all clusters being applied.
 	clusterScopeKeys := make([][]sac.ScopeKey, 0, len(clusters))
 	for _, cluster := range clusters {
-		clusterScopeKeys = append(clusterScopeKeys, []sac.ScopeKey{sac.NamespaceScopeKey(cluster)})
+		if !complianceSAC.ScopeChecker(ctx, storage.Access_READ_WRITE_ACCESS).IsAllowed(sac.ClusterScopeKey(cluster)) {
+			log.Infof("SHREWS -- no access to the cluster in the loop")
+		}
+		clusterScopeKeys = append(clusterScopeKeys, []sac.ScopeKey{sac.ClusterScopeKey(cluster)})
 	}
 	if !complianceSAC.ScopeChecker(ctx, storage.Access_READ_WRITE_ACCESS).AllAllowed(clusterScopeKeys) {
+		log.Infof("SHREWS -- no access to the cluster")
 		return nil, sac.ErrResourceAccessDenied
 	}
 
