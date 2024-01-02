@@ -41,43 +41,43 @@ func (m *MockDataStore) EXPECT() *MockDataStoreMockRecorder {
 }
 
 // DeleteRule mocks base method.
-func (m *MockDataStore) DeleteRule(ctx context.Context, id string) error {
+func (m *MockDataStore) DeleteRule(ctx context.Context, ruleID string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteRule", ctx, id)
+	ret := m.ctrl.Call(m, "DeleteRule", ctx, ruleID)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteRule indicates an expected call of DeleteRule.
-func (mr *MockDataStoreMockRecorder) DeleteRule(ctx, id any) *gomock.Call {
+func (mr *MockDataStoreMockRecorder) DeleteRule(ctx, ruleID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRule", reflect.TypeOf((*MockDataStore)(nil).DeleteRule), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRule", reflect.TypeOf((*MockDataStore)(nil).DeleteRule), ctx, ruleID)
 }
 
 // UpsertRule mocks base method.
-func (m *MockDataStore) UpsertRule(ctx context.Context, result *storage.ComplianceOperatorRuleV2) error {
+func (m *MockDataStore) UpsertRule(ctx context.Context, rule *storage.ComplianceOperatorRuleV2) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertRule", ctx, result)
+	ret := m.ctrl.Call(m, "UpsertRule", ctx, rule)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpsertRule indicates an expected call of UpsertRule.
-func (mr *MockDataStoreMockRecorder) UpsertRule(ctx, result any) *gomock.Call {
+func (mr *MockDataStoreMockRecorder) UpsertRule(ctx, rule any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertRule", reflect.TypeOf((*MockDataStore)(nil).UpsertRule), ctx, result)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertRule", reflect.TypeOf((*MockDataStore)(nil).UpsertRule), ctx, rule)
 }
 
 // UpsertRules mocks base method.
-func (m *MockDataStore) UpsertRules(ctx context.Context, result []*storage.ComplianceOperatorRuleV2) error {
+func (m *MockDataStore) UpsertRules(ctx context.Context, rules []*storage.ComplianceOperatorRuleV2) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpsertRules", ctx, result)
+	ret := m.ctrl.Call(m, "UpsertRules", ctx, rules)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpsertRules indicates an expected call of UpsertRules.
-func (mr *MockDataStoreMockRecorder) UpsertRules(ctx, result any) *gomock.Call {
+func (mr *MockDataStoreMockRecorder) UpsertRules(ctx, rules any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertRules", reflect.TypeOf((*MockDataStore)(nil).UpsertRules), ctx, result)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertRules", reflect.TypeOf((*MockDataStore)(nil).UpsertRules), ctx, rules)
 }

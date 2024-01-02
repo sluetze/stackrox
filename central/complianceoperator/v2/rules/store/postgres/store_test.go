@@ -58,7 +58,7 @@ func (s *ComplianceOperatorRuleV2StoreSuite) TestStore() {
 	complianceOperatorRuleV2 := &storage.ComplianceOperatorRuleV2{}
 	s.NoError(testutils.FullInit(complianceOperatorRuleV2, testutils.SimpleInitializer(), testutils.JSONFieldsFilter))
 
-	foundComplianceOperatorRuleV2, exists, err := store.Get(ctx, complianceOperatorRuleV2.GetName())
+	foundComplianceOperatorRuleV2, exists, err := store.Get(ctx, complianceOperatorRuleV2.GetId())
 	s.NoError(err)
 	s.False(exists)
 	s.Nil(foundComplianceOperatorRuleV2)
@@ -66,7 +66,7 @@ func (s *ComplianceOperatorRuleV2StoreSuite) TestStore() {
 	withNoAccessCtx := sac.WithNoAccess(ctx)
 
 	s.NoError(store.Upsert(ctx, complianceOperatorRuleV2))
-	foundComplianceOperatorRuleV2, exists, err = store.Get(ctx, complianceOperatorRuleV2.GetName())
+	foundComplianceOperatorRuleV2, exists, err = store.Get(ctx, complianceOperatorRuleV2.GetId())
 	s.NoError(err)
 	s.True(exists)
 	s.Equal(complianceOperatorRuleV2, foundComplianceOperatorRuleV2)
@@ -78,23 +78,23 @@ func (s *ComplianceOperatorRuleV2StoreSuite) TestStore() {
 	s.NoError(err)
 	s.Zero(complianceOperatorRuleV2Count)
 
-	complianceOperatorRuleV2Exists, err := store.Exists(ctx, complianceOperatorRuleV2.GetName())
+	complianceOperatorRuleV2Exists, err := store.Exists(ctx, complianceOperatorRuleV2.GetId())
 	s.NoError(err)
 	s.True(complianceOperatorRuleV2Exists)
 	s.NoError(store.Upsert(ctx, complianceOperatorRuleV2))
 	s.ErrorIs(store.Upsert(withNoAccessCtx, complianceOperatorRuleV2), sac.ErrResourceAccessDenied)
 
-	foundComplianceOperatorRuleV2, exists, err = store.Get(ctx, complianceOperatorRuleV2.GetName())
+	foundComplianceOperatorRuleV2, exists, err = store.Get(ctx, complianceOperatorRuleV2.GetId())
 	s.NoError(err)
 	s.True(exists)
 	s.Equal(complianceOperatorRuleV2, foundComplianceOperatorRuleV2)
 
-	s.NoError(store.Delete(ctx, complianceOperatorRuleV2.GetName()))
-	foundComplianceOperatorRuleV2, exists, err = store.Get(ctx, complianceOperatorRuleV2.GetName())
+	s.NoError(store.Delete(ctx, complianceOperatorRuleV2.GetId()))
+	foundComplianceOperatorRuleV2, exists, err = store.Get(ctx, complianceOperatorRuleV2.GetId())
 	s.NoError(err)
 	s.False(exists)
 	s.Nil(foundComplianceOperatorRuleV2)
-	s.ErrorIs(store.Delete(withNoAccessCtx, complianceOperatorRuleV2.GetName()), sac.ErrResourceAccessDenied)
+	s.ErrorIs(store.Delete(withNoAccessCtx, complianceOperatorRuleV2.GetId()), sac.ErrResourceAccessDenied)
 
 	var complianceOperatorRuleV2s []*storage.ComplianceOperatorRuleV2
 	var complianceOperatorRuleV2IDs []string
@@ -102,7 +102,7 @@ func (s *ComplianceOperatorRuleV2StoreSuite) TestStore() {
 		complianceOperatorRuleV2 := &storage.ComplianceOperatorRuleV2{}
 		s.NoError(testutils.FullInit(complianceOperatorRuleV2, testutils.UniqueInitializer(), testutils.JSONFieldsFilter))
 		complianceOperatorRuleV2s = append(complianceOperatorRuleV2s, complianceOperatorRuleV2)
-		complianceOperatorRuleV2IDs = append(complianceOperatorRuleV2IDs, complianceOperatorRuleV2.GetName())
+		complianceOperatorRuleV2IDs = append(complianceOperatorRuleV2IDs, complianceOperatorRuleV2.GetId())
 	}
 
 	s.NoError(store.UpsertMany(ctx, complianceOperatorRuleV2s))
