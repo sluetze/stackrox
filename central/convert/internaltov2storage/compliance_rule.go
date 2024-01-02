@@ -28,7 +28,7 @@ func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, cluste
 			Disruption: fix.GetDisruption(),
 		})
 	}
-	log.Info("SHREWS -- in v2 converter -- done with fixes")
+	log.Infof("SHREWS -- in v2 converter -- done with fixes %v", fixes)
 
 	// TODO:  figure out where to grab this.  Basically is policies.open-cluster-management.io/standards legit to
 	// grab the standards so that then we can get the controls via control.compliance.openshift.io/STANDARD
@@ -40,7 +40,8 @@ func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, cluste
 			Controls: strings.Split(sensorData.GetAnnotations()[controlAnnotationBase+standard], ","),
 		})
 	}
-	log.Info("SHREWS -- in v2 converter -- done with controls")
+	log.Infof("SHREWS -- in v2 converter -- done with controls %v", controls)
+	log.Infof("SHREWS -- in v2 converter -- severity %v", sensorData.GetSeverity())
 
 	return &storage.ComplianceOperatorRuleV2{
 		Id:          sensorData.GetRuleUid(),
