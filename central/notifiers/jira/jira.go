@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -87,26 +88,24 @@ type permissionResult struct {
 }
 
 func callJira(client *jiraLib.Client, urlPath string, result interface{}, startAt int) error {
-	if strings.Contains(urlPath, "?") {
-		urlPath = urlPath + fmt.Sprintf("&startAt=%d", startAt)
-	} else {
-		urlPath = urlPath + fmt.Sprintf("?startAt=%d", startAt)
-	}
-
 	req, err := client.NewRequest("GET", urlPath, nil)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Failed to create Jira request")
 	}
+
+	values := req.URL.Query()
+	values.Set("startAt", strconv.Itoa(startAt))
+	req.URL.RawQuery = values.Encode()
 
 	resp, err := client.Do(req, nil)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Failed to successfully make request to Jira")
 	}
 
 	defer utils.IgnoreError(resp.Body.Close)
 	err = json.NewDecoder(resp.Body).Decode(result)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "Failed to decode JSON response from Jira")
 	}
 
 	return nil
@@ -115,7 +114,7 @@ func callJira(client *jiraLib.Client, urlPath string, result interface{}, startA
 func getIssueTypes(client *jiraLib.Client, project string) ([]*jiraLib.MetaIssueType, error) {
 	urlPath := fmt.Sprintf("rest/api/2/issue/createmeta/%s/issuetypes", project)
 
-	result := issueTypeResult{}
+	var result issueTypeResult
 
 	err := callJira(client, urlPath, &result, 0)
 
@@ -134,9 +133,8 @@ func getIssueTypes(client *jiraLib.Client, project string) ([]*jiraLib.MetaIssue
 	for result.Total != len(returnList) {
 		result = issueTypeResult{}
 		err = callJira(client, urlPath, &result, len(returnList))
-
 		if err != nil {
-			return []*jiraLib.MetaIssueType{}, err
+			return nil, err
 		}
 
 		var actualIssueTypes []*jiraLib.MetaIssueType
@@ -158,9 +156,8 @@ func getIssueFields(client *jiraLib.Client, project, issueID string) ([]*issueFi
 	result := issueFieldsResult{}
 
 	err := callJira(client, urlPath, &result, 0)
-
 	if err != nil {
-		return []*issueField{}, err
+		return nil, err
 	}
 
 	returnList := make([]*issueField, 0, result.Total)
@@ -174,9 +171,8 @@ func getIssueFields(client *jiraLib.Client, project, issueID string) ([]*issueFi
 	for result.Total != len(returnList) {
 		result = issueFieldsResult{}
 		err = callJira(client, urlPath, &result, len(returnList))
-
 		if err != nil {
-			return []*issueField{}, err
+			return nil, err
 		}
 
 		var actualIssueTypes []*issueField
@@ -218,7 +214,6 @@ func isPriorityFieldOnIssueType(client *jiraLib.Client, project, issueType strin
 
 	// Fetch its fields
 	issueTypeFields, err := getIssueFields(client, project, issueID)
-
 	if err != nil {
 		return false, errors.Wrapf(err, "could not get meta information for JIRA project %q and issue type %s", project, issueType)
 	}
@@ -475,11 +470,10 @@ func createClient(notifier *storage.Notifier, cryptoCodec cryptocodec.CryptoCode
 	}
 
 	log.Debugf("Making request to %s", urlPath)
-	_, err = client.Do(req, nil)
+	resp, err := client.Do(req, nil)
 
 	if err != nil {
-		errStr := err.Error()
-		if strings.Contains(errStr, "401") || strings.Contains(errStr, "403") {
+		if resp.StatusCode == 401 || resp.StatusCode == 403 {
 			log.Debug("Retrying request using bearer auth")
 			httpClient := &http.Client{
 				Timeout: timeout,
@@ -498,10 +492,10 @@ func createClient(notifier *storage.Notifier, cryptoCodec cryptocodec.CryptoCode
 			if err != nil {
 				return nil, err
 			}
-			_, err = client.Do(req, nil)
+			resp, err = client.Do(req, nil)
 		}
 		if err != nil {
-			if strings.HasPrefix(errStr, "401") || strings.HasPrefix(errStr, "403") {
+			if resp.StatusCode == 401 || resp.StatusCode == 403 {
 				return nil, errors.Wrap(err, "Could not authenticate to Jira")
 			}
 		}
@@ -559,13 +553,13 @@ func configurePriority(client *jiraLib.Client, jiraConf *storage.Jira, project s
 }
 
 func mapPriorities(prios []jiraLib.Priority, storageMapping []*storage.Jira_PriorityMapping) (map[storage.Severity]string, error) {
+	if len(storageMapping) == 0 {
+		return nil, errors.New("Please define priority mappings")
+	}
+
 	prioNameSet := map[string]string{}
 	for _, prio := range prios {
 		prioNameSet[prio.Name] = ""
-	}
-
-	if len(storageMapping) == 0 {
-		return nil, fmt.Errorf("Please define priority mappings")
 	}
 
 	finalizedMapping := map[storage.Severity]string{}
@@ -603,7 +597,7 @@ func (j *jira) createIssue(_ context.Context, severity storage.Severity, i *jira
 	if err != nil {
 		return err
 	}
-	log.Info(buf)
+	log.Debug(buf)
 
 	_, resp, err := j.client.Issue.Create(i)
 	if err != nil && resp == nil {

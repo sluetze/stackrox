@@ -52,7 +52,6 @@ func (j *fakeJira) Handler() http.Handler {
 	basicAuthHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", j.username, j.password))))
 	tokenAuthHeader := fmt.Sprintf("Bearer %s", j.token)
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		fmt.Printf("Handling call to endpoint %s\n", req.RequestURI)
 		if req.Header.Get("Authorization") != basicAuthHeader && req.Header.Get("Authorization") != tokenAuthHeader {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
