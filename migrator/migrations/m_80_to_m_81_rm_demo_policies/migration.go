@@ -10,6 +10,7 @@ import (
 	"github.com/stackrox/rox/migrator/migrations"
 	"github.com/stackrox/rox/migrator/migrations/policymigrationhelper"
 	"github.com/stackrox/rox/migrator/types"
+	"github.com/stackrox/rox/pkg/protocompat"
 	bolt "go.etcd.io/bbolt"
 )
 
@@ -59,7 +60,7 @@ func rmDemoPolicies(db *bolt.DB) error {
 				return errors.Wrapf(err, "unmarshaling policy with ID %q", policyToRm.GetId())
 			}
 
-			if !proto.Equal(storedPolicy, policyToRm) {
+			if !protocompat.Equal(storedPolicy, policyToRm) {
 				return nil
 			}
 

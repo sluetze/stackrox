@@ -12,6 +12,7 @@ import (
 	"github.com/stackrox/rox/pkg/booleanpolicy/fieldnames"
 	"github.com/stackrox/rox/pkg/gziputil"
 	"github.com/stackrox/rox/pkg/namespaces"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/testutils"
 	"github.com/stackrox/rox/pkg/testutils/centralgrpc"
 	"github.com/stackrox/rox/pkg/uuid"
@@ -122,6 +123,6 @@ func TestAdmissionControllerConfigMapWithPostgres(t *testing.T) {
 
 		var newConfig storage.DynamicClusterConfig
 		require.NoError(t, proto.Unmarshal(newConfigData, &newConfig), "could not unmarshal config")
-		assert.True(t, proto.Equal(&newConfig, &config), "new and old config should be equal")
+		assert.True(t, protocompat.Equal(&newConfig, &config), "new and old config should be equal")
 	})
 }
