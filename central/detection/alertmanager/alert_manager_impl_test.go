@@ -20,6 +20,7 @@ import (
 	"github.com/stackrox/rox/pkg/env"
 	"github.com/stackrox/rox/pkg/fixtures"
 	notifierMocks "github.com/stackrox/rox/pkg/notifier/mocks"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/protoconv"
 	"github.com/stackrox/rox/pkg/search"
 	"github.com/stackrox/rox/pkg/testutils"
@@ -844,19 +845,19 @@ func getAlerts() []*storage.Alert {
 			Id:     "alert1",
 			Policy: getPolicies()[0],
 			Entity: &storage.Alert_Deployment_{Deployment: getDeployments()[0]},
-			Time:   &ptypes.Timestamp{Seconds: 100},
+			Time:   protocompat.GetProtoTimestampFromSeconds(100),
 		},
 		{
 			Id:     "alert2",
 			Policy: getPolicies()[1],
 			Entity: &storage.Alert_Deployment_{Deployment: getDeployments()[1]},
-			Time:   &ptypes.Timestamp{Seconds: 200},
+			Time:   protocompat.GetProtoTimestampFromSeconds(200),
 		},
 		{
 			Id:     "alert3",
 			Policy: getPolicies()[2],
 			Entity: &storage.Alert_Deployment_{Deployment: getDeployments()[2]},
-			Time:   &ptypes.Timestamp{Seconds: 300},
+			Time:   protocompat.GetProtoTimestampFromSeconds(300),
 		},
 	}
 }
@@ -986,7 +987,7 @@ func getResourceAlerts() []*storage.Alert {
 			Policy:         fixtures.GetAuditLogEventSourcePolicy(),
 			Entity:         &storage.Alert_Resource_{Resource: getResources()[0]},
 			LifecycleStage: storage.LifecycleStage_RUNTIME,
-			Time:           &ptypes.Timestamp{Seconds: 100},
+			Time:           protocompat.GetProtoTimestampFromSeconds(100),
 			Violations:     []*storage.Alert_Violation{{Message: "violation-alert-1", Type: storage.Alert_Violation_K8S_EVENT}},
 		},
 		{
@@ -994,7 +995,7 @@ func getResourceAlerts() []*storage.Alert {
 			Policy:         fixtures.GetAuditLogEventSourcePolicy(),
 			Entity:         &storage.Alert_Resource_{Resource: getResources()[1]},
 			LifecycleStage: storage.LifecycleStage_RUNTIME,
-			Time:           &ptypes.Timestamp{Seconds: 200},
+			Time:           protocompat.GetProtoTimestampFromSeconds(200),
 			Violations:     []*storage.Alert_Violation{{Message: "violation-alert-2", Type: storage.Alert_Violation_K8S_EVENT}},
 		},
 		{
@@ -1002,7 +1003,7 @@ func getResourceAlerts() []*storage.Alert {
 			Policy:         fixtures.GetAuditLogEventSourcePolicy(),
 			Entity:         &storage.Alert_Resource_{Resource: getResources()[2]},
 			LifecycleStage: storage.LifecycleStage_RUNTIME,
-			Time:           &ptypes.Timestamp{Seconds: 300},
+			Time:           protocompat.GetProtoTimestampFromSeconds(300),
 			Violations:     []*storage.Alert_Violation{{Message: "violation-alert-3", Type: storage.Alert_Violation_K8S_EVENT}},
 		},
 		{
@@ -1010,7 +1011,7 @@ func getResourceAlerts() []*storage.Alert {
 			Policy:         fixtures.GetAuditLogEventSourcePolicy(),
 			Entity:         &storage.Alert_Resource_{Resource: getResources()[3]},
 			LifecycleStage: storage.LifecycleStage_RUNTIME,
-			Time:           &ptypes.Timestamp{Seconds: 400},
+			Time:           protocompat.GetProtoTimestampFromSeconds(400),
 			Violations:     []*storage.Alert_Violation{{Message: "violation-alert-4", Type: storage.Alert_Violation_K8S_EVENT}},
 		},
 		{
@@ -1018,7 +1019,7 @@ func getResourceAlerts() []*storage.Alert {
 			Policy:         fixtures.GetAuditLogEventSourcePolicy(),
 			Entity:         &storage.Alert_Resource_{Resource: getResources()[4]},
 			LifecycleStage: storage.LifecycleStage_RUNTIME,
-			Time:           &ptypes.Timestamp{Seconds: 500},
+			Time:           protocompat.GetProtoTimestampFromSeconds(500),
 			Violations:     []*storage.Alert_Violation{{Message: "violation-alert-5", Type: storage.Alert_Violation_K8S_EVENT}},
 		},
 	}
