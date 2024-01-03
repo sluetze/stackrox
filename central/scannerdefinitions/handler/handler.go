@@ -389,31 +389,33 @@ func (h *httpHandler) openMostRecentDefinitions(ctx context.Context, uuid string
 	return
 }
 
-func (h *httpHandler) openMostRecentMappings(fileName string) (file *vulDefFile, err error) {
+func (h *httpHandler) openMostRecentFile(updaterKey string, fileName string) (file *vulDefFile, err error) {
 	// TODO(ROX-20520): enable fetching offline file
-	log.Info("Getting v4 repository mapping data updater")
-	u := h.getUpdater(mappingUpdaterKey)
-
+	log.Infof("Getting v4 data for updater key: %s", updaterKey)
+	u := h.getUpdater(updaterKey)
 	var onlineFile *vulDefFile
 	onlineZipFile, onlineTime, err := h.startUpdaterAndOpenFile(u)
 	if err != nil || onlineZipFile == nil {
-		return
+		return nil, err
 	}
-	log.Infof("Compressed repository mapping file is available: %s", onlineZipFile.Name())
+	log.Infof("Data file is available: %s", onlineZipFile.Name())
 	toClose := func(f *vulDefFile) {
 		if file != f && f != nil {
 			utils.IgnoreError(f.Close)
 		}
 	}
-	targetFile, err := openFromArchive(onlineZipFile.Name(), fileName)
-	if err != nil {
-		return nil, err
-	}
-	if targetFile != nil {
-		onlineFile = &vulDefFile{File: targetFile, modTime: onlineTime}
+	if updaterKey == cvssUpdaterKey && fileName == "" {
+		onlineFile = &vulDefFile{File: onlineZipFile, modTime: onlineTime}
+	} else {
+		targetFile, err := openFromArchive(onlineZipFile.Name(), fileName)
+		if err != nil {
+			return nil, err
+		}
+		if targetFile != nil {
+			onlineFile = &vulDefFile{File: targetFile, modTime: onlineTime}
+		}
 	}
 	defer toClose(onlineFile)
-
 	file = onlineFile
 	return file, nil
 }
@@ -473,7 +475,7 @@ func openFromArchive(archiveFile string, fileName string) (*os.File, error) {
 
 func (h *httpHandler) getMappingFile(w http.ResponseWriter, r *http.Request, fileName string) {
 	log.Infof("Fetching repository mapping file: %s", fileName)
-	f, err := h.openMostRecentMappings(fileName)
+	f, err := h.openMostRecentFile(mappingUpdaterKey, fileName)
 	if err != nil {
 		log.Errorf("Failed to find JSON file: %v", err)
 		httputil.WriteGRPCStyleErrorf(w, codes.Internal, "could not read repository mapping file %s: %v", fileName, err)
@@ -486,7 +488,6 @@ func (h *httpHandler) startUpdaterAndOpenFile(u *requestedUpdater) (*os.File, ti
 	if u == nil {
 		return nil, time.Time{}, errors.New("Fail to initialize updater")
 	}
-	log.Info("Initializing updater")
 	u.Start()
 	osFile, modTime, err := u.file.Open()
 	if err != nil {
