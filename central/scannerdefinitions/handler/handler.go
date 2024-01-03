@@ -404,7 +404,7 @@ func (h *httpHandler) openMostRecentFile(updaterKey string, fileName string) (fi
 			utils.IgnoreError(f.Close)
 		}
 	}
-	if updaterKey == cvssUpdaterKey && fileName == "" {
+	if updaterKey == cvssUpdaterKey {
 		onlineFile = &vulDefFile{File: onlineZipFile, modTime: onlineTime}
 	} else {
 		targetFile, err := openFromArchive(onlineZipFile.Name(), fileName)
