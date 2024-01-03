@@ -201,6 +201,7 @@ func (h *httpHandler) getUpdater(key string) *requestedUpdater {
 		case mappingUpdaterKey:
 			url = buildURL([]string{v4StorageDomain, mappingFile})
 		case cvssUpdaterKey:
+			filePath = filepath.Join(h.onlineVulnDir, key+".tar.gz")
 			url = buildURL([]string{v4StorageDomain, cvssFile})
 		default: // uuid
 			url = buildURL([]string{scannerUpdateDomain, key, scannerUpdateURLSuffix})
@@ -396,7 +397,7 @@ func (h *httpHandler) openMostRecentFile(updaterKey string, fileName string) (fi
 	var onlineFile *vulDefFile
 	onlineZipFile, onlineTime, err := h.startUpdaterAndOpenFile(u)
 	if err != nil || onlineZipFile == nil {
-		return nil, err
+		return
 	}
 	log.Infof("Data file is available: %s", onlineZipFile.Name())
 	toClose := func(f *vulDefFile) {
