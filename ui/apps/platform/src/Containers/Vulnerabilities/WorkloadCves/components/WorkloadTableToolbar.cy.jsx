@@ -1,9 +1,43 @@
 import React from 'react';
+import { createStore } from 'redux';
+
+import ComponentTestProviders from 'test-utils/ComponentProviders';
+import { graphqlUrl } from 'test-utils/apiEndpoints';
+
+import {
+    NAMESPACE_SEARCH_OPTION,
+    CLUSTER_SEARCH_OPTION,
+} from 'Containers/Vulnerabilities/searchOptions';
 
 import WorkloadTableToolbar from './WorkloadTableToolbar';
 
+const readOnlyReduxStore = createStore((s) => s, {
+    app: {
+        featureFlags: {
+            featureFlags: [],
+            loading: false,
+            error: null,
+        },
+        publicConfig: {
+            publicConfig: {
+                telemetry: null,
+            },
+        },
+    },
+});
+
 function setup() {
-    cy.mount(<WorkloadTableToolbar />);
+    cy.intercept('POST', graphqlUrl('autocomplete'), (req) => {
+        req.reply({ data: { searchAutocomplete: ['stackrox'] } });
+    });
+
+    cy.mount(
+        <ComponentTestProviders reduxStore={readOnlyReduxStore}>
+            <WorkloadTableToolbar
+                searchOptions={[CLUSTER_SEARCH_OPTION, NAMESPACE_SEARCH_OPTION]}
+            />
+        </ComponentTestProviders>
+    );
 }
 
 const searchOptionsDropdown = () => cy.findByLabelText('search options filter menu toggle');
@@ -19,34 +53,31 @@ describe(Cypress.spec.relative, () => {
         searchOptionsDropdown().should('have.text', 'Namespace');
 
         // Apply a namespace filter
-        cy.findByRole('input', { name: 'Namespace' }).click();
-        cy.findByRole('input', { name: 'Namespace' }).type('stackrox');
+        cy.findByRole('textbox').click().type('stackrox');
         cy.findByRole('option', { name: 'stackrox' }).click();
-        cy.findByRole('input', { name: 'Namespace' }).click();
+        cy.findByRole('textbox').click();
 
         // Apply a severity filter
-        cy.findByText('CVE Severity').click();
-        cy.findByRole('option', { name: 'Critical' }).click();
-        cy.findByRole('option', { name: 'Important' }).click();
-        cy.findByText('CVE Severity').click();
+        cy.findByText('CVE severity').click({ force: true });
+        cy.get('label:contains("Critical") input[type="checkbox"]').click();
+        cy.get('label:contains("Important") input[type="checkbox"]').click();
+        cy.findByText('CVE severity').click({ force: true });
 
         // Check that the filters are applied in the toolbar chips
         cy.findByRole('group', { name: 'Namespace' }).within(() => {
-            cy.findByRole('listitem', { name: 'stackrox' });
+            cy.get('li:contains("stackrox")');
         });
 
         cy.findByRole('group', { name: 'Severity' }).within(() => {
-            cy.findByRole('listitem', { name: 'Critical' });
-            cy.findByRole('listitem', { name: 'Important' });
-            cy.findByRole('listitem', { name: 'Moderate' }).should('not.exist');
-            cy.findByRole('listitem', { name: 'Low' }).should('not.exist');
+            cy.get('li:contains("Critical")');
+            cy.get('li:contains("Important")');
+            cy.get('li:contains("Moderate")').should('not.exist');
+            cy.get('li:contains("Low")').should('not.exist');
         });
 
         // Test removing filters
-        cy.findByRole('listitem', { name: 'Important' }).within(() => {
-            cy.findByLabel('close').click();
-        });
-        cy.findByRole('listitem', { name: 'Important' }).should('not.exist');
+        cy.get('li:contains("Important") button[aria-label="Remove filter"]').click();
+        cy.get('li:contains("Important")').should('not.exist');
 
         // Clear remaining filters
         cy.findByText('Clear filters').click();
