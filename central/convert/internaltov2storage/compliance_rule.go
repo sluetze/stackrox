@@ -21,7 +21,7 @@ var (
 // ComplianceOperatorRule converts message from sensor to V2 storage
 func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, clusterID string) *storage.ComplianceOperatorRuleV2 {
 	log.Info("SHREWS -- in v2 converter")
-	fixes := make([]*storage.ComplianceOperatorRuleV2_Fix, len(sensorData.Fixes))
+	fixes := make([]*storage.ComplianceOperatorRuleV2_Fix, 0, len(sensorData.Fixes))
 	for _, fix := range sensorData.Fixes {
 		fixes = append(fixes, &storage.ComplianceOperatorRuleV2_Fix{
 			Platform:   fix.GetPlatform(),
@@ -33,11 +33,12 @@ func ComplianceOperatorRule(sensorData *central.ComplianceOperatorRuleV2, cluste
 	// TODO:  figure out where to grab this.  Basically is policies.open-cluster-management.io/standards legit to
 	// grab the standards so that then we can get the controls via control.compliance.openshift.io/STANDARD
 	standards := strings.Split(sensorData.GetAnnotations()[standardsKey], ",")
-	controls := make([]*storage.RuleControls, len(standards))
+	log.Infof("SHREWS -- in v2 converter -- got standards %v", standards)
+	controls := make([]*storage.RuleControls, 0, len(standards))
 	for _, standard := range standards {
 		controls = append(controls, &storage.RuleControls{
 			Standard: standard,
-			Controls: strings.Split(sensorData.GetAnnotations()[controlAnnotationBase+standard], ","),
+			Controls: strings.Split(sensorData.GetAnnotations()[controlAnnotationBase+standard], ";"),
 		})
 	}
 	log.Infof("SHREWS -- in v2 converter -- done with controls %v", controls)
