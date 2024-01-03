@@ -5,11 +5,6 @@ import (
 
 	"github.com/stackrox/rox/central/complianceoperator/v2/rules/store/postgres"
 	"github.com/stackrox/rox/generated/storage"
-	"github.com/stackrox/rox/pkg/logging"
-)
-
-var (
-	log = logging.LoggerForModule()
 )
 
 type datastoreImpl struct {
@@ -18,7 +13,6 @@ type datastoreImpl struct {
 
 // UpsertRule adds the rule to the database
 func (d *datastoreImpl) UpsertRule(ctx context.Context, rule *storage.ComplianceOperatorRuleV2) error {
-	log.Infof("SHREWS -- in datastore UpsertRule %v", rule)
 	return d.store.Upsert(ctx, rule)
 }
 

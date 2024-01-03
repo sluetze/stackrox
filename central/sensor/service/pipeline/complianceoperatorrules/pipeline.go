@@ -17,7 +17,6 @@ import (
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/centralsensor"
 	"github.com/stackrox/rox/pkg/features"
-	"github.com/stackrox/rox/pkg/logging"
 	"github.com/stackrox/rox/pkg/metrics"
 	"github.com/stackrox/rox/pkg/postgres/pgutils"
 	"github.com/stackrox/rox/pkg/set"
@@ -25,8 +24,6 @@ import (
 
 var (
 	_ pipeline.Fragment = (*pipelineImpl)(nil)
-
-	log = logging.LoggerForModule()
 )
 
 // GetPipeline returns an instantiation of this particular pipeline
@@ -87,7 +84,6 @@ func (s *pipelineImpl) Match(msg *central.MsgFromSensor) bool {
 func (s *pipelineImpl) Run(ctx context.Context, clusterID string, msg *central.MsgFromSensor, _ common.MessageInjector) error {
 	defer countMetrics.IncrementResourceProcessedCounter(pipeline.ActionToOperation(msg.GetEvent().GetAction()), metrics.ComplianceOperatorRule)
 
-	log.Info("SHREWS -- in rules run")
 	event := msg.GetEvent()
 	// If a sensor sends in a v1 compliance message we will still process it the v1 way in the event
 	// a sensor is not updated.
@@ -117,13 +113,11 @@ func (s *pipelineImpl) processComplianceRule(_ context.Context, event *central.S
 }
 
 func (s *pipelineImpl) processComplianceRuleV2(ctx context.Context, event *central.SensorEvent, clusterID string) error {
-	log.Info("SHREWS -- in rules processComplianceRuleV2")
 	if !features.ComplianceEnhancements.Enabled() {
 		return errors.New("Next gen compliance is disabled.  Message unexpected.")
 	}
 
 	rule := event.GetComplianceOperatorRuleV2()
-	log.Infof("SHREWS -- in rules processComplianceRuleV2 %v", rule)
 
 	switch event.GetAction() {
 	case central.ResourceAction_REMOVE_RESOURCE:

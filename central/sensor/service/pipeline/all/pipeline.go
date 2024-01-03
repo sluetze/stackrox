@@ -64,17 +64,12 @@ func (s *pipelineImpl) Reconcile(ctx context.Context, reconciliationStore *recon
 func (s *pipelineImpl) Run(ctx context.Context, msg *central.MsgFromSensor, injector common.MessageInjector) error {
 	metrics.SetResourceProcessingDuration(msg.GetEvent())
 	defer metrics.SetSensorEventRunDuration(time.Now(), common.GetMessageType(msg), msg.GetEvent().GetAction().String())
-	log.Infof("SHREWS -- message %q", common.GetMessageType(msg))
 
 	var matchCount int
 	for _, fragment := range s.fragments {
 		if fragment.Match(msg) {
 			matchCount++
 
-			log.Info("SHREWS -- in all Run")
-			if msg.GetEvent() != nil {
-				log.Infof("SHREWS -- msg Type %T", msg.GetEvent().Resource)
-			}
 			var err error
 			panicErr := safe.Run(func() {
 				err = fragment.Run(ctx, s.clusterID, msg, injector)
