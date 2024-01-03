@@ -236,11 +236,51 @@ func (m *managerImpl) HandleScanRequestResponse(ctx context.Context, requestID s
 	return nil
 }
 
-func (m *managerImpl) ProcessRescanRequest(_ context.Context, _ interface{}) error {
-	// TODO(ROX-18091):
+func (m *managerImpl) ProcessRescanRequest(ctx context.Context, scanID string) error {
+	if !features.ComplianceEnhancements.Enabled() {
+		return errors.Errorf("Compliance is disabled. Cannot run compliance scan for configuration with ID %s", scanID)
+	}
+
 	// 1. Validate config exists in database
-	// 2. Push request to Sensor
-	panic("implement me")
+	scanConfig, found, err := m.scanSettingDS.GetScanConfiguration(ctx, scanID)
+	if err != nil {
+		return errors.Errorf("Encountered error attempting to find scan configuration with ID: %s", scanID)
+	} else if !found {
+		return errors.Errorf("Failed to find scan configuration by ID: %s", scanID)
+	}
+
+	// 2. Find applicable clusters for the given scan configuration (or just broadcast?)
+	clusters, err := m.scanSettingDS.GetScanConfigClusterStatus(ctx, scanID)
+	if err != nil {
+		return errors.Errorf("Failed to find clusters using scan configuration ID: %s", scanID)
+	}
+
+	for _, cluster := range clusters {
+		sensorRequestID := uuid.NewV4().String()
+		sensorMessage := &central.MsgToSensor{
+			Msg: &central.MsgToSensor_ComplianceRequest{
+				ComplianceRequest: &central.ComplianceRequest{
+					Request: &central.ComplianceRequest_ApplyScanConfig{
+						ApplyScanConfig: &central.ApplyComplianceScanConfigRequest{
+							Id: sensorRequestID,
+							ScanRequest: &central.ApplyComplianceScanConfigRequest_RerunScheduledScan_{
+								RerunScheduledScan: &central.ApplyComplianceScanConfigRequest_RerunScheduledScan{
+									ScanName: scanConfig.GetScanName(),
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		// 3. Push request to Sensor
+		err := m.sensorConnMgr.SendMessage(cluster.Id, sensorMessage)
+		if err != nil {
+			// Should this be tracked somewhere so we don't short-circuit invoking other scans?
+		}
+	}
+
+	return nil
 }
 
 // DeleteScan processes a request to delete an existing compliance scan configuration.
