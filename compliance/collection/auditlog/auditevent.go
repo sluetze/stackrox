@@ -6,6 +6,7 @@ import (
 
 	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
+	"github.com/stackrox/rox/pkg/protocompat"
 )
 
 const (
@@ -78,7 +79,7 @@ func (e *auditEvent) parseTimestamp(timestamp string) (*types.Timestamp, error) 
 	if err != nil {
 		return nil, err
 	}
-	protoTime, err := types.TimestampProto(t)
+	protoTime, err := protocompat.ConvertTimeToTimestampOrError(t)
 	if err != nil {
 		return nil, err
 	}

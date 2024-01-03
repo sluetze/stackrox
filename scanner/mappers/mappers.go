@@ -8,11 +8,11 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gogo/protobuf/types"
 	"github.com/quay/claircore"
 	"github.com/quay/claircore/pkg/cpe"
 	"github.com/quay/zlog"
 	v4 "github.com/stackrox/rox/generated/internalapi/scanner/v4"
+	"github.com/stackrox/rox/pkg/protocompat"
 )
 
 var (
@@ -254,7 +254,7 @@ func toProtoV4VulnerabilitiesMap(ctx context.Context, vulns map[string]*claircor
 		if v == nil {
 			continue
 		}
-		issued, err := types.TimestampProto(v.Issued)
+		issued, err := protocompat.ConvertTimeToTimestampOrError(v.Issued)
 		if err != nil {
 			return nil, err
 		}

@@ -4,20 +4,20 @@ import (
 	"testing"
 	"time"
 
-	timestamp "github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/auth/tokens"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/square/go-jose.v2/jwt"
 )
 
 func TestValidateTokenProviderUpdate(t *testing.T) {
-	before, err := timestamp.TimestampProto(time.Now().Add(-1 * time.Hour))
+	before, err := protocompat.ConvertTimeToTimestampOrError(time.Now().Add(-1 * time.Hour))
 	require.NoError(t, err)
-	after, err := timestamp.TimestampProto(time.Now().Add(1 * time.Hour))
+	after, err := protocompat.ConvertTimeToTimestampOrError(time.Now().Add(1 * time.Hour))
 	require.NoError(t, err)
-	leeway, err := timestamp.TimestampProto(time.Now().Add(5 * time.Second))
+	leeway, err := protocompat.ConvertTimeToTimestampOrError(time.Now().Add(5 * time.Second))
 	require.NoError(t, err)
 
 	cases := map[string]struct {

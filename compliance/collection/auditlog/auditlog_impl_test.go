@@ -13,6 +13,7 @@ import (
 	"github.com/gogo/protobuf/types"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stretchr/testify/suite"
 )
@@ -326,7 +327,7 @@ func (s *ComplianceAuditLogReaderTestSuite) TestReaderStartsSendingEventsAfterSt
 	s.NoError(err)
 	s.NoError(f.Sync())
 
-	collectSinceTs, _ := types.TimestampProto(eventTime)
+	collectSinceTs, _ := protocompat.ConvertTimeToTimestampOrError(eventTime)
 	sender, reader := s.getMocksWithStartState(logPath, &storage.AuditLogFileState{
 		CollectLogsSince: collectSinceTs,
 		LastAuditId:      latestEvent.AuditID,
@@ -368,7 +369,7 @@ func (s *ComplianceAuditLogReaderTestSuite) TestReaderStartsSendingEventsAtStart
 	s.NoError(f.Sync())
 
 	// Set CollectLogSince to be same exact time as the last two logs, but the ID should be the first of the two
-	collectSinceTs, _ := types.TimestampProto(eventTime)
+	collectSinceTs, _ := protocompat.ConvertTimeToTimestampOrError(eventTime)
 	sender, reader := s.getMocksWithStartState(logPath, &storage.AuditLogFileState{
 		CollectLogsSince: collectSinceTs,
 		LastAuditId:      latestEvent.AuditID,

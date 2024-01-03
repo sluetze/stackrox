@@ -10,6 +10,7 @@ import (
 	"github.com/stackrox/rox/generated/internalapi/sensor"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/concurrency"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/uuid"
 	"github.com/stackrox/rox/sensor/common"
 	"github.com/stackrox/rox/sensor/common/message"
@@ -281,7 +282,7 @@ func (s *AuditLogCollectionManagerTestSuite) getAuditLogFileState(time *types.Ti
 }
 
 func (s *AuditLogCollectionManagerTestSuite) getAsProtoTime(now time.Time) *types.Timestamp {
-	protoTime, err := types.TimestampProto(now)
+	protoTime, err := protocompat.ConvertTimeToTimestampOrError(now)
 	s.NoError(err)
 	return protoTime
 }

@@ -34,6 +34,7 @@ import (
 	"github.com/stackrox/rox/pkg/features"
 	"github.com/stackrox/rox/pkg/logging"
 	pgPkg "github.com/stackrox/rox/pkg/postgres"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/protoutils"
 	"github.com/stackrox/rox/pkg/sac"
 	"github.com/stackrox/rox/pkg/search"
@@ -545,7 +546,7 @@ func (g *garbageCollectorImpl) removeOldReportHistory(config *storage.PrivateCon
 
 func (g *garbageCollectorImpl) removeOldReportBlobs(config *storage.PrivateConfig) {
 	blobRetentionDays := config.GetReportRetentionConfig().GetDownloadableReportRetentionDays()
-	cutOffTime, err := types.TimestampProto(time.Now().Add(-time.Duration(blobRetentionDays) * 24 * time.Hour))
+	cutOffTime, err := protocompat.ConvertTimeToTimestampOrError(time.Now().Add(-time.Duration(blobRetentionDays) * 24 * time.Hour))
 	if err != nil {
 		log.Errorf("Failed to determine downloadable report retention %v", err)
 		return

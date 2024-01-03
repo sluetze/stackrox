@@ -18,6 +18,7 @@ import (
 	"github.com/stackrox/rox/pkg/grpc/authz/perrpc"
 	"github.com/stackrox/rox/pkg/grpc/authz/user"
 	"github.com/stackrox/rox/pkg/mtls"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/pkg/tlsutils"
 	"github.com/stackrox/rox/pkg/urlfmt"
 	"github.com/stackrox/rox/pkg/utils"
@@ -62,7 +63,7 @@ func (s *serviceImpl) getCentralCertExpiry() (*v1.GetCertExpiry_Response, error)
 	if err != nil {
 		return nil, errors.New("failed to parse central cert")
 	}
-	expiry, err := types.TimestampProto(parsedCert.NotAfter)
+	expiry, err := protocompat.ConvertTimeToTimestampOrError(parsedCert.NotAfter)
 	if err != nil {
 		return nil, errors.Errorf("failed to convert timestamp: %v", err)
 	}
@@ -103,7 +104,7 @@ func (s *serviceImpl) maybeGetExpiryFomScannerAt(ctx context.Context, endpoint s
 	if cn := leafCert.Subject.CommonName; cn != mtls.ScannerSubject.CN() {
 		return nil, errors.Errorf("common name of scanner at %s (%s) is not as expected", endpoint, cn)
 	}
-	expiry, err := types.TimestampProto(leafCert.NotAfter)
+	expiry, err := protocompat.ConvertTimeToTimestampOrError(leafCert.NotAfter)
 	if err != nil {
 		return nil, errors.Wrap(err, "converting timestamp")
 	}

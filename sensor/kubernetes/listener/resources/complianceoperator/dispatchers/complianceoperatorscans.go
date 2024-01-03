@@ -6,6 +6,7 @@ import (
 	"github.com/stackrox/rox/generated/internalapi/central"
 	"github.com/stackrox/rox/generated/storage"
 	"github.com/stackrox/rox/pkg/centralsensor"
+	"github.com/stackrox/rox/pkg/protocompat"
 	"github.com/stackrox/rox/sensor/common/centralcaps"
 	"github.com/stackrox/rox/sensor/kubernetes/eventpipeline/component"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -45,14 +46,14 @@ func (c *ScanDispatcher) ProcessEvent(obj, _ interface{}, action central.Resourc
 	// of time.  However, we should not need to send the same profile twice, the pipeline can convert the V2 sensor message
 	// so V1 and V2 objects can both be stored.
 	if centralcaps.Has(centralsensor.ComplianceV2Integrations) {
-		startTime, err := types.TimestampProto(complianceScan.CreationTimestamp.Time)
+		startTime, err := protocompat.ConvertTimeToTimestampOrError(complianceScan.CreationTimestamp.Time)
 		if err != nil {
 			log.Warnf("unable to convert start time %v", err)
 		}
 
 		var endTime *types.Timestamp
 		if complianceScan.Status.EndTimestamp != nil {
-			endTime, err = types.TimestampProto(complianceScan.Status.EndTimestamp.Time)
+			endTime, err = protocompat.ConvertTimeToTimestampOrError(complianceScan.Status.EndTimestamp.Time)
 			if err != nil {
 				log.Warnf("unable to convert end time %v", err)
 			}
