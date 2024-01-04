@@ -4899,55 +4899,6 @@
                 }
               }
             ]
-          },
-          {
-            "name": "ComplianceOperatorProfileClusterEdge",
-            "fields": [
-              {
-                "id": 1,
-                "name": "id",
-                "type": "string",
-                "options": [
-                  {
-                    "name": "(gogoproto.moretags)",
-                    "value": "sql:\"pk,id\""
-                  }
-                ]
-              },
-              {
-                "id": 2,
-                "name": "profile_id",
-                "type": "string",
-                "options": [
-                  {
-                    "name": "(gogoproto.moretags)",
-                    "value": "search:\"Compliance Profile ID,store,hidden\"sql:\"fk(ComplianceOperatorProfileV2:id)\""
-                  }
-                ]
-              },
-              {
-                "id": 3,
-                "name": "profile_uid",
-                "type": "string",
-                "options": [
-                  {
-                    "name": "(gogoproto.moretags)",
-                    "value": "search:\"Compliance Profile UID,store,hidden\""
-                  }
-                ]
-              },
-              {
-                "id": 4,
-                "name": "cluster_id",
-                "type": "string",
-                "options": [
-                  {
-                    "name": "(gogoproto.moretags)",
-                    "value": "search:\"Cluster ID,hidden,store\"sql:\"fk(Cluster:id),no-fk-constraint,type(uuid)\""
-                  }
-                ]
-              }
-            ]
           }
         ],
         "imports": [
