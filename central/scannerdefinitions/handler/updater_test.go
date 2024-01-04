@@ -13,6 +13,7 @@ import (
 
 	"github.com/stackrox/rox/central/scannerdefinitions/file"
 	"github.com/stackrox/rox/pkg/fileutils"
+	"github.com/stackrox/rox/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -102,13 +103,17 @@ func countFilesInTarGz(tarGzFilePath string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer file.Close()
+	defer utils.IgnoreError(file.Close())
 
 	gzr, err := gzip.NewReader(file)
 	if err != nil {
 		return 0, err
 	}
-	defer gzr.Close()
+	defer func() {
+		if err := gzr.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	tarr := tar.NewReader(gzr)
 
