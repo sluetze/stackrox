@@ -3,6 +3,7 @@ package handler
 import (
 	"archive/zip"
 	"context"
+	"fmt"
 	"io"
 	"io/fs"
 	"net/http"
@@ -123,7 +124,7 @@ func (h *httpHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *httpHandler) get(w http.ResponseWriter, r *http.Request) {
 	if fileType := r.URL.Query().Get("type"); fileType != "" {
 		if v4FileName, exists := v4FileMapping[fileType]; exists {
-			h.getMappingFile(w, r, v4FileName)
+			h.getV4Files(w, r, mappingUpdaterKey, v4FileName)
 			return
 		}
 	}
@@ -201,8 +202,8 @@ func (h *httpHandler) getUpdater(key string) *requestedUpdater {
 		case mappingUpdaterKey:
 			url = buildURL([]string{v4StorageDomain, mappingFile})
 		case cvssUpdaterKey:
-			filePath = filepath.Join(h.onlineVulnDir, key+".tar.gz")
 			url = buildURL([]string{v4StorageDomain, cvssFile})
+			filePath = filepath.Join(h.onlineVulnDir, key+".tar.gz")
 		default: // uuid
 			url = buildURL([]string{scannerUpdateDomain, key, scannerUpdateURLSuffix})
 		}
@@ -474,19 +475,37 @@ func openFromArchive(archiveFile string, fileName string) (*os.File, error) {
 	return tmpFile, nil
 }
 
-func (h *httpHandler) getMappingFile(w http.ResponseWriter, r *http.Request, fileName string) {
+func (h *httpHandler) getV4Files(w http.ResponseWriter, r *http.Request, updaterKey, fileName string) {
 	log.Infof("Fetching repository mapping file: %s", fileName)
-	f, err := h.openMostRecentFile(mappingUpdaterKey, fileName)
-	if err != nil {
-		log.Errorf("Failed to find JSON file: %v", err)
-		httputil.WriteGRPCStyleErrorf(w, codes.Internal, "could not read repository mapping file %s: %v", fileName, err)
+
+	var err error
+	var f *vulDefFile
+
+	switch updaterKey {
+	case cvssUpdaterKey:
+		f, err = h.openMostRecentFile(cvssUpdaterKey, "")
+	case mappingUpdaterKey:
+		f, err = h.openMostRecentFile(mappingUpdaterKey, fileName)
+	default:
+		errMsg := fmt.Sprintf("Failed to get updater: %s", updaterKey)
+		log.Errorf(errMsg)
+		httputil.WriteGRPCStyleErrorf(w, codes.Internal, errMsg)
 		return
 	}
+
+	if err != nil {
+		errMsg := fmt.Sprintf("could not read file: %v", err)
+		log.Errorf("Failed to find file: %v", errMsg)
+		httputil.WriteGRPCStyleErrorf(w, codes.Internal, errMsg)
+		return
+	}
+
 	http.ServeContent(w, r, f.Name(), f.modTime, f)
 }
 
 func (h *httpHandler) startUpdaterAndOpenFile(u *requestedUpdater) (*os.File, time.Time, error) {
 	if u == nil {
+		// TODO: provide more information when error occurs. Such as updater download URL
 		return nil, time.Time{}, errors.New("Fail to initialize updater")
 	}
 	u.Start()
